@@ -6,7 +6,8 @@ test: build run
 build: compile link
 compile:
 	echo "Compiling CPP files..."
-	g++ -c $(wildcard src/*.cpp) -DSFML_STATIC -Iinclude
+	# g++ -c $(wildcard src/*.cpp) -DSFML_STATIC -Iinclude
+	g++ -c src/main.cpp src/helpers.cpp -DSFML_STATIC -Iinclude
 link:
 	echo "Linking to SFML..."
 	g++ $(wildcard *.o) -o main.exe -Llib $(LINKS)

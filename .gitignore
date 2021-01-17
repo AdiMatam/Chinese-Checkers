@@ -2,5 +2,8 @@
 .vscode
 
 # executables/objects
-.exe
-.o
+*.exe
+*.o
+
+# CPP in outer directory
+guide.cpp
