@@ -1,0 +1,6 @@
+# extra folders
+.vscode
+
+# executables/objects
+.exe
+.o
