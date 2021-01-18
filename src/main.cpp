@@ -1,6 +1,6 @@
 #include <string>
 #include <iostream>
-#include <SFML/Graphics.hpp>
+#include <TGUI/TGUI.hpp>
 
 #include "header/helpers.hpp"
 
@@ -9,7 +9,9 @@ CONSTANT WIDTH = 500;
 CONSTANT HEIGHT = WIDTH;
 
 int main() {
-    sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "SFML-Window");    
+    sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "SFML-Window");
+    tgui::Gui gui{window};
+
     log("Starting up...");
 
     sf::Texture textures[12];
@@ -24,10 +26,11 @@ int main() {
                 window.close();
             else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
                 window.close();
+            gui.handleEvent(event);
         }
         window.clear(bg);
         // window.draw(sprite);
+        gui.draw();
         window.display();
     }
 }
-
