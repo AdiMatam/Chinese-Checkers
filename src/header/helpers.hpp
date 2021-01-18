@@ -6,6 +6,7 @@
 #include <string>
 #include <cstdarg>
 #include <iostream>
+#include <dirent.h>
 
 template <typename T>
 void log (T object) {
@@ -16,6 +17,8 @@ void logf (const char* format, ...);
 
 void logColor(const sf::Color& color); 
 
-void loadImage(sf::Texture* texture, const std::string& file);
+void loadTexture(sf::Texture* texture, const std::string& file);
+
+void loadAllTextures(sf::Texture (&textureArray)[12]);
 
 #endif

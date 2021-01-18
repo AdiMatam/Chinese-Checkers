@@ -12,7 +12,29 @@ void logColor(const sf::Color& color) {
     printf("[%d, %d, %d]\n", static_cast<int>(color.r), static_cast<int>(color.g), static_cast<int>(color.b));
 }
 
-void loadImage(sf::Texture* texture, const std::string& file) {
+void loadTexture(sf::Texture* texture, const std::string& file) {
     if (!texture->loadFromFile(file))
         throw std::exception();
+}
+
+void loadAllTextures(sf::Texture (&textureArray)[12]) {
+    dirent* entry;
+    DIR* dp;
+
+    dp = opendir("img");
+    if (dp == NULL) {
+        perror("opendir: Path does not exist or could not be read.");
+        return;
+    }
+
+    int x = 0;
+    std::string file;
+    while ((entry = readdir(dp))) {
+        file = entry->d_name;
+        if (file.size() < 3) continue;
+        loadTexture(&textureArray[x], "img/" + file);
+        x++;
+    }
+
+    closedir(dp);
 }

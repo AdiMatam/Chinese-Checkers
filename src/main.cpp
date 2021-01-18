@@ -4,23 +4,16 @@
 
 #include "header/helpers.hpp"
 
-
-#define WIDTH 500
-#define HEIGHT 300
+using CONSTANT = const unsigned int;
+CONSTANT WIDTH = 500;
+CONSTANT HEIGHT = WIDTH;
 
 int main() {
-    
     sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "SFML-Window");    
     log("Starting up...");
 
-    sf::Texture knight;
-    loadImage(&knight, "img/wrook.png");
-    sf::Sprite sprite;
-    sprite.setTexture(knight);
-    // logColor(sprite.getColor());
-    sprite.setColor(sf::Color(255, 0, 255));
-    sprite.setOrigin(32.f, 32.f);
-    sprite.setPosition(sf::Vector2f(250.f, 32.f));
+    sf::Texture textures[12];
+    loadAllTextures(textures);
 
     const sf::Color bg(210, 180, 140);
     
@@ -33,7 +26,7 @@ int main() {
                 window.close();
         }
         window.clear(bg);
-        window.draw(sprite);
+        // window.draw(sprite);
         window.display();
     }
 }
