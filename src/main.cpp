@@ -17,10 +17,11 @@ int main() {
     sf::Texture textures[12];
     loadAllTextures(textures);
 
-    
+    sf::Color colors[2] = {{210, 180, 140}, {50, 30, 25}};
 
-    const sf::Color bg(210, 180, 140);
-    
+    for (auto& c: colors)
+        logColor(c);
+
     sf::Event event;
     while (window.isOpen()) {
         while (window.pollEvent(event)) {
@@ -30,7 +31,7 @@ int main() {
                 window.close();
             gui.handleEvent(event);
         }
-        window.clear(bg);
+        window.clear(colors[0]);
         // window.draw(sprite);
         gui.draw();
         window.display();

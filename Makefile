@@ -10,7 +10,7 @@ compile:
 	g++ -c src/main.cpp src/helpers.cpp -DSFML_STATIC -Iinclude
 link:
 	echo "Linking to SFML..."
-	g++ $(wildcard *.o) -o main.exe -Llib $(LINKS)
+	g++ $(wildcard *.o) -o main.exe -Llib $(LINKS) -static-libgcc -static-libstdc++
 run:
 	echo "Running main.exe..."
 	./main.exe
