@@ -10,12 +10,14 @@ CONSTANT HEIGHT = WIDTH;
 
 int main() {
     sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "SFML-Window");
-    tgui::Gui gui{window};
+    tgui::Gui gui(window);
 
     log("Starting up...");
 
     sf::Texture textures[12];
     loadAllTextures(textures);
+
+    
 
     const sf::Color bg(210, 180, 140);
     

@@ -26,15 +26,13 @@ void loadAllTextures(sf::Texture (&textureArray)[12]) {
         perror("opendir: Path does not exist or could not be read.");
         return;
     }
-
     int x = 0;
-    std::string file;
+    std::string name;
     while ((entry = readdir(dp))) {
-        file = entry->d_name;
-        if (file.size() < 3) continue;
-        loadTexture(&textureArray[x], "img/" + file);
+        name = entry->d_name;
+        if (name.size() < 3) continue;
+        loadTexture(&textureArray[x], "img/" + name);
         x++;
     }
-
     closedir(dp);
 }

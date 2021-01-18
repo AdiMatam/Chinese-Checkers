@@ -2,7 +2,7 @@
 .vscode
 
 # executables/objects
-*.exe
+# *.exe
 *.o
 
 # CPP in outer directory
