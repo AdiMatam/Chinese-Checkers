@@ -1,16 +1,19 @@
 .SILENT:
 
-LINKS = -ltgui-s -lsfml-graphics-s -lsfml-window-s -lsfml-system-s -lopengl32 -lwinmm -lgdi32 -lfreetype
+SOURCE = src/main.cpp src/helpers.cpp
+EXTERNAL = -ltgui-s -lsfml-graphics-s -lsfml-window-s -lsfml-system-s -lopengl32 -lwinmm -lgdi32 -lfreetype
+STANDARD = -static-libgcc -static-libstdc++
+
 
 test: build run
 build: compile link
 compile:
 	echo "Compiling CPP files..."
 	# g++ -c $(wildcard src/*.cpp) -DSFML_STATIC -Iinclude
-	g++ -c src/main.cpp src/helpers.cpp -DSFML_STATIC -Iinclude
+	g++ -c $(SOURCE) -DSFML_STATIC -Iinclude
 link:
 	echo "Linking to SFML..."
-	g++ $(wildcard *.o) -o main.exe -Llib $(LINKS) -static-libgcc -static-libstdc++
+	g++ $(wildcard *.o) -o main.exe $(STANDARD) -Llib $(EXTERNAL)
 run:
 	echo "Running main.exe..."
 	./main.exe
