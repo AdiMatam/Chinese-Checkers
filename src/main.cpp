@@ -16,11 +16,20 @@ int main() {
 
     sf::Texture textures[12];
     loadAllTextures(textures);
+    auto& temp = textures[0];
+    sf::Image img = temp.copyToImage();
+    
+    for (int i = 0; i < 64; i++) {
+        for (int j = 0; j < 64; j++) {
+            const sf::Color& c = img.getPixel(i, j);
+            if (c.r != 0 || c.g != 0 || c.b != 0) {
+                printf("%d, %d -> ", i, j);
+                logColor(c);
+            }
+        }
+    }
 
-    sf::Color colors[2] = {{210, 180, 140}, {50, 30, 25}};
-
-    for (auto& c: colors)
-        logColor(c);
+    sf::Color bg(210, 180, 140);
 
     sf::Event event;
     while (window.isOpen()) {
@@ -31,8 +40,8 @@ int main() {
                 window.close();
             gui.handleEvent(event);
         }
-        window.clear(colors[0]);
-        // window.draw(sprite);
+        window.clear(bg);
+        // window.draw(img);
         gui.draw();
         window.display();
     }
