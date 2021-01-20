@@ -1,8 +1,7 @@
 #ifndef HELPERS_H
 #define HELPERS_H
 
-#include <SFML/Graphics/Texture.hpp>
-#include <SFML/Graphics/Color.hpp>
+#include <SFML/Graphics.hpp>
 #include <string>
 #include <cstdarg>
 #include <iostream>
@@ -20,5 +19,11 @@ void logColor(const sf::Color& color);
 void loadTexture(sf::Texture* texture, const std::string& file);
 
 void loadAllTextures(sf::Texture (&textureArray)[12]);
+
+template <int N>
+void drawSpriteArray(sf::RenderWindow* window, sf::Sprite* sprites) {
+    for (int i = 0; i < N; i++)
+        window->draw(sprites[i]);
+}
 
 #endif

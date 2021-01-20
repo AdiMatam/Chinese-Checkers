@@ -1,6 +1,7 @@
 .SILENT:
 
-SOURCE = src/main.cpp src/helpers.cpp
+MAIN = main
+SOURCE = src/$(MAIN).cpp src/helpers.cpp
 EXTERNAL = -ltgui-s -lsfml-graphics-s -lsfml-window-s -lsfml-system-s -lopengl32 -lwinmm -lgdi32 -lfreetype
 STANDARD = -static-libgcc -static-libstdc++
 
@@ -13,10 +14,10 @@ compile:
 	g++ -c $(SOURCE) -DSFML_STATIC -Iinclude
 link:
 	echo "Linking to SFML..."
-	g++ $(wildcard *.o) -o main.exe $(STANDARD) -Llib $(EXTERNAL)
+	g++ $(wildcard *.o) -o $(MAIN).exe $(STANDARD) -Llib $(EXTERNAL)
 run:
 	echo "Running main.exe..."
-	./main.exe
+	./$(MAIN).exe
 clean:
 	echo "Removing .o/.exe..."
 	rm -f *.o *.exe
