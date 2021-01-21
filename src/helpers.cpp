@@ -36,3 +36,7 @@ void loadAllTextures(sf::Texture (&textureArray)[12]) {
     }
     closedir(dp);
 }
+
+bool keyPressed(const sf::Event& e, const sf::Keyboard::Key& code) {
+    return e.type == sf::Event::KeyPressed && e.key.code == code;
+}

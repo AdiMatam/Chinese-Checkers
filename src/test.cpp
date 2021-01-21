@@ -16,6 +16,9 @@ int main() {
     sf::Texture texture;
     loadTexture(&texture, "img/bbishop.png");
     sf::Image img = texture.copyToImage();
+    sf::Sprite sp;
+    sp.setTexture(texture);
+    logColor(sp.getColor());
     
     for (int i = 0; i < 64; i++) {
         for (int j = 0; j < 64; j++) {
