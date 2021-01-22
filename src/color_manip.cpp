@@ -1,8 +1,6 @@
 #include "header/color_manip.hpp"
 #include <cstdio>
 
-using cfloat = const float;
-
 sf::Color toRGB(float h, float s, float v) {
     double p, q, t, f;
 

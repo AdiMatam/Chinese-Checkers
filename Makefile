@@ -13,7 +13,7 @@ compile:
 	# g++ -c $(wildcard src/*.cpp) -DSFML_STATIC -Iinclude
 	g++ -c $(SOURCE) -DSFML_STATIC -Iinclude
 link:
-	echo "Linking to SFML..."
+	echo "Linking Libraries..."
 	g++ $(wildcard *.o) -o $(MAIN).exe $(STANDARD) -Llib $(EXTERNAL)
 run:
 	echo "Running main.exe..."
