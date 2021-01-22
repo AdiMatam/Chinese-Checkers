@@ -1,7 +1,7 @@
 .SILENT:
 
 MAIN = main
-SOURCE = src/$(MAIN).cpp src/helpers.cpp src/color_manip.cpp
+SOURCE = src/$(MAIN).cpp src/helpers.cpp # src/color_manip.cpp
 EXTERNAL = -ltgui-s -lsfml-graphics-s -lsfml-window-s -lsfml-system-s -lopengl32 -lwinmm -lgdi32 -lfreetype
 STANDARD = -static-libgcc -static-libstdc++
 

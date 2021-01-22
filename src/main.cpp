@@ -1,40 +1,41 @@
 #include "pch.hpp"
-#include "color_manip.hpp"
+// #include "color_manip.hpp"
 #include "helpers.hpp"
 
 using CONSTANT = const unsigned int;
-CONSTANT WIDTH = 256;
+CONSTANT WIDTH = 600;
 CONSTANT HEIGHT = WIDTH;
 
-void updateGradient(sf::VertexArray& gradient, HSV& color) {
-    for (int x = 0; x < 256; x++) {
-        color.s = x / 255.f;
-        for (int y = 0; y < 256; y++) {
-            color.v = y / 255.f;
-            gradient[x * 256 + y].color = toRGB(color);
-        }
-    }
-}
-
 int main() {
-    sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "SFML-Window");
+    sf::ContextSettings settings;
+    settings.antialiasingLevel = 8;
+    sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "SFML-Window", sf::Style::Default, settings);
 
     log("Starting up...");
 
-    sf::Clock clock;
+    int locs[] = 
+    { 150, 450,
+      450, 450,
+      300, 150 };
     
-    HSV current = { 0, 0, 0 };
-    sf::VertexArray gradient(sf::Points, 256 * 256);
-    sf::Vector2f* pos;
-
-    for (int x = 0; x < 256; x++) {
-        for (int y = 0; y < 256; y++) {
-            pos = &(gradient[x * 256 + y].position);
-            pos->x = x; pos->y = 255 - y;
-        }
+    sf::VertexArray triangle(sf::Triangles, 3);
+    sf::Vertex* v;
+    for (int i = 0; i < 6; i += 2) {
+        v = &(triangle[i / 2]);
+        v->position.x = locs[i]; v->position.y = locs[i+1];
+        v->color = sf::Color::White;
     }
 
+    sf::Shader shader;
+    if (!shader.loadFromFile("res/shader/fragment.shader", sf::Shader::Fragment)) {
+        log("Shader loading error");
+    }
+
+    sf::Glsl::Vec4 c = sf::Color::Blue;
+    shader.setUniform("u_Color", c);
+
     int elapsed;
+    sf::Clock clock;
     sf::Event event;
     while (window.isOpen()) {
         while (window.pollEvent(event)) {
@@ -42,14 +43,7 @@ int main() {
                 window.close();
         }
         window.clear();
-        elapsed = clock.getElapsedTime().asMilliseconds();
-        if (elapsed >= 100) {
-            current.h++;
-            if (current.h == 360.f) current.h = 0.f;   
-            clock.restart();
-        }
-        updateGradient(gradient, current);
-        window.draw(gradient);
+        window.draw(triangle, &shader);
         window.display();
     }
 }
