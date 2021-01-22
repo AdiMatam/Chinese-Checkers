@@ -1,4 +1,4 @@
-#include "header/helpers.hpp"
+#include "helpers.hpp"
 
 void logf (const char* format, ...) {
     va_list args;

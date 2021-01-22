@@ -1,9 +1,6 @@
-#include <string>
-#include <iostream>
-#include <TGUI/TGUI.hpp>
-
-#include "header/helpers.hpp"
-#include "header/color_manip.hpp"
+#include "pch.hpp"
+#include "color_manip.hpp"
+#include "helpers.hpp"
 
 using CONSTANT = const unsigned int;
 CONSTANT WIDTH = 256;
@@ -37,7 +34,7 @@ int main() {
         }
     }
 
-    float elapsed;
+    int elapsed;
     sf::Event event;
     while (window.isOpen()) {
         while (window.pollEvent(event)) {
@@ -46,7 +43,7 @@ int main() {
         }
         window.clear();
         elapsed = clock.getElapsedTime().asMilliseconds();
-        if (static_cast<int>(elapsed) >= 100) {
+        if (elapsed >= 100) {
             current.h++;
             if (current.h == 360.f) current.h = 0.f;   
             clock.restart();
