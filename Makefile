@@ -13,7 +13,7 @@ compile:
 	# g++ -c $(wildcard src/*.cpp) -DSFML_STATIC -Iinclude
 	g++ -c $(SOURCE) -DSFML_STATIC -Iinclude
 link:
-	echo "Linking Libraries..."
+	echo "Linking libraries..."
 	g++ $(wildcard *.o) -o $(MAIN).exe $(STANDARD) -Llib $(EXTERNAL)
 run:
 	echo "Running main.exe..."
@@ -22,4 +22,3 @@ clean:
 	echo "Removing .o/.exe..."
 	rm -f *.o *.exe
 
-# -LD:\\github\\dependencies\\SDL2-2.0.8\\lib\\x64 -lSDL2main -lSDL2 -lopengl32 -o test-sdl
