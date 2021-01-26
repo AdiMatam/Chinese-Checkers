@@ -1,10 +1,29 @@
 #include "pch.hpp"
-// #include "color_manip.hpp"
+#include "color_manip.hpp"
 #include "helpers.hpp"
 
 using CONSTANT = const unsigned int;
-CONSTANT WIDTH = 600;
+CONSTANT WIDTH = 256;
 CONSTANT HEIGHT = WIDTH;
+
+void setVertex(sf::Vertex& v, int x, int y, int hue) {
+    v.position.x = x;
+    v.position.y = y;
+    v.color = toRGB(hue, x / 255.f, 1.f - y / 255.f);
+}
+
+void updateVertexArray(sf::VertexArray& rects, int hue) {
+    int idx;
+    int y;
+    for (int i = 0; i < rects.getVertexCount() / 4; i++) {
+        y = i * 60;
+        idx = i * 4;
+        setVertex(rects[idx], 0, y, hue);
+        setVertex(rects[idx + 1], 255, y, hue);
+        setVertex(rects[idx + 2], 255, y + 60, hue);
+        setVertex(rects[idx + 3], 0, y + 60, hue);
+    }
+}
 
 int main() {
     sf::ContextSettings settings;
@@ -13,26 +32,21 @@ int main() {
 
     log("Starting up...");
 
-    int locs[] = 
-    { 150, 450,
-      450, 450,
-      300, 150 };
-    
-    sf::VertexArray triangle(sf::Triangles, 3);
-    sf::Vertex* v;
-    for (int i = 0; i < 6; i += 2) {
-        v = &(triangle[i / 2]);
-        v->position.x = locs[i]; v->position.y = locs[i+1];
-        v->color = sf::Color::White;
-    }
+    int hue = 0;
+    const int rectCount = 6;
+    sf::VertexArray rects(sf::Quads, rectCount * 4);
 
-    sf::Shader shader;
-    if (!shader.loadFromFile("res/shader/fragment.shader", sf::Shader::Fragment)) {
-        log("Shader loading error");
-    }
+    int idx;
+    int y;
 
-    sf::Glsl::Vec4 c = sf::Color::Blue;
-    shader.setUniform("u_Color", c);
+    for (int i = 0; i < rectCount; i++) {
+        y = i * 60;
+        idx = i * 4;
+        setVertex(rects[idx], 0, y, hue);
+        setVertex(rects[idx + 1], 255, y, hue);
+        setVertex(rects[idx + 2], 255, y + 60, hue);
+        setVertex(rects[idx + 3], 0, y + 60, hue);
+    }
 
     int elapsed;
     sf::Clock clock;
@@ -43,7 +57,14 @@ int main() {
                 window.close();
         }
         window.clear();
-        window.draw(triangle, &shader);
+        elapsed = clock.getElapsedTime().asMilliseconds();
+        if (elapsed >= 10) {
+            hue++;
+            if (hue == 360.f) hue = 0.f;   
+            clock.restart();
+            updateVertexArray(rects, hue);
+        }
+        window.draw(rects);
         window.display();
     }
 }
