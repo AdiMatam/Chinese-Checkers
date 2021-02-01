@@ -6,6 +6,8 @@
 #include <algorithm>
 #include <cstdarg>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include <SFML/Graphics.hpp>
 

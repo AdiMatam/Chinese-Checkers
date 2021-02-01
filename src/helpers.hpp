@@ -10,10 +10,14 @@ void log (T object) {
     std::cout << object << std::endl;
 }
 
-
 void logf (const char* format, ...);
 
 void logColor(const sf::Color& color); 
+
+template <typename T>
+void logVector(const sf::Vector2<T>& vec) {
+    std::cout << "[" << vec.x << ", " << vec.y << "]\n";
+}
 
 void loadTexture(sf::Texture* texture, const std::string& file);
 
