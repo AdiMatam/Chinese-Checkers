@@ -4,12 +4,11 @@
 // #include "color_manip.hpp"
 
 int main() {
-    sf::RenderWindow window(sf::VideoMode(500, 500), "Big");
-    Checkers game = Checkers(&window);
-
     log("Starting up...");
-
-    const sf::Color bg = {222, 237, 255};
+      
+    sf::RenderWindow window(sf::VideoMode(500, 500), "Big");
+    sf::Color bg = {222, 237, 255};
+    Checkers game(window, bg);
 
     sf::Event event;
     while (window.isOpen()) {
