@@ -2,7 +2,8 @@
 #define CHECKERS_H
 
 #include "pch.hpp"
-// #include "slot.hpp"
+#include "helpers.hpp"
+#include "slot.hpp"
 
 class Checkers {
 private:
@@ -10,8 +11,13 @@ private:
     sf::RenderWindow* mWin;
     sf::Color* mFill;
     sf::CircleShape mOutline;
+    sf::CircleShape mTest;
+    sf::CircleShape mOutline2;
 
-    const int LAYOUT[17] = {
+    std::vector<Slot> mSlots;
+
+    // STATIC
+    static constexpr const int sLAYOUT[17] = {
         1, 2, 3, 4, 13, 12, 11, 10, 9, 
         10, 11, 12, 13, 4, 3, 2, 1
     };

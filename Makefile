@@ -2,7 +2,7 @@
 
 EXTERNAL = -ltgui-s -lsfml-graphics-s -lsfml-window-s -lsfml-system-s -lopengl32 -lwinmm -lgdi32 -lfreetype
 STANDARD = -static-libgcc -static-libstdc++
-FILES = src/main.cpp src/checkers.cpp src/helpers.cpp
+FILES = src/main.cpp src/checkers.cpp src/helpers.cpp src/slot.cpp
 
 test: build run
 build: compile link

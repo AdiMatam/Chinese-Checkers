@@ -1,8 +1,14 @@
 #include "helpers.hpp"
 
+int RADIUS         = 10;
+int STEP           = *(&RADIUS) * 2.5;
+int BOARD_DIAMETER = *(&RADIUS) * 2 * 17 + *(&STEP) * 18;
+int THICK          = *(&RADIUS) / 5;
+int HEIGHT         = *(&BOARD_DIAMETER) * 1.1f;
+
 void logf (const char* format, ...) {
     va_list args;
-    va_start (args, format);
+    va_start(args, format);
     vfprintf(stdout, format, args);
     printf("\n");
     va_end(args);

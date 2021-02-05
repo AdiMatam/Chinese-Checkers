@@ -5,6 +5,12 @@
 
 #include "pch.hpp"
 
+extern int HEIGHT        ; 
+extern int BOARD_DIAMETER; 
+extern int STEP          ;  
+extern int RADIUS        ;
+extern int THICK         ; 
+
 template <typename T>
 void log (T object) {
     std::cout << object << std::endl;

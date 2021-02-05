@@ -1,12 +1,13 @@
 #include "pch.hpp"
 #include "helpers.hpp"
 #include "checkers.hpp"
-// #include "color_manip.hpp"
 
 int main() {
     log("Starting up...");
-      
-    sf::RenderWindow window(sf::VideoMode(500, 500), "Big");
+    sf::ContextSettings settings;
+    settings.antialiasingLevel = 8;
+    
+    sf::RenderWindow window(sf::VideoMode(HEIGHT, HEIGHT), "Window", sf::Style::Default, settings);
     sf::Color bg = {222, 237, 255};
     Checkers game(window, bg);
 
@@ -15,6 +16,7 @@ int main() {
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed || keyPressed(event, sf::Keyboard::Escape))
                 window.close();
+            // if (mousePRessed)
         }   
         window.clear(bg);
         game.draw();        
