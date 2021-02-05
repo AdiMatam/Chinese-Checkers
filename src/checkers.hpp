@@ -11,8 +11,6 @@ private:
     sf::RenderWindow* mWin;
     sf::Color* mFill;
     sf::CircleShape mOutline;
-    sf::CircleShape mTest;
-    sf::CircleShape mOutline2;
 
     std::vector<Slot> mSlots;
 
@@ -26,9 +24,9 @@ public:
     Checkers(sf::RenderWindow& win, sf::Color& fill);
     ~Checkers() = default;
 
-    bool getTurn();
+    bool getTurn() const;
     void switchTurn();
-    void draw();
+    void draw() const;
     void reset();
 };
 
