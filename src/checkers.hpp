@@ -10,8 +10,8 @@ private:
     bool mTurn;
     sf::RenderWindow* mWin;
     sf::Color* mFill;
+    
     sf::CircleShape mOutline;
-
     std::vector<Slot> mSlots;
 
     // STATIC

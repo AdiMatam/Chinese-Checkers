@@ -10,12 +10,13 @@ struct Slot : public sf::CircleShape {
     std::vector<Slot*> mNeighbors;
 
     Slot() = default;
-    Slot(int x, int y, const sf::Color& c=sf::Color::White);
+    Slot(float x, float y, const sf::Color& c);
     ~Slot() = default;
     // ADD OTHER CONSTRUCTORS AS NEEDED
     
+    // void config();
     void addNeighbor(Slot& slot);
-    bool clicked(int mouseX, int mouseY);
+    bool clicked(float mouseX, float mouseY);
     void print();
 };
 
