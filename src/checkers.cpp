@@ -19,6 +19,7 @@ Checkers::Checkers(sf::RenderWindow& win, sf::Color& fill) {
     mOutline.setOrigin(mOutline.getRadius(), mOutline.getRadius());
 
     reset();
+    if (mSlots.size() != 121) logf("Actual Slot Count: %d", mSlots.size());
 }
 void Checkers::draw() const {
     mWin->draw(mOutline);
