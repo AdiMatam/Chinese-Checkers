@@ -7,7 +7,8 @@
 
 extern int HEIGHT        ; 
 extern int BOARD_DIAMETER; 
-extern int STEP          ;  
+extern int GAP           ;
+extern int STEP          ;
 extern int RADIUS        ;
 extern int THICK         ; 
 

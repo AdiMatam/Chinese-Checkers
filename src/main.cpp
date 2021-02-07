@@ -10,15 +10,15 @@ int main() {
     auto LOCKSIZE = sf::Style::Titlebar | sf::Style::Close;
     
     sf::RenderWindow window(sf::VideoMode(HEIGHT, HEIGHT), "Chinese Checkers", LOCKSIZE, settings);
-    tgui::Gui gui(window);
+    // tgui::Gui gui(window);
     sf::Color bg = {222, 237, 255};
     Checkers game(window, bg);
 
-    tgui::Button::Ptr button = tgui::Button::create();
-    button->setPosition(tgui::Layout2d(HEIGHT / 2, HEIGHT / 2));
-    button->setText("Loafer");
-    button->setTextSize(24);
-    gui.add(button);
+    // tgui::Button::Ptr button = tgui::Button::create();
+    // button->setPosition(tgui::Layout2d(HEIGHT / 2, HEIGHT / 2));
+    // button->setText("Loafer");
+    // button->setTextSize(24);
+    // gui.add(button);
 
     sf::Event event;
     while (window.isOpen()) {
@@ -31,12 +31,12 @@ int main() {
                 if (event.mouseButton.button == sf::Mouse::Left)
                     logf("[%d, %d]", event.mouseButton.x, event.mouseButton.y);
             }
-            gui.handleEvent(event);
+            // gui.handleEvent(event);
         }   
         window.clear(bg);
         game.draw();
-        gui.draw();
+        // gui.draw();
         window.display();
     }
-    gui.removeAllWidgets();
+    // gui.removeAllWidgets();
 }

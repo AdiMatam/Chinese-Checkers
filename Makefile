@@ -1,9 +1,9 @@
 .SILENT:
 
-INCLUDE = -DSFML_STATIC -DTGUI_STATIC -Iinclude
+INCLUDE = -DTGUI_STATIC -DSFML_STATIC -Iinclude
 EXTERNAL = -ltgui-s -lsfml-graphics-s -lsfml-window-s -lsfml-system-s -lopengl32 -lwinmm -lgdi32 -lfreetype
 STANDARD = -static-libgcc -static-libstdc++
-FILES = src/main.cpp src/checkers.cpp src/helpers.cpp src/slot.cpp
+FILES = src/main.cpp src/helpers.cpp src/checkers.cpp src/slot.cpp
 
 test: build run
 build: compile link
@@ -18,7 +18,7 @@ run:
 	./main.exe
 pch:
 	echo "Making pch..."
-	g++ src/pch.hpp -o src/pch.hpp.gch $(INCLUDE)
+	g++ src/pch.hpp $(INCLUDE)
 clean:
 	echo "Removing .o/.exe..."
 	rm -f *.o *.exe

@@ -1,10 +1,11 @@
 #include "helpers.hpp"
 
 int RADIUS         = 10;
-int STEP           = RADIUS * 2.5;
 int THICK          = RADIUS / 5;
-int BOARD_DIAMETER = RADIUS * 2 * 17 + STEP * 18;
-int HEIGHT         = BOARD_DIAMETER * 1.05f;
+int GAP            = RADIUS / 2;
+int STEP           = RADIUS * 2 + GAP;
+int BOARD_DIAMETER = RADIUS * 2 * 17 + GAP * 19;
+int HEIGHT         = BOARD_DIAMETER + 2 * GAP;
 
 void logf (const char* format, ...) {
     va_list args;

@@ -11,14 +11,11 @@ private:
     sf::RenderWindow* mWin;
     sf::Color* mFill;
     
-    sf::CircleShape mOutline;
+    sf::CircleShape mOutline; // getter setter?
     std::vector<Slot> mSlots;
 
     // STATIC
-    static constexpr const int sLAYOUT[17] = {
-        1, 2, 3, 4, 13, 12, 11, 10, 9, 
-        10, 11, 12, 13, 4, 3, 2, 1
-    };
+    static int sLAYOUT[17];
 
 public:
     Checkers(sf::RenderWindow& win, sf::Color& fill);
@@ -26,6 +23,10 @@ public:
 
     bool getTurn() const;
     void switchTurn();
+    const sf::Color& getFill() const;
+    void setFill(sf::Color& fill);
+    const std::vector<Slot>& getSlots() const; 
+
     void draw() const;
     void reset();
 };
