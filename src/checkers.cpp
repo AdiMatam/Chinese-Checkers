@@ -9,6 +9,7 @@ Checkers::Checkers(sf::RenderWindow& win, sf::Color& fill) {
     mTurn = true;
     mWin = &win;
     mFill = &fill;
+    mRotation = 0;
 
     mOutline.setPosition(mCENTER);
     mOutline.setFillColor(*mFill);
@@ -66,10 +67,14 @@ void Checkers::setFill(sf::Color& fill) {
 }
 const std::vector<Slot>& Checkers::getSlots() const {
     return mSlots;
-} 
+}
+int Checkers::getRotation() const {
+    return mRotation;
+}
 
 void Checkers::rotate() {
     mTrans.rotate(1, mCENTER);
+    ++mRotation %= 181;
     // int x = 1;
     // for (int x = 0; x < 180; x++) {
     //     mTrans.rotate(1, mCENTER);

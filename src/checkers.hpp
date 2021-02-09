@@ -14,6 +14,7 @@ private:
     const sf::Vector2f mCENTER = { HEIGHT / 2, HEIGHT / 2 };
     sf::CircleShape mOutline; // getter setter?
     sf::Transform mTrans;
+    int mRotation;
     std::vector<Slot> mSlots;
 
     // STATIC
@@ -29,6 +30,7 @@ public:
     const sf::Color& getFill() const;
     void setFill(sf::Color& fill);
     const std::vector<Slot>& getSlots() const; 
+    int getRotation() const;
 
     void rotate();
     void draw() const;

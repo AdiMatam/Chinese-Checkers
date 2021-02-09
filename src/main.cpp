@@ -3,6 +3,14 @@
 #include "checkers.hpp"
 // #include <TGUI/TGUI.hpp>
 
+void handleRotation(Checkers* game, sf::Clock* clock, bool* shouldRotate) {
+    if (clock->getElapsedTime().asMilliseconds() >= 5 && *shouldRotate) {
+        clock->restart();
+        game->rotate();
+    } 
+    if (game->getRotation() == 180) *shouldRotate = false;
+}
+
 int main() {
     log("Starting up...");
     sf::ContextSettings settings;
@@ -21,13 +29,16 @@ int main() {
     // gui.add(button);
 
     sf::Event event;
+    sf::Clock clock;
+    int elapsed;
+    bool shouldRotate = false;
     while (window.isOpen()) {
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed || keyPressed(event, sf::Keyboard::Escape))
                 window.close();
             else if (keyPressed(event, sf::Keyboard::Enter)) {
                 game.switchTurn();
-                game.rotate();
+                shouldRotate = true;
             }
             else if (event.type == sf::Event::MouseButtonPressed) {
                 if (event.mouseButton.button == sf::Mouse::Left)
@@ -35,7 +46,8 @@ int main() {
             }
             // gui.handleEvent(event);
         }
-
+        handleRotation(&game, &clock, &shouldRotate);
+        
         window.clear(bg);
         game.draw();
         // gui.draw();
