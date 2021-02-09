@@ -10,7 +10,7 @@ Checkers::Checkers(sf::RenderWindow& win, sf::Color& fill) {
     mWin = &win;
     mFill = &fill;
 
-    mOutline.setPosition(sf::Vector2f(HEIGHT / 2, HEIGHT / 2));
+    mOutline.setPosition(mCENTER);
     mOutline.setFillColor(*mFill);
     mOutline.setRadius(BOARD_DIAMETER / 2);
     mOutline.setOutlineColor(sf::Color::Black);
@@ -18,30 +18,34 @@ Checkers::Checkers(sf::RenderWindow& win, sf::Color& fill) {
     mOutline.setPointCount(mOutline.getPointCount() * 2);
     mOutline.setOrigin(mOutline.getRadius(), mOutline.getRadius());
 
+    // mTrans.rotate(90, mCENTER);
+
     reset();
     if (mSlots.size() != 121) logf("Actual Slot Count: %d", mSlots.size());
 }
 void Checkers::draw() const {
     mWin->draw(mOutline);
-    for (auto& s : mSlots) mWin->draw(s);
+    for (auto& s : mSlots) mWin->draw(s, mTrans);
 }
 void Checkers::reset() {
     float x;
     float y = 2 * GAP + RADIUS;
-    const auto& c = sf::Color::Blue;
+    const auto* c = &sf::Color::Blue;
+    int count;
 
     for (int i = 0; i < 17; i++) {
+        if (i > 7) c = &sf::Color::Red;
+
         x = HEIGHT / 2;
-        const int& count = sLAYOUT[i];
+        count = sLAYOUT[i];
         if (count % 2 == 1) {
-            mSlots.push_back(Slot(x, y, c));
+            mSlots.push_back(Slot(x, y, *c));
             x -= STEP;
         }
-        else
-            x -= (RADIUS + GAP / 2.f);
+        else x -= (RADIUS + GAP / 2.f);
         for (int j = 0; j < count / 2; j++) {
-            mSlots.push_back(Slot(x, y, c));
-            mSlots.push_back(Slot(HEIGHT - x, y, c));
+            mSlots.push_back(Slot(x, y, *c));
+            mSlots.push_back(Slot(HEIGHT - x, y, *c));
             x -= STEP;
         }
         y += STEP;
@@ -63,3 +67,13 @@ void Checkers::setFill(sf::Color& fill) {
 const std::vector<Slot>& Checkers::getSlots() const {
     return mSlots;
 } 
+
+void Checkers::rotate() {
+    mTrans.rotate(1, mCENTER);
+    // int x = 1;
+    // for (int x = 0; x < 180; x++) {
+    //     mTrans.rotate(1, mCENTER);
+    //     draw();
+    //     Sleep(50);
+    // }
+}

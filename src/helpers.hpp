@@ -5,12 +5,12 @@
 
 #include "pch.hpp"
 
-extern int HEIGHT        ; 
-extern int BOARD_DIAMETER; 
-extern int GAP           ;
-extern int STEP          ;
-extern int RADIUS        ;
-extern int THICK         ; 
+extern float HEIGHT        ; 
+extern float BOARD_DIAMETER; 
+extern float GAP           ;
+extern float STEP          ;
+extern float RADIUS        ;
+extern float THICK         ; 
 
 template <typename T>
 void log (T object) {

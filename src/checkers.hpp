@@ -11,11 +11,14 @@ private:
     sf::RenderWindow* mWin;
     sf::Color* mFill;
     
+    const sf::Vector2f mCENTER = { HEIGHT / 2, HEIGHT / 2 };
     sf::CircleShape mOutline; // getter setter?
+    sf::Transform mTrans;
     std::vector<Slot> mSlots;
 
     // STATIC
     static int sLAYOUT[17];
+
 
 public:
     Checkers(sf::RenderWindow& win, sf::Color& fill);
@@ -27,6 +30,7 @@ public:
     void setFill(sf::Color& fill);
     const std::vector<Slot>& getSlots() const; 
 
+    void rotate();
     void draw() const;
     void reset();
 };

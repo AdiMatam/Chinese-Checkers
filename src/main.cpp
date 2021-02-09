@@ -25,14 +25,17 @@ int main() {
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed || keyPressed(event, sf::Keyboard::Escape))
                 window.close();
-            else if (keyPressed(event, sf::Keyboard::Enter))
+            else if (keyPressed(event, sf::Keyboard::Enter)) {
                 game.switchTurn();
+                game.rotate();
+            }
             else if (event.type == sf::Event::MouseButtonPressed) {
                 if (event.mouseButton.button == sf::Mouse::Left)
                     logf("[%d, %d]", event.mouseButton.x, event.mouseButton.y);
             }
             // gui.handleEvent(event);
-        }   
+        }
+
         window.clear(bg);
         game.draw();
         // gui.draw();
