@@ -6,7 +6,7 @@
 void handleRotation(Checkers* game, sf::Clock* clock, bool* shouldRotate) {
     if (clock->getElapsedTime().asMilliseconds() >= 5 && *shouldRotate) {
         clock->restart();
-        game->rotate();
+        game->rotateBoard();
     } 
     if (game->getRotation() == 180) *shouldRotate = false;
 }

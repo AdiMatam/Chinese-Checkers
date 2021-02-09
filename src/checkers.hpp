@@ -32,7 +32,7 @@ public:
     const std::vector<Slot>& getSlots() const; 
     int getRotation() const;
 
-    void rotate();
+    void rotateBoard();
     void draw() const;
     void reset();
 };

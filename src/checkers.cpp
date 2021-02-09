@@ -28,6 +28,12 @@ void Checkers::draw() const {
     mWin->draw(mOutline);
     for (auto& s : mSlots) mWin->draw(s, mTrans);
 }
+
+void Checkers::rotateBoard() {
+    mTrans.rotate(1, mCENTER);
+    ++mRotation %= 181;
+}
+
 void Checkers::reset() {
     float x;
     float y = 2 * GAP + RADIUS;
@@ -70,15 +76,4 @@ const std::vector<Slot>& Checkers::getSlots() const {
 }
 int Checkers::getRotation() const {
     return mRotation;
-}
-
-void Checkers::rotate() {
-    mTrans.rotate(1, mCENTER);
-    ++mRotation %= 181;
-    // int x = 1;
-    // for (int x = 0; x < 180; x++) {
-    //     mTrans.rotate(1, mCENTER);
-    //     draw();
-    //     Sleep(50);
-    // }
 }
