@@ -10,16 +10,15 @@ private:
     bool mTurn;
     sf::RenderWindow* mWin;
     sf::Color* mFill;
-    
     const sf::Vector2f mCENTER = { HEIGHT / 2, HEIGHT / 2 };
     sf::CircleShape mOutline; // getter setter?
     sf::Transform mTrans;
     int mRotation;
     std::vector<Slot> mSlots;
+    std::vector<sf::Color> mColors;
 
     // STATIC
     static int sLAYOUT[17];
-
 
 public:
     Checkers(sf::RenderWindow& win, sf::Color& fill);

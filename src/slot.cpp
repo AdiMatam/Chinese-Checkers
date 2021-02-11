@@ -1,6 +1,6 @@
 #include "slot.hpp"
 
-Slot::Slot(float x, float y, const sf::Color& c=sf::Color::White) {
+Slot::Slot(float x, float y, const sf::Color& c) {
     setPosition(sf::Vector2f(x, y));
     setFillColor(c);
     setOutlineColor(sf::Color::Black);
