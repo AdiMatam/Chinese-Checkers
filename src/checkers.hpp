@@ -20,6 +20,8 @@ private:
     // STATIC
     static int sLAYOUT[17];
 
+    void addSlot(int x, int y, int rowCount, sf::Color* oneToFour, sf::Color* rest);
+
 public:
     Checkers(sf::RenderWindow& win, sf::Color& fill);
     ~Checkers() = default;

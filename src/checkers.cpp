@@ -45,15 +45,14 @@ void Checkers::rotateBoard() {
 void Checkers::reset() {
     float x;
     float y = 2 * GAP + RADIUS;
-    const sf::Color* colorStepper = &mColors[0];
-    const sf::Color* current;
+    sf::Color* colorStepper = &mColors[0];
+    sf::Color* current;
     int rowCount;
 
     int guide[] = {0,0,0,0,-1,2,3,3,4,5,-2,4,3,3,2,-2,0,0,0,0};
     int* guidePtr = &guide[0];
 
     for (int i = 0; i < 17; i++) {
-        current = mFill;
         rowCount = sLAYOUT[i];
         if (*guidePtr < 0) {
             colorStepper += abs(*guidePtr);
@@ -63,20 +62,15 @@ void Checkers::reset() {
         if (rowCount % 2 == 0) 
             x -= (RADIUS + GAP / 2.f);
         else {
-            if (rowCount > 4)
-                mSlots.push_back(Slot(x, y, *current));
-            else
-                mSlots.push_back(Slot(x, y, *colorStepper));
+            addSlot(x, y, rowCount, colorStepper, mFill);
             x -= STEP;
         }
-
+        
+        current = mFill;
         for (int j = 0; j < rowCount / 2; j++) {
             if (*guidePtr <= j) current = colorStepper;
             mSlots.push_back(Slot(x, y, *current));
-            if (rowCount > 4)
-                mSlots.push_back(Slot(HEIGHT - x, y, *(current+1)));
-            else
-                mSlots.push_back(Slot(HEIGHT - x, y, *current));
+            addSlot(HEIGHT - x, y, rowCount, current, current+1);
             x -= STEP;
         }
         y += STEP;
@@ -84,6 +78,11 @@ void Checkers::reset() {
     }
 }
 
+// PRIVATE
+void Checkers::addSlot(int x, int y, int rowCount, sf::Color* oneToFour, sf::Color* rest) {
+    if (rowCount > 4) mSlots.push_back(Slot(x, y, *rest));
+    else              mSlots.push_back(Slot(x, y, *oneToFour));
+}
 
 bool Checkers::getTurn() const {
     return mTurn;
