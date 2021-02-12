@@ -7,7 +7,7 @@
 
 struct Slot : public sf::CircleShape {
     
-    std::vector<Slot*> mNeighbors;
+    // std::vector<Slot*> mNeighbors;
 
     Slot() = default;
     Slot(float x, float y, const sf::Color& c);
@@ -15,7 +15,7 @@ struct Slot : public sf::CircleShape {
     // ADD OTHER CONSTRUCTORS AS NEEDED
     
     // void config();
-    void addNeighbor(Slot& slot);
+    // void addNeighbor(Slot& slot);
     bool clicked(float mouseX, float mouseY);
     void print();
 };

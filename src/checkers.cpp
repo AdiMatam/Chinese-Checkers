@@ -24,8 +24,8 @@ Checkers::Checkers(sf::RenderWindow& win, sf::Color& fill) {
     mColors[0] = sf::Color::White;
     mColors[1] = sf::Color::Red;
     mColors[2] = sf::Color::Blue;
-    mColors[3] = sf::Color::Yellow;
-    mColors[4] = sf::Color::Green;
+    mColors[3] = sf::Color::Green;
+    mColors[4] = sf::Color::Yellow;
     mColors[5] = sf::Color(65, 65, 65);
     
     reset();
@@ -49,7 +49,7 @@ void Checkers::reset() {
     sf::Color* current;
     int rowCount;
 
-    int guide[] = {0,0,0,0,-1,2,3,3,4,5,-2,4,3,3,2,-2,0,0,0,0};
+    int guide[20] = {0,0,0,0,-1,2,3,3,4,5,-2,4,3,3,2,-2,0,0,0,0};
     int* guidePtr = &guide[0];
 
     for (int i = 0; i < 17; i++) {

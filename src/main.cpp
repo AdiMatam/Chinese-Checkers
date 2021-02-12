@@ -25,6 +25,7 @@ int main() {
     sf::Clock clock;
     int elapsed;
     bool shouldRotate = false;
+    
     while (window.isOpen()) {
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed || keyPressed(event, sf::Keyboard::Escape))
