@@ -96,7 +96,7 @@ const sf::Color& Checkers::getFill() const {
 void Checkers::setFill(sf::Color& fill) {
     mFill = &fill;
 }
-const std::vector<Slot>& Checkers::getSlots() const {
+std::vector<Slot>& Checkers::getSlots() {
     return mSlots;
 }
 int Checkers::getRotation() const {

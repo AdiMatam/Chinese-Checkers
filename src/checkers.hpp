@@ -30,7 +30,7 @@ public:
     void switchTurn();
     const sf::Color& getFill() const;
     void setFill(sf::Color& fill);
-    const std::vector<Slot>& getSlots() const; 
+    std::vector<Slot>& getSlots(); 
     int getRotation() const;
 
     void rotateBoard();

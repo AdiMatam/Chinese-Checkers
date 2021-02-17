@@ -1,9 +1,9 @@
 .SILENT:
 
-INCLUDE = -DTGUI_STATIC -DSFML_STATIC -Iinclude
-EXTERNAL = -ltgui-s -lsfml-graphics-s -lsfml-window-s -lsfml-system-s -lopengl32 -lwinmm -lgdi32 -lfreetype
+INCLUDE = -DSFML_STATIC -Iinclude
+EXTERNAL = -lsfml-graphics-s -lsfml-window-s -lsfml-system-s -lopengl32 -lwinmm -lgdi32 -lfreetype
 STANDARD = -static-libgcc -static-libstdc++
-FILES = src/main.cpp src/helpers.cpp src/checkers.cpp src/slot.cpp
+FILES = $(wildcard src/*.cpp) # src/main.cpp src/helpers.cpp src/checkers.cpp src/slot.cpp
 
 all: build run
 build: compile link
@@ -22,9 +22,3 @@ pch:
 clean:
 	echo "Removing .o/.exe..."
 	rm -f *.o *.exe
-# test:
-# 	echo "Testing file"
-# 	g++ -c src/extra/test.cpp src/helpers.cpp $(INCLUDE)
-# 	g++ $(wildcard *.o) -o test.exe $(STANDARD) -Llib $(EXTERNAL)
-# 	./test.exe 
-
