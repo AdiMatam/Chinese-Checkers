@@ -1,9 +1,8 @@
 #ifndef HELPERS_H
 #define HELPERS_H
 
+#include "Pch.hpp"
 #include <dirent.h>
-
-#include "pch.hpp"
 
 extern float HEIGHT        ; 
 extern float BOARD_DIAMETER; 
@@ -26,9 +25,9 @@ void logVector(const sf::Vector2<T>& vec) {
     std::cout << "[" << vec.x << ", " << vec.y << "]\n";
 }
 
-void loadTexture(sf::Texture* texture, const std::string& file);
+// void loadTexture(sf::Texture* texture, const std::string& file);
 
-void loadAllTextures(sf::Texture (&textureArray)[12]);
+// void loadAllTextures(sf::Texture (&textureArray)[12]);
 
 bool keyPressed(const sf::Event& e, const sf::Keyboard::Key& code);
 

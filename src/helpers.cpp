@@ -1,4 +1,4 @@
-#include "helpers.hpp"
+#include "Helpers.hpp"
 
 float RADIUS         = 20;
 float THICK          = RADIUS / 5;
@@ -19,30 +19,30 @@ void logColor(const sf::Color& color) {
     printf("[%d, %d, %d]\n", static_cast<int>(color.r), static_cast<int>(color.g), static_cast<int>(color.b));
 }
 
-void loadTexture(sf::Texture* texture, const std::string& file) {
-    if (!texture->loadFromFile(file))
-        throw std::exception();
-}
+// void loadTexture(sf::Texture* texture, const std::string& file) {
+//     if (!texture->loadFromFile(file))
+//         throw std::exception();
+// }
 
-void loadAllTextures(sf::Texture (&textureArray)[12]) {
-    dirent* entry;
-    DIR* dp;
+// void loadAllTextures(sf::Texture (&textureArray)[12]) {
+//     dirent* entry;
+//     DIR* dp;
 
-    dp = opendir("img");
-    if (dp == NULL) {
-        perror("opendir: Path does not exist or could not be read.");
-        return;
-    }
-    int x = 0;
-    std::string name;
-    while ((entry = readdir(dp))) {
-        name = entry->d_name;
-        if (name.size() < 3) continue;
-        loadTexture(&textureArray[x], "img/" + name);
-        x++;
-    }
-    closedir(dp);
-}
+//     dp = opendir("img");
+//     if (dp == NULL) {
+//         perror("opendir: Path does not exist or could not be read.");
+//         return;
+//     }
+//     int x = 0;
+//     std::string name;
+//     while ((entry = readdir(dp))) {
+//         name = entry->d_name;
+//         if (name.size() < 3) continue;
+//         loadTexture(&textureArray[x], "img/" + name);
+//         x++;
+//     }
+//     closedir(dp);
+// }
 
 bool keyPressed(const sf::Event& e, const sf::Keyboard::Key& code) {
     return e.type == sf::Event::KeyPressed && e.key.code == code;

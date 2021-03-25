@@ -1,5 +1,6 @@
 # extra folders
 .vscode
+.vs
 
 # executables/objects
 *.o

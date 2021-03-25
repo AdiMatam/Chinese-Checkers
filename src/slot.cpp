@@ -1,4 +1,4 @@
-#include "slot.hpp"
+#include "Slot.hpp"
 
 Slot::Slot(float x, float y, const sf::Color& c) {
     setPosition(sf::Vector2f(x, y));

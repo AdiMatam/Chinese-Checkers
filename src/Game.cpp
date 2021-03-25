@@ -1,6 +1,6 @@
-#include "pch.hpp"
-#include "helpers.hpp"
-#include "checkers.hpp"
+#include "Pch.hpp"
+#include "Helpers.hpp"
+#include "Checkers.hpp"
 
 void handleRotation(Checkers* game, sf::Clock* clock, bool* shouldRotate) {
     if (clock->getElapsedTime().asMilliseconds() >= 3 && *shouldRotate) {
