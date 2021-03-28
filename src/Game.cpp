@@ -20,13 +20,12 @@ void clickTest(Checkers* game, sf::Event::MouseButtonEvent* mouse) {
 }
 
 int main() {
-    log("Starting up...");
     sf::ContextSettings settings;
     settings.antialiasingLevel = 8;
-    auto LOCKSIZE = sf::Style::Titlebar | sf::Style::Close;
+    const auto LOCKSIZE = sf::Style::Titlebar | sf::Style::Close;
     
     sf::RenderWindow window(sf::VideoMode(HEIGHT, HEIGHT), "Chinese Checkers", LOCKSIZE, settings);
-    sf::Color bg = {222, 237, 255};
+    sf::Color bg(222, 237, 255);
     Checkers game(window, bg);
 
     sf::Event event;

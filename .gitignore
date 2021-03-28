@@ -6,5 +6,5 @@
 *.o
 *.exe
 
-# CPP in outer directory
-guide.cpp
+# Misc files
+misc
