@@ -11,6 +11,7 @@ Checkers::Checkers(sf::RenderWindow& win, sf::Color& fill) {
     mWin = &win;
     mFill = &fill;
     mRotation = 0;
+    mSelected = nullptr;
 
     mOutline.setPosition(mCENTER);
     mOutline.setFillColor(*mFill);
@@ -20,20 +21,25 @@ Checkers::Checkers(sf::RenderWindow& win, sf::Color& fill) {
     mOutline.setPointCount(mOutline.getPointCount() * 2);
     mOutline.setOrigin(mOutline.getRadius(), mOutline.getRadius());
 
+    // FIRST 3 -> mTurn = FALSE
+    // LAST  3 -> mTurn = TRUE
     mColors.reserve(6);
-    mColors[0] = sf::Color::White;
-    mColors[1] = sf::Color::Red;
-    mColors[2] = sf::Color::Blue;
-    mColors[3] = sf::Color::Green;
-    mColors[4] = sf::Color::Yellow;
-    mColors[5] = sf::Color(65, 65, 65);
+    mColors.push_back(sf::Color::White);
+    mColors.push_back(sf::Color::Red);
+    mColors.push_back(sf::Color::Blue);
+    mColors.push_back(sf::Color::Green);
+    mColors.push_back(sf::Color::Yellow);
+    mColors.push_back(sf::Color(90, 90, 90));
     
     reset();
     if (mSlots.size() != 121) logf("Actual Slot Count: %d", mSlots.size());
 }
 void Checkers::draw() const {
     mWin->draw(mOutline);
-    for (auto& s : mSlots) mWin->draw(s, mTrans);
+    for (auto& s : mSlots) {
+        mWin->draw(s, mTrans);
+        mWin->draw(s.mOverlay);
+    }
 }
 
 void Checkers::rotateBoard() {
@@ -84,6 +90,51 @@ void Checkers::addSlot(int x, int y, int rowCount, sf::Color* oneToFour, sf::Col
     else              mSlots.push_back(Slot(x, y, *oneToFour));
 }
 
+bool Checkers::isMine(float x, float y) {
+    auto start = mColors.begin();
+    auto end = start + 3;
+    if (mTurn) {
+        start += 3;
+        end += 3;
+    }
+    for (Slot& s : mSlots) {
+        if (s.clicked(x, y) && 
+            std::find(start, end, s.getFillColor()) != end) {
+            return true;
+        }
+    }
+    return false; 
+}
+
+void Checkers::select(float x, float y) {
+    auto start = mColors.begin();
+    auto end = start + 3;
+    if (mTurn) {
+        start += 3;
+        end += 3;
+    }
+    
+    for (Slot& s : mSlots) {
+        if (s.clicked(x, y) && 
+            std::find(start, end, s.getFillColor()) != end) {
+            
+            mSelected = &s;
+            mSelected->pick();
+        }
+    }
+}
+
+void Checkers::move(float x, float y) {
+    for (Slot& s : mSlots) {
+        if (s.clicked(x, y) && mSelected != &s && s.getFillColor() == *mFill) {
+            s.setFillColor(mSelected->getFillColor());
+            mSelected->setFillColor(*mFill);
+            
+            mSelected == nullptr;
+            mSelected->unpick();
+        }
+    }
+}
 bool Checkers::getTurn() const {
     return mTurn;
 }
@@ -101,4 +152,7 @@ std::vector<Slot>& Checkers::getSlots() {
 }
 int Checkers::getRotation() const {
     return mRotation;
+}
+const Slot* Checkers::getSelected() const {
+    return mSelected;
 }

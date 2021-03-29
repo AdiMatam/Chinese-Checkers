@@ -7,6 +7,7 @@
 struct Slot : public sf::CircleShape {
     
     // std::vector<Slot*> mNeighbors;
+    sf::CircleShape mOverlay;
 
     Slot() = default;
     Slot(float x, float y, const sf::Color& c);
@@ -15,8 +16,10 @@ struct Slot : public sf::CircleShape {
     
     // void config();
     // void addNeighbor(Slot& slot);
-    bool clicked(float mouseX, float mouseY);
-    void print();
+    bool clicked(float mouseX, float mouseY) const;
+    void print() const;
+    void pick();
+    void unpick();
 };
 
 #endif

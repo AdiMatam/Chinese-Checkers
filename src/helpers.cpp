@@ -47,3 +47,9 @@ void logColor(const sf::Color& color) {
 bool keyPressed(const sf::Event& e, const sf::Keyboard::Key& code) {
     return e.type == sf::Event::KeyPressed && e.key.code == code;
 }
+
+bool mousePressed(const sf::Event& e, const sf::Mouse::Button& code) {
+    return (
+        e.type == sf::Event::MouseButtonPressed &&
+        e.mouseButton.button == code);
+}

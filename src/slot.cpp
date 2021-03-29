@@ -7,20 +7,29 @@ Slot::Slot(float x, float y, const sf::Color& c) {
     setOutlineThickness(THICK);
     setRadius(RADIUS);
     setOrigin(getRadius(), getRadius());
+
+    mOverlay.setFillColor(c);
+    mOverlay.setPosition(sf::Vector2f(x, y));
+    mOverlay.setRadius(7);
+    mOverlay.setOrigin(mOverlay.getRadius(), mOverlay.getRadius());
 }
 
-// void Slot::addNeighbor(Slot& slot) {
-//     mNeighbors.push_back(&slot);
-// }
 
-bool Slot::clicked(float mouseX, float mouseY) {
+bool Slot::clicked(float mouseX, float mouseY) const {
     const sf::Vector2f* pos = &getPosition();
     bool x = (pos->x - RADIUS <= mouseX) && (mouseX <= pos->x + RADIUS);
     return x && (pos->y - RADIUS <= mouseY) && (mouseY <= pos->y + RADIUS);
 }
 
-void Slot::print() {
+void Slot::print() const {
     logVector(getPosition());
     logColor(getFillColor());
     log("\n");
+}
+
+void Slot::pick() {
+    mOverlay.setFillColor(sf::Color::Black);
+}
+void Slot::unpick() {
+    mOverlay.setFillColor(getFillColor());
 }

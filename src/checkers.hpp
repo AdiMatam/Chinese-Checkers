@@ -10,12 +10,13 @@ private:
     bool mTurn;
     sf::RenderWindow* mWin;
     sf::Color* mFill;
-    const sf::Vector2f mCENTER = { HEIGHT / 2, HEIGHT / 2 };
+    const sf::Vector2f mCENTER = sf::Vector2f(HEIGHT / 2, HEIGHT / 2);
     sf::CircleShape mOutline; // getter setter?
     sf::Transform mTrans;
     int mRotation;
     std::vector<Slot> mSlots;
     std::vector<sf::Color> mColors;
+    Slot* mSelected;
 
     // STATIC
     static int sLAYOUT[17];
@@ -26,16 +27,22 @@ public:
     Checkers(sf::RenderWindow& win, sf::Color& fill);
     ~Checkers() = default;
 
+    void rotateBoard();
+    void draw() const;
+    void reset();
+    void select(float, float);
+    void move(float, float);
+    bool isMine(float, float);
+
     bool getTurn() const;
     void switchTurn();
     const sf::Color& getFill() const;
     void setFill(sf::Color& fill);
     std::vector<Slot>& getSlots(); 
     int getRotation() const;
+    const Slot* getSelected() const;
+    
 
-    void rotateBoard();
-    void draw() const;
-    void reset();
 };
 
 #endif

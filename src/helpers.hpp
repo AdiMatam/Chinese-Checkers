@@ -30,6 +30,7 @@ void logVector(const sf::Vector2<T>& vec) {
 // void loadAllTextures(sf::Texture (&textureArray)[12]);
 
 bool keyPressed(const sf::Event& e, const sf::Keyboard::Key& code);
+bool mousePressed(const sf::Event& e, const sf::Mouse::Button& code);
 
 // template <int N>
 // void drawSpriteArray(sf::RenderWindow* window, sf::Sprite* sprites) {
