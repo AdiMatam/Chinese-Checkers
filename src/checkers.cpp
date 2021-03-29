@@ -52,7 +52,6 @@ void Checkers::reset() {
     float x;
     float y = 2 * GAP + RADIUS;
     sf::Color* colorStepper = &mColors[0];
-    sf::Color* current;
     int rowCount;
 
     int guide[20] = {0,0,0,0,-1,2,3,3,4,5,-2,4,3,3,2,-2,0,0,0,0};
@@ -68,15 +67,24 @@ void Checkers::reset() {
         if (rowCount % 2 == 0) 
             x -= (RADIUS + GAP / 2.f);
         else {
-            addSlot(x, y, rowCount, colorStepper, mFill);
+            if (rowCount > 4) 
+                mSlots.push_back(Slot(x, y, *mFill));
+            else              
+                mSlots.push_back(Slot(x, y, *colorStepper));
             x -= STEP;
-        }
-        
-        current = mFill;
+        }       
         for (int j = 0; j < rowCount / 2; j++) {
-            if (*guidePtr <= j) current = colorStepper;
-            mSlots.push_back(Slot(x, y, *current));
-            addSlot(HEIGHT - x, y, rowCount, current, current+1);
+            if (j >= *guidePtr) {
+                mSlots.push_back(Slot(x, y, *colorStepper));
+                if (rowCount > 4)
+                    mSlots.push_back(Slot(HEIGHT - x, y, *(colorStepper+1)));
+                else
+                    mSlots.push_back(Slot(HEIGHT - x, y, *colorStepper));
+            }
+            else {
+                mSlots.push_back(Slot(x, y, *mFill));
+                mSlots.push_back(Slot(HEIGHT - x, y, *mFill));
+            }
             x -= STEP;
         }
         y += STEP;
@@ -84,56 +92,23 @@ void Checkers::reset() {
     }
 }
 
-// PRIVATE
-void Checkers::addSlot(int x, int y, int rowCount, sf::Color* oneToFour, sf::Color* rest) {
-    if (rowCount > 4) mSlots.push_back(Slot(x, y, *rest));
-    else              mSlots.push_back(Slot(x, y, *oneToFour));
-}
-
-bool Checkers::isMine(float x, float y) {
-    auto start = mColors.begin();
-    auto end = start + 3;
-    if (mTurn) {
-        start += 3;
-        end += 3;
-    }
+Slot* Checkers::find(float x, float y) {
     for (Slot& s : mSlots) {
-        if (s.clicked(x, y) && 
-            std::find(start, end, s.getFillColor()) != end) {
-            return true;
+        if (s.clicked(x, y)) {
+            return &s;
         }
     }
-    return false; 
+    return nullptr;
 }
 
-void Checkers::select(float x, float y) {
-    auto start = mColors.begin();
-    auto end = start + 3;
-    if (mTurn) {
-        start += 3;
-        end += 3;
-    }
-    
-    for (Slot& s : mSlots) {
-        if (s.clicked(x, y) && 
-            std::find(start, end, s.getFillColor()) != end) {
-            
-            mSelected = &s;
-            mSelected->pick();
-        }
-    }
-}
-
-void Checkers::move(float x, float y) {
-    for (Slot& s : mSlots) {
-        if (s.clicked(x, y) && mSelected != &s && s.getFillColor() == *mFill) {
-            s.setFillColor(mSelected->getFillColor());
-            mSelected->setFillColor(*mFill);
-            
-            mSelected == nullptr;
-            mSelected->unpick();
-        }
-    }
+int Checkers::getIdentity(const Slot* slot) {
+    sf::Color fill = slot->getFillColor();
+    if (fill == *mFill) return -1;
+    // FIRST 3 -> return 0
+    // ELSE    -> return 1
+    if (fill == mColors[3] || fill == mColors[4] || fill == mColors[5])
+        return 1;
+    return 0;
 }
 bool Checkers::getTurn() const {
     return mTurn;

@@ -21,8 +21,6 @@ private:
     // STATIC
     static int sLAYOUT[17];
 
-    void addSlot(int x, int y, int rowCount, sf::Color* oneToFour, sf::Color* rest);
-
 public:
     Checkers(sf::RenderWindow& win, sf::Color& fill);
     ~Checkers() = default;
@@ -30,9 +28,10 @@ public:
     void rotateBoard();
     void draw() const;
     void reset();
-    void select(float, float);
-    void move(float, float);
-    bool isMine(float, float);
+    Slot* find(float x, float y);
+    int getIdentity(const Slot* slot);
+    // void select();
+    // void move();
 
     bool getTurn() const;
     void switchTurn();

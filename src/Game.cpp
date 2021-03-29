@@ -2,7 +2,6 @@
 #include "Helpers.hpp"
 #include "Checkers.hpp"
 
-
 int main() {
     sf::ContextSettings settings;
     settings.antialiasingLevel = 8;
@@ -13,28 +12,32 @@ int main() {
     Checkers game(window, bg);
 
     sf::Event event;
-    
+    Slot* selected = nullptr;
+
     while (window.isOpen()) {
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed || keyPressed(event, sf::Keyboard::Escape))
                 window.close();
             else if (mousePressed(event, sf::Mouse::Left)) {
-                // if (game.isMine(event.mouseButton.x, event.mouseButton.y)) {
-
-                // }
-                if (game.getSelected() == nullptr) {
-                    game.select(event.mouseButton.x, event.mouseButton.y);
+                Slot* current = game.find(event.mouseButton.x, event.mouseButton.y);
+                if (current == nullptr) continue;
+                if (game.getIdentity(current) == game.getTurn()) {
+                    current->pick();
+                    selected = current;
                 }
-                else {
-                    game.move(event.mouseButton.x, event.mouseButton.y);
+                else if (game.getIdentity(current) == -1 && selected != nullptr) {
+                    // slot color should be selected color
+                    // selected color should be bg
+                    current->setFillColor(selected->getFillColor());
+                    current->resetFill();
+
+                    selected->setFillColor(bg);
+                    selected->resetFill();
+                    selected = nullptr;
+                    game.switchTurn();
                 }
             }
-            // else if (keyPressed(event, sf::Keyboard::Enter)) {
-                
-            //     game.switchTurn();
-            // }
         }
-        
         window.clear(bg);
         game.draw();
         window.display();

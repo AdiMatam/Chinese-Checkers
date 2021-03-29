@@ -30,6 +30,6 @@ void Slot::print() const {
 void Slot::pick() {
     mOverlay.setFillColor(sf::Color::Black);
 }
-void Slot::unpick() {
+void Slot::resetFill() {
     mOverlay.setFillColor(getFillColor());
 }

@@ -19,7 +19,7 @@ struct Slot : public sf::CircleShape {
     bool clicked(float mouseX, float mouseY) const;
     void print() const;
     void pick();
-    void unpick();
+    void resetFill();
 };
 
 #endif
