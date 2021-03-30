@@ -5,15 +5,15 @@ A simple **Chinese Checkers** game developed on C++ -> **SFML** Graphics Library
 ![board](/res/img/myBoard.png)
 
 ## **Contents**
-- #### src     - main source code
+- src     - main source code
     - Game - main application
     - Helpers - helper functions & constants
     - Checkers - game logic + drawing board
     - Slot - struct for individual circles on the board
     - Pch - pre-compiled header
-- #### include - SFML + TGUI headers (TGUI still not used).
-- #### lib     - SFML + TGUI + required std libs for windows.
-- #### res     - misc files, images, fonts.
+- include - SFML + TGUI headers (TGUI still not used).
+- lib     - SFML + TGUI + required std libs for windows.
+- res     - misc files, images, fonts.
 
 ## **Building**
 - Developed with MinGW GCC
