@@ -10,7 +10,7 @@ Slot::Slot(float x, float y, const sf::Color& c) {
 
     mOverlay.setFillColor(c);
     mOverlay.setPosition(sf::Vector2f(x, y));
-    mOverlay.setRadius(7);
+    mOverlay.setRadius(RADIUS / 3);
     mOverlay.setOrigin(mOverlay.getRadius(), mOverlay.getRadius());
 }
 

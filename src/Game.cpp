@@ -2,43 +2,26 @@
 #include "Helpers.hpp"
 #include "Checkers.hpp"
 
+namespace Pref {
+    int         STYLE = sf::Style::Titlebar | sf::Style::Close;
+    std::string TITLE = "Chinese Checkers";
+    sf::Color   BG    = sf::Color(222, 237, 255);
+};
+
 int main() {
-    sf::ContextSettings settings;
-    settings.antialiasingLevel = 8;
-    const auto LOCKSIZE = sf::Style::Titlebar | sf::Style::Close;
-    
-    sf::RenderWindow window(sf::VideoMode(HEIGHT, HEIGHT), "Chinese Checkers", LOCKSIZE, settings);
-    sf::Color bg(222, 237, 255);
-    Checkers game(window, bg);
+    sf::RenderWindow window(sf::VideoMode(HEIGHT, HEIGHT), Pref::TITLE, Pref::STYLE);
+    Checkers game(window, Pref::BG);
 
     sf::Event event;
-    Slot* selected = nullptr;
 
     while (window.isOpen()) {
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed || keyPressed(event, sf::Keyboard::Escape))
                 window.close();
-            else if (mousePressed(event, sf::Mouse::Left)) {
-                Slot* current = game.find(event.mouseButton.x, event.mouseButton.y);
-                if (current == nullptr) continue;
-                if (game.getIdentity(current) == game.getTurn()) {
-                    current->pick();
-                    selected = current;
-                }
-                else if (game.getIdentity(current) == -1 && selected != nullptr) {
-                    // slot color should be selected color
-                    // selected color should be bg
-                    current->setFillColor(selected->getFillColor());
-                    current->resetFill();
-
-                    selected->setFillColor(bg);
-                    selected->resetFill();
-                    selected = nullptr;
-                    game.switchTurn();
-                }
-            }
+            else if (mousePressed(event, sf::Mouse::Left))
+                game.processClick(event.mouseButton.x, event.mouseButton.y);
         }
-        window.clear(bg);
+        window.clear(Pref::BG);
         game.draw();
         window.display();
     }

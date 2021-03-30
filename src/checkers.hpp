@@ -30,8 +30,8 @@ public:
     void reset();
     Slot* find(float x, float y);
     int getIdentity(const Slot* slot);
-    // void select();
-    // void move();
+    bool validateMove(const Slot* s1, const Slot* s2);
+    void processClick(float x, float y);
 
     bool getTurn() const;
     void switchTurn();
