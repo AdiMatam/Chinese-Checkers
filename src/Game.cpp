@@ -11,7 +11,6 @@ namespace Pref {
 int main() {
     sf::RenderWindow window(sf::VideoMode(HEIGHT, HEIGHT), Pref::TITLE, Pref::STYLE);
     Checkers game(window, Pref::BG);
-
     sf::Event event;
 
     while (window.isOpen()) {

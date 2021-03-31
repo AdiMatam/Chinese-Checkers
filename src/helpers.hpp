@@ -11,12 +11,12 @@ extern float STEP          ;
 extern float RADIUS        ;
 extern float THICK         ; 
 
-template <typename T>
-void log (T object) {
-    std::cout << object << std::endl;
-}
+// template <typename T>
+// void log (T object) {
+//     std::cout << object << std::endl;
+// }
 
-void logf (const char* format, ...);
+// void logf (const char* format, ...);
 
 void logColor(const sf::Color& color); 
 

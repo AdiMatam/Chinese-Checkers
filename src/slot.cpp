@@ -24,7 +24,7 @@ bool Slot::clicked(float mouseX, float mouseY) const {
 void Slot::print() const {
     logVector(getPosition());
     logColor(getFillColor());
-    log("\n");
+    printf("\n");
 }
 
 void Slot::pick() {

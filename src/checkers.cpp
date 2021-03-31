@@ -32,7 +32,7 @@ Checkers::Checkers(sf::RenderWindow& win, sf::Color& fill) {
     mColors.push_back(sf::Color(90, 90, 90));
     
     reset();
-    if (mSlots.size() != 121) logf("Actual Slot Count: %d", mSlots.size());
+    if (mSlots.size() != 121) printf("Actual Slot Count: %d\n", mSlots.size());
 }
 void Checkers::draw() const {
     mWin->draw(mOutline);
@@ -133,8 +133,16 @@ int Checkers::getIdentity(const Slot* slot) {
 bool Checkers::validateMove(const Slot* s1, const Slot* s2) {
     sf::Vector2f s1pos = s1->getPosition();
     sf::Vector2f s2pos = s2->getPosition();
-    float distance = sqrtf(powf(s1pos.y - s2pos.y, 2) + powf(s1pos.x - s2pos.x, 2));
-    return (distance <= 4 * RADIUS);
+
+    float distance = sqrtf(powf(s1pos.y - s2pos.y, 2) + powf(s1pos.x - s2pos.x, 2));    
+    if (distance <= 4 * RADIUS)
+        return true;
+
+    // MIDPOINT
+    float midX = (s1pos.x + s2pos.x) / 2.f;
+    float midY = (s1pos.y + s2pos.y) / 2.f;
+    auto midPoint = find(midX, midY);
+    return midPoint != nullptr && getIdentity(midPoint) != -1;
 }
 
 bool Checkers::getTurn() const {
