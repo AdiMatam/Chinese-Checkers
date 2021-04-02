@@ -5,12 +5,10 @@ int Checkers::sLAYOUT[17] = {
     10, 11, 12, 13, 4, 3, 2, 1
 };
 
-
 Checkers::Checkers(sf::RenderWindow& win, sf::Color& fill) {
     mTurn = true;
     mWin = &win;
     mFill = &fill;
-    mRotation = 0;
     mSelected = nullptr;
 
     mOutline.setPosition(mCENTER);
@@ -35,18 +33,26 @@ Checkers::Checkers(sf::RenderWindow& win, sf::Color& fill) {
     if (mSlots.size() != 121) printf("Actual Slot Count: %d\n", mSlots.size());
 }
 void Checkers::draw() const {
+    mWin->clear(*mFill);
     mWin->draw(mOutline);
     for (auto& s : mSlots) {
         mWin->draw(s, mTrans);
-        mWin->draw(s.mOverlay);
+        mWin->draw(s.mOverlay, mTrans);
     }
+    mWin->display();
 }
 
 void Checkers::rotateBoard() {
-    if (++mRotation == 181) 
-        mRotation = 0;
-    else 
-        mTrans.rotate(1, mCENTER);
+    int rotation = 0;
+    sf::Clock c;
+    while (rotation < 180) {
+        if (c.getElapsedTime().asMilliseconds() >= 4) {
+            mTrans.rotate(1, mCENTER);
+            draw();
+            c.restart();
+            rotation++;
+        }
+    }
 }
 
 void Checkers::reset() {
@@ -103,15 +109,38 @@ void Checkers::processClick(float x, float y) {
         clicked->pick();
         mSelected = clicked;
     }
-    else if (id == -1 && mSelected != nullptr && validateMove(clicked, mSelected)) {
-        clicked->setFillColor(mSelected->getFillColor());
-        clicked->resetFill();
+    else if (id == -1 && mSelected != nullptr) {
+        int moveType = validateMove(clicked, mSelected);
+        if (moveType == 0) 
+            return;
+        else {
+            clicked->setFillColor(mSelected->getFillColor());
+            clicked->resetFill();
 
-        mSelected->setFillColor(*mFill);
-        mSelected->resetFill();
-        mSelected = nullptr;
-        switchTurn();
+            mSelected->setFillColor(*mFill);
+            mSelected->resetFill();
+            mSelected = nullptr;
+            if (moveType == 1) 
+                switchTurn();
+            else if (legalsTest(x, y))
+                switchTurn();
+            else
+                processClick(x, y);
+        }
     }
+}
+
+bool Checkers::legalsTest(float x, float y) {
+    float length = RADIUS * 4;
+    float nx, ny;
+    for (int angle = 0; angle < 360; angle += 60) {
+        nx = x + length * cosf(angle * toRadian);
+        ny = y + length * sinf(angle * toRadian);
+        Slot* temp = find(nx, ny);
+        if (temp != nullptr && getIdentity(temp) == -1)
+            return false;
+    }
+    return true;
 }
 
 Slot* Checkers::find(float x, float y) {
@@ -130,19 +159,21 @@ int Checkers::getIdentity(const Slot* slot) {
     return (fill == mColors[3] || fill == mColors[4] || fill == mColors[5]);
 }
 
-bool Checkers::validateMove(const Slot* s1, const Slot* s2) {
+int Checkers::validateMove(const Slot* s1, const Slot* s2) {
     sf::Vector2f s1pos = s1->getPosition();
     sf::Vector2f s2pos = s2->getPosition();
 
     float distance = sqrtf(powf(s1pos.y - s2pos.y, 2) + powf(s1pos.x - s2pos.x, 2));    
     if (distance <= 4 * RADIUS)
-        return true;
+        return 1;
 
     // MIDPOINT
     float midX = (s1pos.x + s2pos.x) / 2.f;
     float midY = (s1pos.y + s2pos.y) / 2.f;
     auto midPoint = find(midX, midY);
-    return midPoint != nullptr && getIdentity(midPoint) != -1;
+    if (midPoint != nullptr && getIdentity(midPoint) != -1)
+        return 2;
+    return 0;
 }
 
 bool Checkers::getTurn() const {
@@ -150,6 +181,7 @@ bool Checkers::getTurn() const {
 }
 void Checkers::switchTurn() {
     mTurn = !mTurn;
+    // rotateBoard();
 }
 const sf::Color& Checkers::getFill() const {
     return *mFill;
@@ -159,9 +191,6 @@ void Checkers::setFill(sf::Color& fill) {
 }
 std::vector<Slot>& Checkers::getSlots() {
     return mSlots;
-}
-int Checkers::getRotation() const {
-    return mRotation;
 }
 const Slot* Checkers::getSelected() const {
     return mSelected;

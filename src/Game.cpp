@@ -20,8 +20,6 @@ int main() {
             else if (mousePressed(event, sf::Mouse::Left))
                 game.processClick(event.mouseButton.x, event.mouseButton.y);
         }
-        window.clear(Pref::BG);
         game.draw();
-        window.display();
     }
 }
