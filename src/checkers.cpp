@@ -10,6 +10,7 @@ Checkers::Checkers(sf::RenderWindow& win, sf::Color& fill) {
     mWin = &win;
     mFill = &fill;
     mSelected = nullptr;
+    mEnableMouse = true;
 
     mOutline.setPosition(mCENTER);
     mOutline.setFillColor(*mFill);
@@ -99,11 +100,12 @@ void Checkers::reset() {
     }
 }
 
-void Checkers::processClick(float x, float y) {
+void Checkers::processClick(float x, float y, bool mouseClick) {
     Slot* clicked = find(x, y);
-    if (clicked == nullptr) return;
+    if (clicked == nullptr) 
+        return;
     int id = getIdentity(clicked);
-    if (id == getTurn()) {
+    if (id == getTurn() && mouseClick == mEnableMouse) {
         if (mSelected != nullptr) 
             mSelected->resetFill();
         clicked->pick();
@@ -111,36 +113,40 @@ void Checkers::processClick(float x, float y) {
     }
     else if (id == -1 && mSelected != nullptr) {
         int moveType = validateMove(clicked, mSelected);
+        sf::Vector2f pos = mSelected->getPosition();
         if (moveType == 0) 
             return;
-        else {
+        bool ender = moveType == 1 || !foundLegal(pos.x, pos.y);
+        if (!ender || mEnableMouse) {
             clicked->setFillColor(mSelected->getFillColor());
             clicked->resetFill();
 
             mSelected->setFillColor(*mFill);
             mSelected->resetFill();
-            mSelected = nullptr;
-            if (moveType == 1) 
+            if (ender && mEnableMouse) {
                 switchTurn();
-            else if (legalsTest(x, y))
-                switchTurn();
-            else
-                processClick(x, y);
+                mSelected = nullptr;
+            }
+            else if (moveType == 2) {
+                mEnableMouse = false;
+                processClick(x, y, false);
+            }
         }
+        
     }
 }
 
-bool Checkers::legalsTest(float x, float y) {
+bool Checkers::foundLegal(float x, float y) {
     float length = RADIUS * 4;
     float nx, ny;
     for (int angle = 0; angle < 360; angle += 60) {
-        nx = x + length * cosf(angle * toRadian);
-        ny = y + length * sinf(angle * toRadian);
+        nx = x + length * cosf(angle * RADIAN);
+        ny = y + length * sinf(angle * RADIAN);
         Slot* temp = find(nx, ny);
         if (temp != nullptr && getIdentity(temp) == -1)
-            return false;
+            return true;
     }
-    return true;
+    return false;
 }
 
 Slot* Checkers::find(float x, float y) {
@@ -171,8 +177,9 @@ int Checkers::validateMove(const Slot* s1, const Slot* s2) {
     float midX = (s1pos.x + s2pos.x) / 2.f;
     float midY = (s1pos.y + s2pos.y) / 2.f;
     auto midPoint = find(midX, midY);
-    if (midPoint != nullptr && getIdentity(midPoint) != -1)
+    if (midPoint != nullptr && getIdentity(midPoint) != -1) {
         return 2;
+    }
     return 0;
 }
 
@@ -182,6 +189,7 @@ bool Checkers::getTurn() const {
 void Checkers::switchTurn() {
     mTurn = !mTurn;
     // rotateBoard();
+    mEnableMouse = true;
 }
 const sf::Color& Checkers::getFill() const {
     return *mFill;

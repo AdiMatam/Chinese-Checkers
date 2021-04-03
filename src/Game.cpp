@@ -18,7 +18,7 @@ int main() {
             if (event.type == sf::Event::Closed || keyPressed(event, sf::Keyboard::Escape))
                 window.close();
             else if (mousePressed(event, sf::Mouse::Left))
-                game.processClick(event.mouseButton.x, event.mouseButton.y);
+                game.processClick(event.mouseButton.x, event.mouseButton.y, true);
         }
         game.draw();
     }
