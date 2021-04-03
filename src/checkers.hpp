@@ -16,7 +16,7 @@ private:
     std::vector<Slot> mSlots;
     std::vector<sf::Color> mColors;
     Slot* mSelected;
-    bool mEnableMouse;
+    int mMoveCount;
 
     const float RADIAN = 3.1415 / 180;
 
@@ -33,7 +33,7 @@ public:
     Slot* find(float x, float y);
     int getIdentity(const Slot* slot);
     int validateMove(const Slot* s1, const Slot* s2);
-    void processClick(float x, float y, bool mouseClick);
+    void processClick(float x, float y, bool force);
     bool foundLegal(float x, float y);
 
     bool getTurn() const;

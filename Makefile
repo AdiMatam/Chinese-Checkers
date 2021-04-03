@@ -9,7 +9,7 @@ EXEC = Game
 
 
 all: build run
-build: compile link clean
+build: compile link
 compile:
 	echo "Compiling CPP files..."
 	g++ -c $(FILES) $(INCLUDE)

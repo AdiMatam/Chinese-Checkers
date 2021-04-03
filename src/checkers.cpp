@@ -10,7 +10,7 @@ Checkers::Checkers(sf::RenderWindow& win, sf::Color& fill) {
     mWin = &win;
     mFill = &fill;
     mSelected = nullptr;
-    mEnableMouse = true;
+    mMoveCount = 0;
 
     mOutline.setPosition(mCENTER);
     mOutline.setFillColor(*mFill);
@@ -100,12 +100,12 @@ void Checkers::reset() {
     }
 }
 
-void Checkers::processClick(float x, float y, bool mouseClick) {
+void Checkers::processClick(float x, float y, bool force) {
     Slot* clicked = find(x, y);
     if (clicked == nullptr) 
         return;
     int id = getIdentity(clicked);
-    if (id == getTurn() && mouseClick == mEnableMouse) {
+    if (force || (id == getTurn() && mMoveCount == 0)) {
         if (mSelected != nullptr) 
             mSelected->resetFill();
         clicked->pick();
@@ -117,22 +117,22 @@ void Checkers::processClick(float x, float y, bool mouseClick) {
         if (moveType == 0) 
             return;
         bool ender = moveType == 1 || !foundLegal(pos.x, pos.y);
-        if (!ender || mEnableMouse) {
+        if (mMoveCount == 0 || !ender) {
             clicked->setFillColor(mSelected->getFillColor());
             clicked->resetFill();
 
             mSelected->setFillColor(*mFill);
             mSelected->resetFill();
-            if (ender && mEnableMouse) {
+            if (mMoveCount == 0 && ender) {
+                mMoveCount++;
                 switchTurn();
                 mSelected = nullptr;
             }
             else if (moveType == 2) {
-                mEnableMouse = false;
-                processClick(x, y, false);
+                mMoveCount++;
+                processClick(x, y, true);
             }
         }
-        
     }
 }
 
@@ -189,7 +189,7 @@ bool Checkers::getTurn() const {
 void Checkers::switchTurn() {
     mTurn = !mTurn;
     // rotateBoard();
-    mEnableMouse = true;
+    mMoveCount = 0;
 }
 const sf::Color& Checkers::getFill() const {
     return *mFill;
