@@ -5,6 +5,11 @@ int Checkers::sLAYOUT[17] = {
     10, 11, 12, 13, 4, 3, 2, 1
 };
 
+int Checkers::sINDICES[17] = {
+    0, 1, 3, 6, 10, 23, 35, 46, 56,
+    65, 75, 86, 98, 111, 115, 118, 120,
+};
+
 Checkers::Checkers(sf::RenderWindow& win, sf::Color& fill) {
     mTurn = true;
     mWin = &win;
@@ -105,7 +110,7 @@ void Checkers::processClick(float x, float y, bool force) {
     if (clicked == nullptr) 
         return;
     int id = getIdentity(clicked);
-    if (force || (id == getTurn() && mMoveCount == 0)) {
+    if (force || (id == mTurn && mMoveCount == 0)) {
         if (mSelected != nullptr) 
             mSelected->resetFill();
         clicked->pick();
@@ -150,11 +155,18 @@ bool Checkers::foundLegal(float x, float y) {
 }
 
 Slot* Checkers::find(float x, float y) {
-    for (Slot& s : mSlots) {
-        if (s.clicked(x, y))
-            return &s;
+    int row = static_cast<int>((y - RADIUS + THICK) / STEP);
+    for (int i = sINDICES[row]; i < sINDICES[row+1]; i++) {
+        Slot* curr = &mSlots[i];
+        if (curr->clicked(x, y))
+            return curr;
     }
     return nullptr;
+    // for (Slot& s : mSlots) {
+    //     if (s.clicked(x, y))
+    //         return &s;
+    // }
+    // return nullptr;
 }
 
 int Checkers::getIdentity(const Slot* slot) {
@@ -177,29 +189,13 @@ int Checkers::validateMove(const Slot* s1, const Slot* s2) {
     float midX = (s1pos.x + s2pos.x) / 2.f;
     float midY = (s1pos.y + s2pos.y) / 2.f;
     auto midPoint = find(midX, midY);
-    if (midPoint != nullptr && getIdentity(midPoint) != -1) {
+    if (midPoint != nullptr && getIdentity(midPoint) != -1)
         return 2;
-    }
     return 0;
 }
 
-bool Checkers::getTurn() const {
-    return mTurn;
-}
 void Checkers::switchTurn() {
     mTurn = !mTurn;
     // rotateBoard();
     mMoveCount = 0;
-}
-const sf::Color& Checkers::getFill() const {
-    return *mFill;
-}
-void Checkers::setFill(sf::Color& fill) {
-    mFill = &fill;
-}
-std::vector<Slot>& Checkers::getSlots() {
-    return mSlots;
-}
-const Slot* Checkers::getSelected() const {
-    return mSelected;
 }
