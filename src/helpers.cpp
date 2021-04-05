@@ -1,4 +1,4 @@
-#include "Helpers.hpp"
+#include "helpers.hpp"
 
 float RADIUS         = 20;
 float THICK          = RADIUS / 5;

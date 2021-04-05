@@ -5,6 +5,7 @@
 # executables/objects
 *.o
 *.exe
+*.gch
 
 # Misc files
 misc

@@ -1,4 +1,4 @@
-#include "Checkers.hpp"
+#include "checkers.hpp"
 
 int Checkers::sLAYOUT[17] = {
     1, 2, 3, 4, 13, 12, 11, 10, 9, 

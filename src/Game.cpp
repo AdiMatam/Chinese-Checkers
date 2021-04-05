@@ -1,6 +1,6 @@
-#include "Pch.hpp"
-#include "Helpers.hpp"
-#include "Checkers.hpp"
+#include "pch.hpp"
+#include "helpers.hpp"
+#include "checkers.hpp"
 
 namespace Pref {
     int         STYLE = sf::Style::Titlebar | sf::Style::Close;

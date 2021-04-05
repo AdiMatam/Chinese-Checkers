@@ -1,8 +1,8 @@
 #ifndef SLOT_H
 #define SLOT_H
 
-#include "Pch.hpp"
-#include "Helpers.hpp"
+#include "pch.hpp"
+#include "helpers.hpp"
 
 struct Slot : public sf::CircleShape {
     

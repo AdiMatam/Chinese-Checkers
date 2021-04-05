@@ -1,7 +1,7 @@
 #ifndef HELPERS_H
 #define HELPERS_H
 
-#include "Pch.hpp"
+#include "pch.hpp"
 #include <dirent.h>
 
 extern float HEIGHT        ; 

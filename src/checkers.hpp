@@ -1,9 +1,9 @@
 #ifndef CHECKERS_H
 #define CHECKERS_H
 
-#include "Pch.hpp"
-#include "Helpers.hpp"
-#include "Slot.hpp"
+#include "pch.hpp"
+#include "helpers.hpp"
+#include "slot.hpp"
 
 class Checkers {
 private:
