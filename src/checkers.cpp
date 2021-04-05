@@ -15,29 +15,26 @@ Checkers::Checkers(sf::RenderWindow& win, sf::Color& fill) {
     mWin = &win;
     mFill = &fill;
     mSelected = nullptr;
-    mMoveCount = 0;
+    mEnableMouse = true;
 
-    mOutline.setPosition(mCENTER);
-    mOutline.setFillColor(*mFill);
-    mOutline.setRadius(BOARD_DIAMETER / 2);
-    mOutline.setOutlineColor(sf::Color::Black);
-    mOutline.setOutlineThickness(THICK);
-    mOutline.setPointCount(mOutline.getPointCount() * 2);
-    mOutline.setOrigin(mOutline.getRadius(), mOutline.getRadius());
-
-    // FIRST 3 -> mTurn = FALSE
-    // LAST  3 -> mTurn = TRUE
-    mColors.reserve(6);
-    mColors.push_back(sf::Color::White);
-    mColors.push_back(sf::Color::Red);
-    mColors.push_back(sf::Color::Blue);
-    mColors.push_back(sf::Color::Green);
-    mColors.push_back(sf::Color::Yellow);
-    mColors.push_back(sf::Color(90, 90, 90));
-    
-    reset();
-    if (mSlots.size() != 121) printf("Actual Slot Count: %d\n", mSlots.size());
+    config();   
+    resetBoard();
 }
+
+void Checkers::switchTurn() {
+    mTurn = !mTurn;
+    // rotateBoard();
+    mEnableMouse = true;
+}
+
+bool Checkers::movedAtAll() {
+    if (!mEnableMouse) {
+        if (mSelected != nullptr) mSelected->resetFill();
+        return true;
+    }
+    return false;
+}
+
 void Checkers::draw() const {
     mWin->clear(*mFill);
     mWin->draw(mOutline);
@@ -61,7 +58,7 @@ void Checkers::rotateBoard() {
     }
 }
 
-void Checkers::reset() {
+void Checkers::resetBoard() {
     float x;
     float y = 2 * GAP + RADIUS;
     sf::Color* colorStepper = &mColors[0];
@@ -110,7 +107,7 @@ void Checkers::processClick(float x, float y, bool force) {
     if (clicked == nullptr) 
         return;
     int id = getIdentity(clicked);
-    if (force || (id == mTurn && mMoveCount == 0)) {
+    if (force || (id == mTurn && mEnableMouse)) {
         if (mSelected != nullptr) 
             mSelected->resetFill();
         clicked->pick();
@@ -122,19 +119,18 @@ void Checkers::processClick(float x, float y, bool force) {
         if (moveType == 0) 
             return;
         bool ender = moveType == 1 || !foundLegal(pos.x, pos.y);
-        if (mMoveCount == 0 || !ender) {
+        if (mEnableMouse || !ender) {
             clicked->setFillColor(mSelected->getFillColor());
             clicked->resetFill();
 
             mSelected->setFillColor(*mFill);
             mSelected->resetFill();
-            if (mMoveCount == 0 && ender) {
-                mMoveCount++;
-                switchTurn();
+            if (mEnableMouse && ender) {
                 mSelected = nullptr;
+                switchTurn();
             }
             else if (moveType == 2) {
-                mMoveCount++;
+                mEnableMouse = false;
                 processClick(x, y, true);
             }
         }
@@ -162,11 +158,6 @@ Slot* Checkers::find(float x, float y) {
             return curr;
     }
     return nullptr;
-    // for (Slot& s : mSlots) {
-    //     if (s.clicked(x, y))
-    //         return &s;
-    // }
-    // return nullptr;
 }
 
 int Checkers::getIdentity(const Slot* slot) {
@@ -194,8 +185,22 @@ int Checkers::validateMove(const Slot* s1, const Slot* s2) {
     return 0;
 }
 
-void Checkers::switchTurn() {
-    mTurn = !mTurn;
-    // rotateBoard();
-    mMoveCount = 0;
+void Checkers::config() {
+    mOutline.setPosition(mCENTER);
+    mOutline.setFillColor(*mFill);
+    mOutline.setRadius(BOARD_DIAMETER / 2);
+    mOutline.setOutlineColor(sf::Color::Black);
+    mOutline.setOutlineThickness(THICK);
+    mOutline.setPointCount(mOutline.getPointCount() * 2);
+    mOutline.setOrigin(mOutline.getRadius(), mOutline.getRadius());
+
+    // FIRST 3 -> mTurn = FALSE
+    // LAST  3 -> mTurn = TRUE
+    mColors.reserve(6);
+    mColors.push_back(sf::Color::White);
+    mColors.push_back(sf::Color::Red);
+    mColors.push_back(sf::Color::Blue);
+    mColors.push_back(sf::Color::Green);
+    mColors.push_back(sf::Color::Yellow);
+    mColors.push_back(sf::Color(90, 90, 90));
 }

@@ -22,9 +22,12 @@ A simple **Chinese Checkers** game developed on C++ -> **SFML** Graphics Library
 
 ## **Playing**
 1. Run Game.exe (or whatever extension)
-2. "Lower half" of board plays first - click on any occuppied slot.
-3. This selects piece; then, click on un-occuppied slot to move piece (multiple steps still not working...)
-4. Turn switches, "Upper half" of board plays now.
+2. "Lower half" of board plays first - click on any occuppied slot to select piece
+3. Click on vacant slot to move piece (multiple steps possible when you jump by 2)
+4. Turn system  
+    a. If **SINGLE MOVE** or **NO LEGAL MOVES** -> turn switches automatically  
+    b. Else -> press **ENTER KEY** when done with turn  
+5. Repeat... (end of game not checked yet...)
 
 ## **To-do**
 - [ ] - LAN Multiplayer option  
