@@ -5,9 +5,9 @@ int Checkers::sLAYOUT[17] = {
     10, 11, 12, 13, 4, 3, 2, 1
 };
 
-int Checkers::sINDICES[17] = {
+int Checkers::sINDICES[18] = {
     0, 1, 3, 6, 10, 23, 35, 46, 56,
-    65, 75, 86, 98, 111, 115, 118, 120,
+    65, 75, 86, 98, 111, 115, 118, 120, 121
 };
 
 Checkers::Checkers(sf::RenderWindow& win, sf::Color& fill) {
@@ -114,28 +114,31 @@ void Checkers::processClick(float x, float y, bool force) {
         mSelected = clicked;
     }
     else if (id == -1 && mSelected != nullptr) {
-        int moveType = validateMove(clicked, mSelected);
-        sf::Vector2f pos = mSelected->getPosition();
-        if (moveType == 0) 
+        MoveType type = validateMove(clicked, mSelected);
+        if (type == MoveType::INVALID)
             return;
-        bool ender = moveType == 1 || !foundLegal(pos.x, pos.y);
+
+        sf::Vector2f pos = mSelected->getPosition();
+        bool ender = (type == MoveType::SINGLE) || (!foundLegal(pos.x, pos.y));
+
         if (mEnableMouse || !ender) {
             clicked->setFillColor(mSelected->getFillColor());
             clicked->resetFill();
 
             mSelected->setFillColor(*mFill);
             mSelected->resetFill();
-            if (mEnableMouse && ender) {
+            if (ender) {
                 mSelected = nullptr;
                 switchTurn();
             }
-            else if (moveType == 2) {
+            else {
                 mEnableMouse = false;
                 processClick(x, y, true);
             }
         }
     }
 }
+
 
 bool Checkers::foundLegal(float x, float y) {
     float length = RADIUS * 4;
@@ -151,7 +154,7 @@ bool Checkers::foundLegal(float x, float y) {
 }
 
 Slot* Checkers::find(float x, float y) {
-    int row = static_cast<int>((y - RADIUS + THICK) / STEP);
+    int row = int( (y - RADIUS + THICK) / STEP);
     for (int i = sINDICES[row]; i < sINDICES[row+1]; i++) {
         Slot* curr = &mSlots[i];
         if (curr->clicked(x, y))
@@ -168,21 +171,21 @@ int Checkers::getIdentity(const Slot* slot) {
     return (fill == mColors[3] || fill == mColors[4] || fill == mColors[5]);
 }
 
-int Checkers::validateMove(const Slot* s1, const Slot* s2) {
+Checkers::MoveType Checkers::validateMove(const Slot* s1, const Slot* s2) {
     sf::Vector2f s1pos = s1->getPosition();
     sf::Vector2f s2pos = s2->getPosition();
 
     float distance = sqrtf(powf(s1pos.y - s2pos.y, 2) + powf(s1pos.x - s2pos.x, 2));    
     if (distance <= 4 * RADIUS)
-        return 1;
+        return MoveType::SINGLE;
 
     // MIDPOINT
     float midX = (s1pos.x + s2pos.x) / 2.f;
     float midY = (s1pos.y + s2pos.y) / 2.f;
-    auto midPoint = find(midX, midY);
+    Slot* midPoint = find(midX, midY);
     if (midPoint != nullptr && getIdentity(midPoint) != -1)
-        return 2;
-    return 0;
+        return MoveType::MULTIPLE;
+    return MoveType::INVALID;
 }
 
 void Checkers::config() {

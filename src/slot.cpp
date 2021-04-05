@@ -16,15 +16,9 @@ Slot::Slot(float x, float y, const sf::Color& c) {
 
 
 bool Slot::clicked(float mouseX, float mouseY) const {
-    const sf::Vector2f* pos = &getPosition();
-    bool x = (pos->x - RADIUS <= mouseX) && (mouseX <= pos->x + RADIUS);
-    return x && (pos->y - RADIUS <= mouseY) && (mouseY <= pos->y + RADIUS);
-}
-
-void Slot::print() const {
-    logVector(getPosition());
-    logColor(getFillColor());
-    printf("\n");
+    sf::Vector2f pos = getPosition();
+    bool x = (pos.x - RADIUS <= mouseX) && (mouseX <= pos.x + RADIUS);
+    return x && (pos.y - RADIUS <= mouseY) && (mouseY <= pos.y + RADIUS);
 }
 
 void Slot::pick() {

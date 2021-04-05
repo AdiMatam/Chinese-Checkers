@@ -23,7 +23,11 @@ private:
 
     // STATIC
     static int sLAYOUT[17];
-    static int sINDICES[17];
+    static int sINDICES[18];
+
+    enum MoveType {
+        INVALID, SINGLE, MULTIPLE
+    };
     
 public:
     Checkers(sf::RenderWindow& win, sf::Color& fill);
@@ -35,7 +39,7 @@ public:
     
     Slot* find(float x, float y);
     int getIdentity(const Slot* slot);
-    int validateMove(const Slot* s1, const Slot* s2);
+    MoveType validateMove(const Slot* s1, const Slot* s2);
     void processClick(float x, float y, bool force);
     bool foundLegal(float x, float y);
 
