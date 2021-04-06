@@ -1,10 +1,5 @@
 #include "checkers.hpp"
 
-int Checkers::sLAYOUT[17] = {
-    1, 2, 3, 4, 13, 12, 11, 10, 9, 
-    10, 11, 12, 13, 4, 3, 2, 1
-};
-
 int Checkers::sINDICES[18] = {
     0, 1, 3, 6, 10, 23, 35, 46, 56,
     65, 75, 86, 98, 111, 115, 118, 120, 121
@@ -68,7 +63,7 @@ void Checkers::resetBoard() {
     int* guidePtr = &guide[0];
 
     for (int i = 0; i < 17; i++) {
-        rowCount = sLAYOUT[i];
+        rowCount = sINDICES[i+1] - sINDICES[i];
         if (*guidePtr < 0) {
             colorStepper += abs(*guidePtr);
             guidePtr++;

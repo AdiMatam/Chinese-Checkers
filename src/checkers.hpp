@@ -21,8 +21,6 @@ private:
     const sf::Vector2f mCENTER = sf::Vector2f(HEIGHT / 2, HEIGHT / 2);
     const float RADIAN = 3.1415f / 180.f;
 
-    // STATIC
-    static int sLAYOUT[17];
     static int sINDICES[18];
 
     enum MoveType {
