@@ -78,22 +78,22 @@ void Checkers::resetBoard() {
             x -= (RADIUS + GAP / 2.f);
         else {
             if (rowCount > 4) 
-                mSlots.push_back(Slot(x, y, *mFill));
+                mSlots.emplace_back(x, y, *mFill);
             else              
-                mSlots.push_back(Slot(x, y, *colorStepper));
+                mSlots.emplace_back(x, y, *colorStepper);
             x -= STEP;
         }       
         for (int j = 0; j < rowCount / 2; j++) {
             if (j >= *guidePtr) {
-                mSlots.push_back(Slot(x, y, *colorStepper));
+                mSlots.emplace_back(x, y, *colorStepper);
                 if (rowCount > 4)
-                    mSlots.push_back(Slot(HEIGHT - x, y, *(colorStepper+1)));
+                    mSlots.emplace_back(HEIGHT - x, y, *(colorStepper+1));
                 else
-                    mSlots.push_back(Slot(HEIGHT - x, y, *colorStepper));
+                    mSlots.emplace_back(HEIGHT - x, y, *colorStepper);
             }
             else {
-                mSlots.push_back(Slot(x, y, *mFill));
-                mSlots.push_back(Slot(HEIGHT - x, y, *mFill));
+                mSlots.emplace_back(x, y, *mFill);
+                mSlots.emplace_back(HEIGHT - x, y, *mFill);
             }
             x -= STEP;
         }

@@ -9,7 +9,7 @@ class Checkers {
 private:
     sf::RenderWindow* mWin;
     sf::Color* mFill;
-    sf::CircleShape mOutline; // getter setter?
+    sf::CircleShape mOutline;
     sf::Transform mTrans;
     std::vector<Slot> mSlots;
     std::vector<sf::Color> mColors;
@@ -19,7 +19,7 @@ private:
     bool mEnableMouse;
 
     const sf::Vector2f mCENTER = sf::Vector2f(HEIGHT / 2, HEIGHT / 2);
-    const float RADIAN = 3.1415 / 180;
+    const float RADIAN = 3.1415f / 180.f;
 
     // STATIC
     static int sLAYOUT[17];
