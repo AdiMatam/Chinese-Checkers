@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // TGUI - Texus' Graphical User Interface
-// Copyright (C) 2012-2020 Bruno Van de Velde (vdv_b@tgui.eu)
+// Copyright (C) 2012-2021 Bruno Van de Velde (vdv_b@tgui.eu)
 //
 // This software is provided 'as-is', without any express or implied warranty.
 // In no event will the authors be held liable for any damages arising from the use of this software.
@@ -29,7 +29,7 @@
 
 #include <string>
 #include <stdexcept>
-#include <TGUI/Config.hpp>
+#include <TGUI/String.hpp>
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -44,8 +44,8 @@ namespace tgui
 
     class TGUI_API Exception : public std::runtime_error {
     public:
-        explicit Exception(const std::string& argument) :
-            std::runtime_error(argument)
+        explicit Exception(const String& argument) :
+            std::runtime_error(argument.toStdString())
         {
         }
     };

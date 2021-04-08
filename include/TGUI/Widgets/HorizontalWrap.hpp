@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // TGUI - Texus's Graphical User Interface
-// Copyright (C) 2012-2020 Bruno Van de Velde (vdv_b@tgui.eu)
+// Copyright (C) 2012-2021 Bruno Van de Velde (vdv_b@tgui.eu)
 //
 // This software is provided 'as-is', without any express or implied warranty.
 // In no event will the authors be held liable for any damages arising from the use of this software.
@@ -39,14 +39,18 @@ namespace tgui
     class TGUI_API HorizontalWrap : public BoxLayout
     {
     public:
-        typedef std::shared_ptr<HorizontalWrap> Ptr; ///< Shared widget pointer
-        typedef std::shared_ptr<const HorizontalWrap> ConstPtr; ///< Shared constant widget pointer
+        typedef std::shared_ptr<HorizontalWrap> Ptr; //!< Shared widget pointer
+        typedef std::shared_ptr<const HorizontalWrap> ConstPtr; //!< Shared constant widget pointer
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /// @brief Default constructor
+        /// @internal
+        /// @brief Constructor
+        /// @param typeName     Type of the widget
+        /// @param initRenderer Should the renderer be initialized? Should be true unless a derived class initializes it.
+        /// @see create
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        HorizontalWrap(const Layout2d& size = {"100%", "100%"});
+        HorizontalWrap(const char* typeName = "HorizontalWrap", bool initRenderer = true);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

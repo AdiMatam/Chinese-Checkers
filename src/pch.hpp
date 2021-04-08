@@ -8,8 +8,6 @@
 #include <string>
 #include <utility>
 #include <vector>
-//#include <windows.h>
-// #include <memory>
 
 #include <SFML/Graphics.hpp>
 

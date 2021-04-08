@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // TGUI - Texus' Graphical User Interface
-// Copyright (C) 2012-2020 Bruno Van de Velde (vdv_b@tgui.eu)
+// Copyright (C) 2012-2021 Bruno Van de Velde (vdv_b@tgui.eu)
 //
 // This software is provided 'as-is', without any express or implied warranty.
 // In no event will the authors be held liable for any damages arising from the use of this software.
@@ -41,24 +41,26 @@ namespace tgui
     {
     public:
 
-        typedef std::shared_ptr<Picture> Ptr; ///< Shared widget pointer
-        typedef std::shared_ptr<const Picture> ConstPtr; ///< Shared constant widget pointer
+        typedef std::shared_ptr<Picture> Ptr; //!< Shared widget pointer
+        typedef std::shared_ptr<const Picture> ConstPtr; //!< Shared constant widget pointer
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /// @brief Default constructor
+        /// @internal
+        /// @brief Constructor
+        /// @param typeName     Type of the widget
+        /// @param initRenderer Should the renderer be initialized? Should be true unless a derived class initializes it.
+        /// @see create
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        Picture();
+        Picture(const char* typeName = "Picture", bool initRenderer = true);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /// @brief Constructor to create the picture from a texture
+        /// @brief Creates a new empty picture widget
         ///
-        /// @param texture  The texture to load the picture from
-        /// @param transparentTexture  Are there transparent parts in the texture where the mouse events should be passed
-        ///                            to the widget behind the picture?
+        /// @return The new picture
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        Picture(const Texture& texture, bool transparentTexture = false);
+        static Picture::Ptr create();
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -80,7 +82,7 @@ namespace tgui
         /// auto picture3 = Picture::create(texture);
         /// @endcode
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        static Picture::Ptr create(const Texture& texture = {}, bool transparentTexture = false);
+        static Picture::Ptr create(const Texture& texture, bool transparentTexture = false);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -155,7 +157,7 @@ namespace tgui
         /// @return Is the mouse on top of the widget?
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool mouseOnWidget(Vector2f pos) const override;
+        bool isMouseOnWidget(Vector2f pos) const override;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -171,7 +173,7 @@ namespace tgui
         /// @param states Current render states
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+        void draw(BackendRenderTargetBase& target, RenderStates states) const override;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -186,13 +188,13 @@ namespace tgui
         ///
         /// @throw Exception when the name does not match any signal
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        Signal& getSignal(std::string signalName) override;
+        Signal& getSignal(String signalName) override;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public:
 
-        SignalVector2f onDoubleClick = {"DoubleClicked"};  ///< The picture was double clicked. Optional parameter: mouse position relative to picture
+        SignalVector2f onDoubleClick = {"DoubleClicked"};  //!< The picture was double clicked. Optional parameter: mouse position relative to picture
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -201,10 +203,10 @@ namespace tgui
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @brief Function called when one of the properties of the renderer is changed
         ///
-        /// @param property  Lowercase name of the property that was changed
+        /// @param property  Name of the property that was changed
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void rendererChanged(const std::string& property) override;
+        void rendererChanged(const String& property) override;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -222,7 +224,7 @@ namespace tgui
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // This function is called every frame with the time passed since the last frame.
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool update(sf::Time elapsedTime) override;
+        bool updateTime(Duration elapsedTime) override;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

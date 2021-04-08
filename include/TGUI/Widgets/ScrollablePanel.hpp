@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // TGUI - Texus' Graphical User Interface
-// Copyright (C) 2012-2020 Bruno Van de Velde (vdv_b@tgui.eu)
+// Copyright (C) 2012-2021 Bruno Van de Velde (vdv_b@tgui.eu)
 //
 // This software is provided 'as-is', without any express or implied warranty.
 // In no event will the authors be held liable for any damages arising from the use of this software.
@@ -42,23 +42,17 @@ namespace tgui
     {
     public:
 
-        typedef std::shared_ptr<ScrollablePanel> Ptr; ///< Shared widget pointer
-        typedef std::shared_ptr<const ScrollablePanel> ConstPtr; ///< Shared constant widget pointer
-
-#ifndef TGUI_REMOVE_DEPRECATED_CODE
-        /// @brief Defines when the scrollbar shows up
-        using ScrollbarPolicy TGUI_DEPRECATED("Use tgui::Scrollbar::Policy instead") = Scrollbar::Policy;
-#endif
+        typedef std::shared_ptr<ScrollablePanel> Ptr; //!< Shared widget pointer
+        typedef std::shared_ptr<const ScrollablePanel> ConstPtr; //!< Shared constant widget pointer
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /// @brief Default constructor
-        ///
-        /// @param size        Size of the panel
-        /// @param contentSize Size of the content area for which the scrollbars will appear if larger than the size
-        ///
-        /// When contentSize is set to (0,0), the content size is determined by the child widgets of the panel.
+        /// @internal
+        /// @brief Constructor
+        /// @param typeName     Type of the widget
+        /// @param initRenderer Should the renderer be initialized? Should be true unless a derived class initializes it.
+        /// @see create
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ScrollablePanel(const Layout2d& size = {"100%", "100%"}, Vector2f contentSize = {0, 0});
+        ScrollablePanel(const char* typeName = "ScrollablePanel", bool initRenderer = true);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -146,7 +140,7 @@ namespace tgui
         /// @param widget      Pointer to the widget you would like to add
         /// @param widgetName  An identifier to access to the widget later
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void add(const Widget::Ptr& widget, const sf::String& widgetName = "") override;
+        void add(const Widget::Ptr& widget, const String& widgetName = "") override;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -194,13 +188,6 @@ namespace tgui
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         Vector2f getContentOffset() const;
 
-#ifndef TGUI_REMOVE_DEPRECATED_CODE
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /// @brief Changes the width of the scrollbars
-        /// @param width  Scrollbar width
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        TGUI_DEPRECATED("Use the ScrollbarWidth renderer property instead") void setScrollbarWidth(float width);
-#endif
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @brief Returns the width of the scrollbars
@@ -302,6 +289,16 @@ namespace tgui
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// @brief Returns the leaf child widget that is located at the given position
+        ///
+        /// @param pos  The location where the widget will be searched, relative to the container
+        ///
+        /// @return Widget at the queried position, or nullptr when there is no widget at that location
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        Widget::Ptr getWidgetAtPosition(Vector2f pos) const override;
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @internal
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         void leftMousePressed(Vector2f pos) override;
@@ -347,7 +344,7 @@ namespace tgui
         /// @param target Render target to draw to
         /// @param states Current render states
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+        void draw(BackendRenderTargetBase& target, RenderStates states) const override;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -356,10 +353,10 @@ namespace tgui
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @brief Function called when one of the properties of the renderer is changed
         ///
-        /// @param property  Lowercase name of the property that was changed
+        /// @param property  Name of the property that was changed
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void rendererChanged(const std::string& property) override;
+        void rendererChanged(const String& property) override;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -424,7 +421,8 @@ namespace tgui
         unsigned int m_verticalScrollAmount = 0;
         unsigned int m_horizontalScrollAmount = 0;
 
-        std::map<Widget::Ptr, unsigned int> m_connectedCallbacks;
+        std::map<Widget::Ptr, unsigned int> m_connectedPositionCallbacks;
+        std::map<Widget::Ptr, unsigned int> m_connectedSizeCallbacks;
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     };

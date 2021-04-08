@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // TGUI - Texus' Graphical User Interface
-// Copyright (C) 2012-2020 Bruno Van de Velde (vdv_b@tgui.eu)
+// Copyright (C) 2012-2021 Bruno Van de Velde (vdv_b@tgui.eu)
 //
 // This software is provided 'as-is', without any express or implied warranty.
 // In no event will the authors be held liable for any damages arising from the use of this software.
@@ -46,22 +46,23 @@ namespace tgui
     {
       public:
 
-        typedef std::shared_ptr<ListView> Ptr; ///< Shared widget pointer
-        typedef std::shared_ptr<const ListView> ConstPtr; ///< Shared constant widget pointer
+        typedef std::shared_ptr<ListView> Ptr; //!< Shared widget pointer
+        typedef std::shared_ptr<const ListView> ConstPtr; //!< Shared constant widget pointer
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @brief The text alignment for all texts within a column
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         enum class ColumnAlignment
         {
-            Left,   ///< Place the text on the left side (default)
-            Center, ///< Center the text inside the column
-            Right   ///< Place the text on the right side (e.g. for numbers)
+            Left,   //!< Place the text on the left side (default)
+            Center, //!< Center the text inside the column
+            Right   //!< Place the text on the right side (e.g. for numbers)
         };
 
         struct Item
         {
             std::vector<Text> texts;
+            Any data;
             Sprite icon;
         };
 
@@ -69,15 +70,20 @@ namespace tgui
         {
             float width = 0;
             float designWidth = 0;
+            float maxItemWidth = 0;
             Text text;
             ColumnAlignment alignment = ColumnAlignment::Left;
         };
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // Default constructor
+        /// @internal
+        /// @brief Constructor
+        /// @param typeName     Type of the widget
+        /// @param initRenderer Should the renderer be initialized? Should be true unless a derived class initializes it.
+        /// @see create
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ListView();
+        ListView(const char* typeName = "ListView", bool initRenderer = true);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -131,7 +137,7 @@ namespace tgui
         ///
         /// @return Index of the added column
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        std::size_t addColumn(const sf::String& text, float width = 0, ColumnAlignment alignment = ColumnAlignment::Left);
+        std::size_t addColumn(const String& text, float width = 0, ColumnAlignment alignment = ColumnAlignment::Left);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -140,7 +146,7 @@ namespace tgui
         /// @param index  Index of the column to change
         /// @param text   Caption of the column
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void setColumnText(std::size_t index, const sf::String& text);
+        void setColumnText(std::size_t index, const String& text);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -150,7 +156,7 @@ namespace tgui
         ///
         /// @return Caption of the column
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        sf::String getColumnText(std::size_t index) const;
+        String getColumnText(std::size_t index) const;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -252,7 +258,7 @@ namespace tgui
         ///
         /// @return Index of the item that was just added
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        std::size_t addItem(const sf::String& text);
+        std::size_t addItem(const String& text);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -262,7 +268,7 @@ namespace tgui
         ///
         /// @return Index of the item that was just added
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        std::size_t addItem(const std::vector<sf::String>& item);
+        std::size_t addItem(const std::vector<String>& item);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -270,8 +276,31 @@ namespace tgui
         ///
         /// @param items  List of items that should be passed to the addItem
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void addMultipleItems(const std::vector<std::vector<sf::String>>& items);
+        void addMultipleItems(const std::vector<std::vector<String>>& items);
 
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// @brief Inserts an item into the list
+        ///
+        /// @param index Index to insert the item at
+        /// @param text The caption of the item you want to add
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        void insertItem(std::size_t index, const String& text);
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// @brief Inserts an item into the list
+        ///
+        /// @param index Index to insert the item at
+        /// @param item Texts for each column
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        void insertItem(std::size_t index, const std::vector<String>& item);
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// @brief Inserts multiple items into the list
+        ///
+        /// @param index Index to insert the items at
+        /// @param items List of items that should be passed to the insertItem
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        void insertMultipleItems(std::size_t index, const std::vector<std::vector<String>>& items);
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @brief Changes an item with values for multiple columns to the list
@@ -281,7 +310,7 @@ namespace tgui
         ///
         /// @return True when the item was updated, false when the index was too high
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool changeItem(std::size_t index, const std::vector<sf::String>& item);
+        bool changeItem(std::size_t index, const std::vector<String>& item);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -293,7 +322,7 @@ namespace tgui
         ///
         /// @return True when the item was updated, false when the index was too high
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool changeSubItem(std::size_t index, std::size_t column, const sf::String& item);
+        bool changeSubItem(std::size_t index, std::size_t column, const String& item);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -327,12 +356,6 @@ namespace tgui
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         void setSelectedItems(const std::set<std::size_t>& indices);
 
-#ifndef TGUI_REMOVE_DEPRECATED_CODE
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /// @brief Deselects the selected item or all of them
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        TGUI_DEPRECATED("Use deselectItems instead") void deselectItem();
-#endif
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @brief Deselects the selected items
@@ -373,6 +396,37 @@ namespace tgui
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// @brief Store some user data with the item
+        ///
+        /// @param index Index of the item
+        /// @param data  User data to store
+        ///
+        /// Examples:
+        /// @code
+        /// listView->setItemData(idx, "Data"); // Note: type to retrieve with getItemData is 'const char*' here
+        /// listView->setItemData(idx, 5);
+        /// @endcode
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        void setItemData(std::size_t index, Any data);
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// @brief Returns user data stored in the item
+        /// @return Stored data
+        /// @throw std::bad_cast if the template type does not match the type inside the std::any variable passed in setItemData
+        ///        or when the index was too high (which acts as if you access an empty std::any variable).
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        template <typename T>
+        T getItemData(std::size_t index) const
+        {
+            if (index < m_items.size())
+                return AnyCast<T>(m_items[index].data);
+            else
+                throw std::bad_cast();
+        }
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @brief Sets a small icon in front of the item
         ///
         /// @param index   Index of the item
@@ -406,7 +460,7 @@ namespace tgui
         ///
         /// @return Text of the item or an empty string when the index was higher than the amount of items
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        sf::String getItem(std::size_t index) const;
+        String getItem(std::size_t index) const;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -418,7 +472,7 @@ namespace tgui
         ///
         /// The returned list has the same length as the amount of columns.
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        std::vector<sf::String> getItemRow(std::size_t index) const;
+        std::vector<String> getItemRow(std::size_t index) const;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -429,7 +483,7 @@ namespace tgui
         ///
         /// @return Text of the cell or an empty string when the index is out of range
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        sf::String getItemCell(std::size_t rowIndex, std::size_t columnIndex) const;
+        String getItemCell(std::size_t rowIndex, std::size_t columnIndex) const;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -437,7 +491,7 @@ namespace tgui
         ///
         /// @return Texts of the first column of items
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        std::vector<sf::String> getItems() const;
+        std::vector<String> getItems() const;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -445,16 +499,16 @@ namespace tgui
         ///
         /// @return Texts of the items and their subitems
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        std::vector<std::vector<sf::String>> getItemRows() const;
+        std::vector<std::vector<String>> getItemRows() const;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @brief Sort items
         ///
-        /// @param cmp  The comparator
-        /// @param index  The index of the column for sorting
+        /// @param index The index of the column for sorting
+        /// @param cmp   The comparator
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void sort(std::size_t index, const std::function<bool(const sf::String&, const sf::String&)>& cmp);
+        void sort(std::size_t index, const std::function<bool(const String&, const String&)>& cmp);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -610,8 +664,6 @@ namespace tgui
         /// @brief Changes whether the last column is expanded to fill the list view (if all columns fit inside the list view)
         ///
         /// @param expand  Make the last column larger to make it fill the list view when it isn't full yet?
-        ///
-        /// The last column is expanded by default.
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         void setExpandLastColumn(bool expand);
 
@@ -685,10 +737,31 @@ namespace tgui
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// @brief Sets a size to which all icons should be scaled
+        ///
+        /// @param iconSize  Wanted size for all icons
+        ///
+        /// By default the fixed icon size is set to (0,0) which doesn't scale the icons and lets each icon use the texture size.
+        /// By setting only the x or y component of the vector to 0, that dimension will be calculated to keep the icon ratio.
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        void setFixedIconSize(Vector2f iconSize);
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// @brief Returns to which size all icons should be scaled
+        ///
+        /// @return Wanted size for all icons
+        ///
+        /// By default the fixed icon size is set to (0,0) which doesn't scale the icons and lets each icon use the texture size.
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        Vector2f getFixedIconSize() const;
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @brief Returns whether the mouse position (which is relative to the parent widget) lies on top of the widget
         /// @return Is the mouse on top of the widget?
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool mouseOnWidget(Vector2f pos) const override;
+        bool isMouseOnWidget(Vector2f pos) const override;
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @internal
@@ -725,6 +798,11 @@ namespace tgui
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         void leftMouseButtonNoLongerDown() override;
 
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// @internal
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        void keyPressed(const Event::KeyEvent& event) override;
+
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @brief Draw the widget to a render target
@@ -732,7 +810,7 @@ namespace tgui
         /// @param target Render target to draw to
         /// @param states Current render states
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+        void draw(BackendRenderTargetBase& target, RenderStates states) const override;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -747,15 +825,15 @@ namespace tgui
         ///
         /// @throw Exception when the name does not match any signal
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        Signal& getSignal(std::string signalName) override;
+        Signal& getSignal(String signalName) override;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @brief Function called when one of the properties of the renderer is changed
         ///
-        /// @param property  Lowercase name of the property that was changed
+        /// @param property  Name of the property that was changed
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void rendererChanged(const std::string& property) override;
+        void rendererChanged(const String& property) override;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -779,13 +857,13 @@ namespace tgui
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Create a Text object for an item from the given caption, using the preset color, font, text size and opacity
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        Text createText(const sf::String& caption);
+        Text createText(const String& caption);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Create a Text object for a header text from the given caption, using the preset color, font, text size and opacity
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        Text createHeaderText(const sf::String& caption);
+        Text createHeaderText(const String& caption);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -831,6 +909,27 @@ namespace tgui
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Update the maximum item width of the last column by recalculating all items' widths.
+        // Returns whether the max item width was changed.
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        bool updateLastColumnMaxItemWidth();
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Update the maximum item width of the last column based on the addition of an Item.
+        // Returns true if the maximum item width was changed.
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        bool updateLastColumnMaxItemWidthWithNewItem(const Item& item);
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Update the maximum item width of the last column based on the modification of an Item.
+        // Returns true if the maximum item width was changed.
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        bool updateLastColumnMaxItemWidthWithModifiedItem(const Item& modifiedItem, float oldDesiredWidthInLastColumn);
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Add item to selected set
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         void addSelectedItem(int item);
@@ -852,6 +951,12 @@ namespace tgui
         // Returns either the configured separator width or the width of vertical grid lines, whichever is larger.
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         unsigned int getTotalSeparatorWidth() const;
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Returns the total width an Item takes up at some column, assuming it will not be cut off by the column.
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        float getItemTotalWidth(const Item& item, std::size_t columnIndex) const;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -880,19 +985,19 @@ namespace tgui
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Draw the header text for a single column
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void drawHeaderText(sf::RenderTarget& target, sf::RenderStates states, float columnWidth, float headerHeight, std::size_t column) const;
+        void drawHeaderText(BackendRenderTargetBase& target, RenderStates states, float columnWidth, float headerHeight, std::size_t column) const;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Draw the texts in a single column
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void drawColumn(sf::RenderTarget& target, sf::RenderStates states, std::size_t firstItem, std::size_t lastItem, std::size_t column, float columnWidth) const;
+        void drawColumn(BackendRenderTargetBase& target, RenderStates states, std::size_t firstItem, std::size_t lastItem, std::size_t column, float columnWidth) const;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // This function is called every frame with the time passed since the last frame.
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool update(sf::Time elapsedTime) override;
+        bool updateTime(Duration elapsedTime) override;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -907,10 +1012,16 @@ namespace tgui
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public:
 
-        SignalInt onItemSelect  = {"ItemSelected"};   ///< An item was selected in the list view (only used when MultiSelect is false). Optional parameter: selected item index (-1 when deselecting)
-        SignalInt onDoubleClick = {"DoubleClicked"};  ///< An item was double clicked. Optional parameter: selected item index
-        SignalInt onRightClick  = {"RightClicked"};   ///< Right mouse clicked. Optional parameter: index of item below mouse (-1 when not on top of item)
-        SignalInt onHeaderClick = {"HeaderClicked"};  ///< The header was clicked. Optional parameter: column index
+        /// An item was selected in the list view
+        /// Optional parameter: selected item index (-1 when deselecting)
+        ///
+        /// Note that when MultiSelect is true, this signal is triggered for every change to the selected items. The optional
+        /// parameter will contain the lowest index in the selected items or -1 when none of the items are selected.
+        SignalInt onItemSelect  = {"ItemSelected"};
+
+        SignalInt onDoubleClick = {"DoubleClicked"};  //!< An item was double clicked. Optional parameter: selected item index
+        SignalInt onRightClick  = {"RightClicked"};   //!< Right mouse clicked. Optional parameter: index of item below mouse (-1 when not on top of item)
+        SignalInt onHeaderClick = {"HeaderClicked"};  //!< The header was clicked. Optional parameter: column index
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -932,11 +1043,13 @@ namespace tgui
         unsigned int m_gridLinesWidth = 1;
         unsigned int m_iconCount = 0;
         float m_maxIconWidth = 0;
+        float m_maxItemWidth = 0; // If there are no columns, this is the maximum width from all items
         bool m_headerVisible = true;
         bool m_showHorizontalGridLines = false;
         bool m_showVerticalGridLines = true;
         bool m_expandLastColumn = false;
         bool m_multiSelect = false;
+        Vector2f m_fixedIconSize;
 
         CopiedSharedPtr<ScrollbarChildWidget> m_horizontalScrollbar;
         CopiedSharedPtr<ScrollbarChildWidget> m_verticalScrollbar;
@@ -944,7 +1057,7 @@ namespace tgui
         Scrollbar::Policy m_horizontalScrollbarPolicy = Scrollbar::Policy::Automatic;
 
         int m_mouseOnHeaderIndex = -1; // If the left mouse is down, this contains the index of the column if the mouse went down on the header
-        int m_possibleDoubleClick = -1; // Will be set to index of item after the first click, but gets reset to -1 when the second click does not occur soon after
+        int m_possibleDoubleClick = false; // Will be set to true after the first click, but gets reset to false when the second click does not occur soon after
         bool m_autoScroll = true; // Should the list view scroll to the bottom when a new item is added?
 
         // Cached renderer properties

@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // TGUI - Texus' Graphical User Interface
-// Copyright (C) 2012-2020 Bruno Van de Velde (vdv_b@tgui.eu)
+// Copyright (C) 2012-2021 Bruno Van de Velde (vdv_b@tgui.eu)
 //
 // This software is provided 'as-is', without any express or implied warranty.
 // In no event will the authors be held liable for any damages arising from the use of this software.
@@ -29,10 +29,16 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include <TGUI/TextureData.hpp>
-#include <TGUI/Vector2f.hpp>
+#include <TGUI/Vector2.hpp>
+#include <TGUI/String.hpp>
 #include <TGUI/Color.hpp>
-#include <SFML/System/String.hpp>
+#include <TGUI/Rect.hpp>
 #include <functional>
+
+#if TGUI_HAS_BACKEND_SFML
+    #include <SFML/Graphics/Texture.hpp>
+    #include <SFML/Graphics/Shader.hpp>
+#endif
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -43,8 +49,8 @@ namespace tgui
     public:
 
         using CallbackFunc = std::function<void(std::shared_ptr<TextureData>)>;
-        using ImageLoaderFunc = std::function<std::unique_ptr<sf::Image>(const sf::String&)>;
-        using TextureLoaderFunc = std::function<std::shared_ptr<TextureData>(Texture&, const sf::String&, const sf::IntRect&)>;
+        using BackendTextureLoaderFunc = std::function<bool(BackendTextureBase&, const String&)>;
+        using TextureLoaderFunc = std::function<std::shared_ptr<TextureData>(Texture&, const String&, bool smooth)>;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -62,12 +68,13 @@ namespace tgui
         /// @param middlePart Choose the middle part of the image for 9-slice scaling (relative to the part defined by partRect)
         /// @param smooth     Enable smoothing on the texture
         ///
+        /// @throw Exception when loading failed
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         Texture(const char* id,
-                const sf::IntRect& partRect = sf::IntRect(0, 0, 0, 0),
-                const sf::IntRect& middlePart = sf::IntRect(0, 0, 0, 0),
-                bool smooth = false)
-            : Texture(sf::String{id}, partRect, middlePart, smooth)
+                const UIntRect& partRect = UIntRect(0, 0, 0, 0),
+                const UIntRect& middlePart = UIntRect(0, 0, 0, 0),
+                bool smooth = true)
+            : Texture(String{id}, partRect, middlePart, smooth)
         {
         }
 
@@ -82,33 +89,14 @@ namespace tgui
         ///
         /// This constructor just calls the corresponding load function.
         ///
+        /// @throw Exception when loading failed
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        Texture(const std::string& id,
-                const sf::IntRect& partRect = sf::IntRect(0, 0, 0, 0),
-                const sf::IntRect& middlePart = sf::IntRect(0, 0, 0, 0),
-                bool smooth = false)
-            : Texture(sf::String{id}, partRect, middlePart, smooth)
-        {
-        }
+        Texture(const String& id,
+                const UIntRect& partRect = UIntRect(0, 0, 0, 0),
+                const UIntRect& middlePart = UIntRect(0, 0, 0, 0),
+                bool smooth = true);
 
-
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /// @brief Constructor that created the texture
-        ///
-        /// @param id         Id for the the image to load (for the default loader, the id is the filename)
-        /// @param partRect   Load only part of the image. Pass an empty rectangle if you want to load the full image
-        /// @param middlePart Choose the middle part of the image for 9-slice scaling (relative to the part defined by partRect)
-        /// @param smooth     Enable smoothing on the texture
-        ///
-        /// This constructor just calls the corresponding load function.
-        ///
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        Texture(const sf::String& id,
-                const sf::IntRect& partRect = sf::IntRect(0, 0, 0, 0),
-                const sf::IntRect& middlePart = sf::IntRect(0, 0, 0, 0),
-                bool smooth = false);
-
-
+#if TGUI_HAS_BACKEND_SFML
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @brief Constructor that created the texture from an existing sf::Texture
         ///
@@ -119,12 +107,11 @@ namespace tgui
         /// The texture will be copied, you do not have to keep the sf::Texture alive after calling this function.
         ///
         /// This constructor just calls the corresponding load function.
-        ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         Texture(const sf::Texture& texture,
-                const sf::IntRect& partRect = sf::IntRect(0, 0, 0, 0),
-                const sf::IntRect& middlePart = sf::IntRect(0, 0, 0, 0));
-
+                const UIntRect& partRect = UIntRect(0, 0, 0, 0),
+                const UIntRect& middlePart = UIntRect(0, 0, 0, 0));
+#endif
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @brief Copy constructor
@@ -160,13 +147,14 @@ namespace tgui
         /// @param middleRect Choose the middle part of the image for 9-slice scaling (relative to the part defined by partRect)
         /// @param smooth     Enable smoothing on the texture
         ///
+        /// @throw Exception when loading failed
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void load(const sf::String& id,
-                  const sf::IntRect& partRect = {},
-                  const sf::IntRect& middleRect = {},
-                  bool smooth = false);
+        void load(const String& id,
+                  const UIntRect& partRect = {},
+                  const UIntRect& middleRect = {},
+                  bool smooth = true);
 
-
+#if TGUI_HAS_BACKEND_SFML
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @brief Creates the texture from an existing sf::Texture
         ///
@@ -176,10 +164,54 @@ namespace tgui
         ///
         /// The texture will be copied, you do not have to keep the sf::Texture alive after calling this function.
         ///
+        /// @throw Exception when loading failed
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         void load(const sf::Texture& texture,
-                  const sf::IntRect& partRect = {},
-                  const sf::IntRect& middleRect = {});
+                  const UIntRect& partRect = {},
+                  const UIntRect& middleRect = {});
+#endif
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// @brief Loads the texture from an array of 32-bits RGBA pixels
+        ///
+        /// @param size       Width and height of the image to create
+        /// @param pixels     Pointer to array of size.x*size.y*4 bytes with RGBA pixels
+        /// @param partRect   Load only part of the texture. Don't pass this parameter if you want to load the full image
+        /// @param middleRect Choose the middle part of the image for 9-slice scaling (relative to the part defined by partRect)
+        ///
+        /// @return True on success, false if the backend failed to create the texture
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        TGUI_DEPRECATED("Use loadFromPixelData instead") bool load(Vector2u size, const std::uint8_t* pixels, const UIntRect& partRect = {}, const UIntRect& middleRect = {});
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// @brief Loads the texture from memory (data in memory should contain the entire file, not just the pixels)
+        ///
+        /// @param data       Pointer to the file in memory
+        /// @param dataSize   Amount of bytes of the file in memory
+        /// @param partRect   Load only part of the texture. Don't pass this parameter if you want to load the full image
+        /// @param middleRect Choose the middle part of the image for 9-slice scaling (relative to the part defined by partRect)
+        /// @param smooth     Enable smoothing on the texture
+        ///
+        /// @throw Exception when loading failed
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        void loadFromMemory(const std::uint8_t* data, std::size_t dataSize, const UIntRect& partRect = {}, const UIntRect& middleRect = {}, bool smooth = true);
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// @brief Loads the texture from an array of 32-bits RGBA pixels
+        ///
+        /// @param size       Width and height of the image to create
+        /// @param pixels     Pointer to array of size.x*size.y*4 bytes with RGBA pixels
+        /// @param partRect   Load only part of the texture. Don't pass this parameter if you want to load the full image
+        /// @param middleRect Choose the middle part of the image for 9-slice scaling (relative to the part defined by partRect)
+        /// @param smooth     Enable smoothing on the texture
+        ///
+        /// The pixels are copied by this function, you can free the buffer after calling this function.
+        ///
+        /// @throw Exception when loading failed
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        void loadFromPixelData(Vector2u size, const std::uint8_t* pixels, const UIntRect& partRect = {}, const UIntRect& middleRect = {}, bool smooth = true);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -188,7 +220,7 @@ namespace tgui
         /// @return Id of the texture
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        const sf::String& getId() const;
+        const String& getId() const;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -201,36 +233,26 @@ namespace tgui
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /// @brief Returns the size that the loaded image
+        /// @brief Returns the size that the loaded image, or the size of the part if only a part of the image is loaded
         ///
         /// @return Size of the image like it was when loaded (no scaling applied)
-        ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        Vector2f getImageSize() const;
+        Vector2u getImageSize() const;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /// @brief Enables or disable the smooth filter
+        /// @brief Returns which part of the image was loaded
         ///
-        /// When the filter is activated, the texture appears smoother so that pixels are less noticeable.
-        /// However if you want the texture to look exactly the same as its source file, you should leave it disabled.
-        /// The smooth filter is disabled by default.
-        ///
-        /// @param smooth True to enable smoothing, false to disable it
-        ///
-        /// @see isSmooth
+        /// @return Part of the image that was loaded
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void setSmooth(bool smooth);
+        UIntRect getPartRect() const;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @brief Tells whether the smooth filter is enabled or not
         ///
         /// @return True if smoothing is enabled, false if it is disabled
-        ///
-        /// @see setSmooth
-        ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         bool isSmooth() const;
 
@@ -261,7 +283,7 @@ namespace tgui
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         const Color& getColor() const;
 
-
+#if TGUI_HAS_BACKEND_SFML
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @brief Sets the shader used to draw the texture
         /// @param shader  New shader to use
@@ -274,7 +296,7 @@ namespace tgui
         /// @return Shader currently being use to draw the texture
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         sf::Shader* getShader() const;
-
+#endif
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @brief Returns the middle rect of the texture which is used for 9-slice scaling
@@ -282,7 +304,7 @@ namespace tgui
         /// @return Middle rect of the texture
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        sf::IntRect getMiddleRect() const;
+        UIntRect getMiddleRect() const;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -293,7 +315,7 @@ namespace tgui
         /// @return True when the pixel is transparent, false when it is not
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool isTransparentPixel(sf::Vector2u pos) const;
+        bool isTransparentPixel(Vector2u pos) const;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -331,27 +353,25 @@ namespace tgui
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /// @brief Sets a different image loader
+        /// @brief Sets a different backend texture loader
         ///
-        /// @param func  New image loader function
+        /// @param func  New backend texture loader function
         ///
-        /// The image loader will be called inside the texture loader to create the sf::Image.
+        /// The backend texture loader will be called inside the texture loader to create the backend texture.
         ///
         /// The default loader will simply load the image from a file.
-        ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        static void setImageLoader(const ImageLoaderFunc& func);
+        static void setBackendTextureLoader(const BackendTextureLoaderFunc& func);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /// @brief Returns the used image loader
+        /// @brief Returns the used backend texture loader
         ///
-        /// @return Image loader that is currently being used
+        /// @return Backend texture loader that is currently being used
         ///
-        /// @see setImageLoader
-        ///
+        /// @see setBackendTextureLoader
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        static const ImageLoaderFunc& getImageLoader();
+        static const BackendTextureLoaderFunc& getBackendTextureLoader();
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -385,26 +405,32 @@ namespace tgui
         /// @brief Changes the texture data
         ///
         /// @param data       New texture data
+        /// @param partRect   Load only part of the image
         /// @param middleRect Choose the middle part of the image part to determine scaling (e.g. 9-slice scaling)
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void setTextureData(std::shared_ptr<TextureData> data, const sf::IntRect& middleRect = {});
+        void setTextureData(std::shared_ptr<TextureData> data, const UIntRect& partRect, const UIntRect& middleRect);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     private:
 
+#if TGUI_HAS_BACKEND_SFML
+        sf::Shader* m_shader = nullptr;
+#endif
+
         std::shared_ptr<TextureData> m_data = nullptr;
         Color m_color = Color::White;
-        sf::Shader* m_shader = nullptr;
-        sf::IntRect m_middleRect;
-        sf::String  m_id;
+
+        UIntRect m_partRect;
+        UIntRect m_middleRect;
+        String  m_id;
 
         CallbackFunc m_copyCallback;
         CallbackFunc m_destructCallback;
 
         static TextureLoaderFunc m_textureLoader;
-        static ImageLoaderFunc m_imageLoader;
+        static BackendTextureLoaderFunc m_backendTextureLoader;
     };
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // TGUI - Texus' Graphical User Interface
-// Copyright (C) 2012-2020 Bruno Van de Velde (vdv_b@tgui.eu)
+// Copyright (C) 2012-2021 Bruno Van de Velde (vdv_b@tgui.eu)
 //
 // This software is provided 'as-is', without any express or implied warranty.
 // In no event will the authors be held liable for any damages arising from the use of this software.
@@ -26,24 +26,35 @@
 #ifndef TGUI_TEXT_STYLE_HPP
 #define TGUI_TEXT_STYLE_HPP
 
-#include <TGUI/Config.hpp>
-#include <SFML/Graphics/Text.hpp>
+#include <TGUI/String.hpp>
 #include <string>
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 namespace tgui
 {
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// @brief Enumeration of the text drawing styles
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    enum TextStyle
+    {
+        Regular       = 0,      //!< Regular characters, no style
+        Bold          = 1 << 0, //!< Bold characters
+        Italic        = 1 << 1, //!< Italic characters
+        Underlined    = 1 << 2, //!< Underlined characters
+        StrikeThrough = 1 << 3  //!< Strike through characters
+    };
+
+
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /// @brief Wrapper for text styles
     ///
     /// The class is used for 2 purposes:
-    /// - Implicit converter for parameters. A function taking a TextStyle as parameter can be given either an sf::Text::Style
-    ///   or a string representation as argument.
+    /// - Implicit converter for parameters. A function taking a TextStyles as parameter can be given either a
+    ///   tgui::TextStyle (or multiple combined with | operator) or a string representation as argument.
     /// - Storing no style at all. Some style settings may be optionally set and can thus remain unspecified.
-    ///
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    class TGUI_API TextStyle
+    class TGUI_API TextStyles
     {
     public:
 
@@ -51,31 +62,36 @@ namespace tgui
         /// @brief Creates the object without a text style
         ///
         /// The isSet function will return false when the object was created using this constructor.
-        ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        TextStyle();
+        TGUI_CONSTEXPR TextStyles() :
+            m_isSet{false},
+            m_style{Regular}
+        {
+        }
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /// @brief Creates the object from one or more sf::Text::Style enum members
+        /// @brief Creates the object from one or more tgui::TextStyle::Style enum members
         ///
         /// @param style  Text style to set
         ///
         /// @code
-        /// TextStyle style{sf::Text::Italic | sf::Text::Bold};
+        /// TextStyles style{tgui::TextStyle::Italic | tgui::TextStyle::Bold};
         /// @endcode
-        ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        TextStyle(unsigned int style);
+        TGUI_CONSTEXPR TextStyles(unsigned int style) :
+            m_isSet{true},
+            m_style{style}
+        {
+        }
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @brief Creates the object from a string representing the text styles
         ///
         /// @param string  String to be deserialized as text styles
-        ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        TextStyle(const std::string& string);
+        TextStyles(const String& string);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -84,29 +100,32 @@ namespace tgui
         /// @param string  String to be deserialized as text styles
         ///
         /// @code
-        /// TextStyle style{"Italic | Bold"};
+        /// TextStyles style{"Italic | Bold"};
         /// @endcode
-        ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        TextStyle(const char* string);
+        TextStyles(const char* string);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @brief Checks if a style was set
         ///
         /// @return True if a text style was passed to the constructor, false when the default constructor was used
-        ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool isSet() const;
+        TGUI_CONSTEXPR bool isSet() const
+        {
+            return m_isSet;
+        }
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @brief Converts this object into an unsigned int
         ///
-        /// @return The text styles stored in this object, or sf::Text::Regular if no style was set
-        ///
+        /// @return The text styles stored in this object, or tgui::TextStyle::Regular if no style was set
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        operator unsigned int() const;
+        TGUI_CONSTEXPR operator unsigned int() const
+        {
+            return m_style;
+        }
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -122,4 +141,3 @@ namespace tgui
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #endif // TGUI_TEXT_STYLE_HPP
-

@@ -1,3 +1,5 @@
+#include "pch.hpp"
+
 #include "helpers.hpp"
 
 float RADIUS         = 20;

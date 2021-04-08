@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // TGUI - Texus' Graphical User Interface
-// Copyright (C) 2012-2020 Bruno Van de Velde (vdv_b@tgui.eu)
+// Copyright (C) 2012-2021 Bruno Van de Velde (vdv_b@tgui.eu)
 //
 // This software is provided 'as-is', without any express or implied warranty.
 // In no event will the authors be held liable for any damages arising from the use of this software.
@@ -27,12 +27,13 @@
 #define TGUI_THEME_LOADER_HPP
 
 
-#include <TGUI/Config.hpp>
-#include <SFML/System/String.hpp>
+#include <TGUI/String.hpp>
+#include <TGUI/Loading/DataIO.hpp>
 #include <memory>
 #include <string>
 #include <vector>
 #include <map>
+#include <set>
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -56,7 +57,7 @@ namespace tgui
         ///
         /// @param primary    Primary parameter of the loader (filename of the theme file in DefaultThemeLoader)
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        virtual void preload(const std::string& primary);
+        virtual void preload(const String& primary);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -69,7 +70,7 @@ namespace tgui
         ///
         /// @return Map op property-value pairs
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        virtual const std::map<sf::String, sf::String>& load(const std::string& primary, const std::string& secondary) = 0;
+        virtual const std::map<String, String>& load(const String& primary, const String& secondary) = 0;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -82,7 +83,23 @@ namespace tgui
         ///
         /// @return Whether a map op property-value pairs is available
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        virtual bool canLoad(const std::string& primary, const std::string& secondary) = 0;
+        virtual bool canLoad(const String& primary, const String& secondary) = 0;
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    protected:
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Turns texture and font filenames into paths relative to the theme file
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        void injectThemePath(const std::unique_ptr<DataIO::Node>& node, const String& path) const;
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Resolves references to sections
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        void resolveReferences(std::map<String, std::reference_wrapper<const std::unique_ptr<DataIO::Node>>>& sections, const std::unique_ptr<DataIO::Node>& node) const;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -108,7 +125,7 @@ namespace tgui
         ///
         /// @exception Exception when finding syntax errors in the file
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void preload(const std::string& filename) override;
+        void preload(const String& filename) override;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -122,7 +139,7 @@ namespace tgui
         /// @exception Exception when finding syntax errors in the file
         /// @exception Exception when file did not contain requested class name
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        const std::map<sf::String, sf::String>& load(const std::string& filename, const std::string& section) override;
+        const std::map<String, String>& load(const String& filename, const String& section) override;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -133,7 +150,7 @@ namespace tgui
         ///
         /// @return Whether a map op property-value pairs is available
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool canLoad(const std::string& filename, const std::string& section) override;
+        bool canLoad(const String& filename, const String& section) override;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -142,7 +159,7 @@ namespace tgui
         /// @param filename  File to remove from cache.
         ///                  If no filename is given, the entire cache is cleared.
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        static void flushCache(const std::string& filename = "");
+        static void flushCache(const String& filename = "");
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -152,15 +169,15 @@ namespace tgui
         /// @brief Reads and return the contents of the entire file
         ///
         /// @param filename  Filename of the file to read
-        /// @param contents  Reference to a stringstream that should be filled with the contents of the file by this function
         ///
+        /// @return Root node of the parsed file, obtained by calling DataIO::parse(fileContents)
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        virtual void readFile(const std::string& filename, std::stringstream& contents) const;
+        virtual std::unique_ptr<DataIO::Node> readFile(const String& filename) const;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     private:
-        static std::map<std::string, std::map<std::string, std::map<sf::String, sf::String>>> m_propertiesCache;
+        static std::map<String, std::map<String, std::map<String, String>>> m_propertiesCache;
 
         friend struct DefaultThemeLoaderTest; // Used for testing m_propertiesCache
     };

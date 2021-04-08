@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // TGUI - Texus' Graphical User Interface
-// Copyright (C) 2012-2020 Bruno Van de Velde (vdv_b@tgui.eu)
+// Copyright (C) 2012-2021 Bruno Van de Velde (vdv_b@tgui.eu)
 //
 // This software is provided 'as-is', without any express or implied warranty.
 // In no event will the authors be held liable for any damages arising from the use of this software.
@@ -29,12 +29,16 @@
 
 #include <TGUI/Widget.hpp>
 #include <TGUI/Renderers/MenuBarRenderer.hpp>
+#include <TGUI/CopiedSharedPtr.hpp>
 #include <TGUI/Text.hpp>
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 namespace tgui
 {
+    class MenuBarMenuPlaceholder;
+
+
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /// @brief Menu bar widget
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -42,26 +46,15 @@ namespace tgui
     {
     public:
 
-        typedef std::shared_ptr<MenuBar> Ptr; ///< Shared widget pointer
-        typedef std::shared_ptr<const MenuBar> ConstPtr; ///< Shared constant widget pointer
+        typedef std::shared_ptr<MenuBar> Ptr; //!< Shared widget pointer
+        typedef std::shared_ptr<const MenuBar> ConstPtr; //!< Shared constant widget pointer
 
-    #ifndef TGUI_REMOVE_DEPRECATED_CODE
-        /// @brief Used for return value of getAllMenus
-        /// @deprecated The getMenuList should be used instead of getAllMenus
-        struct GetAllMenusElement
+        /// @brief Used for return value of getMenus
+        struct GetMenusElement
         {
-            sf::String text;
+            String text;
             bool enabled;
-            std::vector<std::unique_ptr<GetAllMenusElement>> menuItems;
-        };
-    #endif
-
-        /// @brief Used for return value of getMenuList
-        struct GetMenuListElement
-        {
-            sf::String text;
-            bool enabled;
-            std::vector<GetMenuListElement> menuItems;
+            std::vector<GetMenusElement> menuItems;
         };
 
         /// @internal
@@ -75,9 +68,34 @@ namespace tgui
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // Default constructor
+        /// @internal
+        /// @brief Constructor
+        /// @param typeName     Type of the widget
+        /// @param initRenderer Should the renderer be initialized? Should be true unless a derived class initializes it.
+        /// @see create
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        MenuBar();
+        MenuBar(const char* typeName = "MenuBar", bool initRenderer = true);
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Copy constructor
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        MenuBar(const MenuBar& other);
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Move constructor
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        MenuBar(MenuBar&& other);
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Copy assignment operator
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        MenuBar& operator=(const MenuBar& other);
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Move assignment operator
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        MenuBar& operator=(MenuBar&& other);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -130,7 +148,7 @@ namespace tgui
         /// The hierarchy does not need to exist yet and the signal will still exist when removing and readding the menu items.
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         template <typename Func, typename... Args>
-        unsigned int connectMenuItem(const sf::String& menu, const sf::String& menuItem, Func&& handler, const Args&... args)
+        unsigned int connectMenuItem(const String& menu, const String& menuItem, Func&& handler, const Args&... args)
         {
             return connectMenuItem({menu, menuItem}, std::forward<Func>(handler), args...);
         }
@@ -150,19 +168,19 @@ namespace tgui
         /// The hierarchy does not need to exist yet and the signal will still exist when removing and readding the menu items.
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         template <typename Func, typename... Args>
-        unsigned int connectMenuItem(const std::vector<sf::String>& hierarchy, Func&& handler, const Args&... args)
+        unsigned int connectMenuItem(const std::vector<String>& hierarchy, Func&& handler, const Args&... args)
         {
 #if defined(__cpp_lib_invoke) && (__cpp_lib_invoke >= 201411L)
-            return connect("MenuItemClicked",
-                [=](const std::vector<sf::String>& clickedMenuItem)
+            return onMenuItemClick.connect(
+                [=](const std::vector<String>& clickedMenuItem)
                 {
                     if (clickedMenuItem == hierarchy)
                         std::invoke(handler, args...);
                 }
             );
 #else
-            return connect("MenuItemClicked",
-                [f=std::function<void(const Args&...)>(handler),args...,hierarchy](const std::vector<sf::String>& clickedMenuItem)
+            return onMenuItemClick.connect(
+                [f=std::function<void(const Args&...)>(handler),args...,hierarchy](const std::vector<String>& clickedMenuItem)
                 {
                     if (clickedMenuItem == hierarchy)
                         f(args...);
@@ -200,7 +218,7 @@ namespace tgui
         /// @param text  The text written on the menu
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void addMenu(const sf::String& text);
+        void addMenu(const String& text);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -217,8 +235,10 @@ namespace tgui
         /// menuBar->addMenu("Edit");
         /// menuBar->addMenuItem("Undo");
         /// @endcode
+        ///
+        /// If the "-" string is given as menu item then a separator will appear instead of an item.
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool addMenuItem(const sf::String& text);
+        bool addMenuItem(const String& text);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -236,8 +256,10 @@ namespace tgui
         /// menuBar->addMenuItem("File", "Save");
         /// menuBar->addMenuItem("Edit", "Undo");
         /// @endcode
+        ///
+        /// If the "-" string is given as menu item then a separator will appear instead of an item.
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool addMenuItem(const sf::String& menu, const sf::String& text);
+        bool addMenuItem(const String& menu, const String& text);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -253,8 +275,10 @@ namespace tgui
         /// menuBar->addMenuItem({"File", "Save"});
         /// menuBar->addMenuItem({"View", "Messages", "Tags", "Important"});
         /// @endcode
+        ///
+        /// If the "-" string is given as menu item then a separator will appear instead of an item.
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool addMenuItem(const std::vector<sf::String>& hierarchy, bool createParents = true);
+        bool addMenuItem(const std::vector<String>& hierarchy, bool createParents = true);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -273,7 +297,7 @@ namespace tgui
         /// @return True when the menu was removed, false when menu was not found
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool removeMenu(const sf::String& menu);
+        bool removeMenu(const String& menu);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -285,7 +309,7 @@ namespace tgui
         /// @return True when the item was removed, false when menu or menuItem was not found
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool removeMenuItem(const sf::String& menu, const sf::String& menuItem);
+        bool removeMenuItem(const String& menu, const String& menuItem);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -301,7 +325,7 @@ namespace tgui
         /// menuBar->removeMenuItem({"View", "Messages", "Tags", "Important"});
         /// @endcode
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool removeMenuItem(const std::vector<sf::String>& hierarchy, bool removeParentsWhenEmpty = true);
+        bool removeMenuItem(const std::vector<String>& hierarchy, bool removeParentsWhenEmpty = true);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -312,7 +336,7 @@ namespace tgui
         /// @return True when the menu existed and its children were removed, false when menu was not found
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool removeMenuItems(const sf::String& menu);
+        bool removeMenuItems(const String& menu);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -326,7 +350,7 @@ namespace tgui
         /// menuBar->removeSubMenuItems({"File", "Recent files"});
         /// @endcode
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool removeSubMenuItems(const std::vector<sf::String>& hierarchy);
+        bool removeSubMenuItems(const std::vector<String>& hierarchy);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -335,7 +359,7 @@ namespace tgui
         /// @param enabled  Should the menu be enabled or disabled?
         /// @return True when the menu exists, false when menu was not found
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool setMenuEnabled(const sf::String& menu, bool enabled);
+        bool setMenuEnabled(const String& menu, bool enabled);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -343,7 +367,7 @@ namespace tgui
         /// @param menu  The name of the menu to check
         /// @return True if the menu is enabled, false if it was disabled or when the menu did not exist
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool getMenuEnabled(const sf::String& menu) const;
+        bool getMenuEnabled(const String& menu) const;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -353,7 +377,7 @@ namespace tgui
         /// @param enabled   Should the menu item be enabled or disabled?
         /// @return True when the menu item exists, false when menu or menuItem was not found
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool setMenuItemEnabled(const sf::String& menu, const sf::String& menuItem, bool enabled);
+        bool setMenuItemEnabled(const String& menu, const String& menuItem, bool enabled);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -362,7 +386,7 @@ namespace tgui
         /// @param enabled    Should the menu item be enabled or disabled?
         /// @return True when the menu item exists, false when hierarchy was incorrect
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool setMenuItemEnabled(const std::vector<sf::String>& hierarchy, bool enabled);
+        bool setMenuItemEnabled(const std::vector<String>& hierarchy, bool enabled);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -371,7 +395,7 @@ namespace tgui
         /// @param menuItem  The name of the menu item to check
         /// @return True if the menu item is enabled, false if it was disabled or when the menu or menuItem did not exist
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool getMenuItemEnabled(const sf::String& menu, const sf::String& menuItem) const;
+        bool getMenuItemEnabled(const String& menu, const String& menuItem) const;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -379,7 +403,7 @@ namespace tgui
         /// @param hierarchy  Hierarchy of menu items, starting with the menu and ending with the menu item to check
         /// @return True if the menu item is enabled, false if it was disabled or when the hierarchy was incorrect
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool getMenuItemEnabled(const std::vector<sf::String>& hierarchy) const;
+        bool getMenuItemEnabled(const std::vector<String>& hierarchy) const;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -430,36 +454,16 @@ namespace tgui
         bool getInvertedMenuDirection() const;
 
 
-    #ifndef TGUI_REMOVE_DEPRECATED_CODE
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /// @internal
-        /// @brief Returns a copy of all the menus and their menu items
-        /// @return Map of menus and their items
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        TGUI_DEPRECATED("This function doesn't work with submenus, use getMenuList instead")
-        std::vector<std::pair<sf::String, std::vector<sf::String>>> getMenus() const;
-
-
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @internal
         /// @brief Returns the menus and their menu items, including submenus
         /// @return List of menus
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        TGUI_DEPRECATED("This function is deprecated, use getMenuList instead")
-        std::vector<std::unique_ptr<GetAllMenusElement>> getAllMenus() const;
-    #endif
-
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /// @internal
-        /// @brief Returns the menus and their menu items, including submenus
-        /// @return List of menus
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        std::vector<GetMenuListElement> getMenuList() const;
+        std::vector<GetMenusElement> getMenus() const;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @brief Closes the open menu when one of the menus is open
-        ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         void closeMenu();
 
@@ -470,7 +474,7 @@ namespace tgui
         /// @return Is the mouse on top of the widget?
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool mouseOnWidget(Vector2f pos) const override;
+        bool isMouseOnWidget(Vector2f pos) const override;
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @internal
@@ -487,20 +491,6 @@ namespace tgui
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         void mouseMoved(Vector2f pos) override;
 
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /// @internal
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void leftMouseButtonNoLongerDown() override;
-
-
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    private:
-
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // This function is called when the mouse leaves the widget. If requested, a callback will be send.
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void mouseLeftWidget() override;
-
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @brief Draw the widget to a render target
@@ -509,7 +499,7 @@ namespace tgui
         /// @param states Current render states
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+        void draw(BackendRenderTargetBase& target, RenderStates states) const override;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -524,16 +514,16 @@ namespace tgui
         ///
         /// @throw Exception when the name does not match any signal
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        Signal& getSignal(std::string signalName) override;
+        Signal& getSignal(String signalName) override;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @brief Function called when one of the properties of the renderer is changed
         ///
-        /// @param property  Lowercase name of the property that was changed
+        /// @param property  Name of the property that was changed
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void rendererChanged(const std::string& property) override;
+        void rendererChanged(const String& property) override;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -556,23 +546,31 @@ namespace tgui
             return std::make_shared<MenuBar>(*this);
         }
 
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// @brief Opens a menu
+        /// @param menuIndex  Index of the menu to open
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        void openMenu(std::size_t menuIndex);
+
+
         /// @internal
         /// Helper function to create a new menu or menu item
-        void createMenu(std::vector<Menu>& menus, const sf::String& text);
+        void createMenu(std::vector<Menu>& menus, const String& text);
 
         /// @internal
         /// Recursively search for the menu containing the menu item specified in the hierarchy, creating the hierarchy if requested.
         /// The initial call to this function must pass "parentIndex = 0" and "menus = m_menus".
-        Menu* findMenu(const std::vector<sf::String>& hierarchy, unsigned int parentIndex, std::vector<Menu>& menus, bool createParents);
+        Menu* findMenu(const std::vector<String>& hierarchy, unsigned int parentIndex, std::vector<Menu>& menus, bool createParents);
 
         /// @internal
         /// Recursively search for the menu containing the menu item specified in the hierarchy.
         /// The initial call to this function must pass "parentIndex = 0" and "menus = m_menus".
-        const Menu* findMenu(const std::vector<sf::String>& hierarchy, unsigned int parentIndex, const std::vector<Menu>& menus) const;
+        const Menu* findMenu(const std::vector<String>& hierarchy, unsigned int parentIndex, const std::vector<Menu>& menus) const;
 
         /// @internal
         /// Search for the menu item specified in the hierarchy.
-        const Menu* findMenuItem(const std::vector<sf::String>& hierarchy) const;
+        const Menu* findMenuItem(const std::vector<String>& hierarchy) const;
 
         /// @internal
         /// Helper function to load the menus when the menu bar is being loaded from a text file
@@ -602,6 +600,14 @@ namespace tgui
         float calculateMenuWidth(const Menu& menu) const;
 
         /// @internal
+        /// Returns the height of the menu item or the separator
+        float getMenuItemHeight(const Menu& menuItem) const;
+
+        /// @internal
+        /// Calculates the height of all menu items and separators in a menu
+        float calculateOpenMenuHeight(const std::vector<Menu>& menuItems) const;
+
+        /// @internal
         Vector2f calculateSubmenuOffset(const Menu& menu, float globalLeftPos, float menuWidth, float subMenuWidth, bool& openSubMenuToRight) const;
 
         /// @internal
@@ -612,11 +618,41 @@ namespace tgui
 
         /// @internal
         /// Draw the backgrounds and text of the menu names on top of the bar itself
-        void drawMenusOnBar(sf::RenderTarget& target, sf::RenderStates states, Sprite& backgroundSprite) const;
+        void drawMenusOnBar(BackendRenderTargetBase& target, RenderStates states) const;
 
         /// @internal
         /// Draw an open menu and recusively draw submenus when open
-        void drawMenu(sf::RenderTarget& target, sf::RenderStates states, const Menu& menu, float menuWidth, Sprite& backgroundSprite, float globalLeftPos, bool openSubMenuToRight) const;
+        void drawMenu(BackendRenderTargetBase& target, RenderStates states, const Menu& menu, float menuWidth, float globalLeftPos, bool openSubMenuToRight) const;
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// @internal
+        /// @brief Is the mouse located on one of the opened menus?
+        /// @param pos  Mouse position
+        /// @return True if mouse on menu, false otherwise.
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        bool isMouseOnOpenMenu(Vector2f pos) const;
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// @internal
+        /// @brief Left mouse button was released on top of a menu
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        void leftMouseReleasedOnMenu();
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// @internal
+        /// @brief Mouse moved on top of a menu
+        /// @param pos  Mouse position
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        void mouseMovedOnMenu(Vector2f pos);
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// @internal
+        /// @brief Called from MenuBarMenuPlaceholder to draw the menu that is currently open
+        /// @param target Render target to draw to
+        /// @param states Current render states
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        void drawOpenMenu(BackendRenderTargetBase& target, RenderStates states) const;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -633,6 +669,7 @@ namespace tgui
     protected:
 
         std::vector<Menu> m_menus;
+        std::shared_ptr<MenuBarMenuPlaceholder> m_menuWidgetPlaceholder;
 
         int m_visibleMenu = -1;
 
@@ -650,9 +687,95 @@ namespace tgui
         Color m_textColorCached;
         Color m_selectedTextColorCached;
         Color m_textColorDisabledCached;
+        Color m_separatorColorCached = Color::Black;
+        float m_separatorThicknessCached = 1;
+        float m_separatorVerticalPaddingCached = 0;
+        float m_separatorSidePaddingCached = 0;
         float m_distanceToSideCached = 0;
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        friend class MenuBarMenuPlaceholder;
+    };
+
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// @brief Widget that is added to a container when the user clicks on the menu bar. This widget will be added in front of
+    ///        all other widgets to ensure that the menus from the menu bar are always drawn in front of other widgets.
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    class MenuBarMenuPlaceholder : public Widget
+    {
+    public:
+
+        // Instances of this class can't be copied
+        MenuBarMenuPlaceholder(const MenuBarMenuPlaceholder&) = delete;
+        MenuBarMenuPlaceholder& operator=(const MenuBarMenuPlaceholder&) = delete;
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// @brief Constructor
+        /// @param menuBar  The menu bar that owns this menu
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        MenuBarMenuPlaceholder(MenuBar* menuBar);
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// @brief Returns the entire size that the widget is using
+        ///
+        /// @return Full size of the widget
+        ///
+        /// This MenuBarMenuPlaceholder widget will try to fit the entire screen to absorb all mouse events.
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        Vector2f getFullSize() const override;
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// @brief Returns the distance between the position where the widget is drawn and where the widget is placed
+        ///
+        /// @return Offset of the widget
+        ///
+        /// The offset equals -getPosition() for MenuBarMenuPlaceholder because it tries to fill the entire screen.
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        Vector2f getWidgetOffset() const override;
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// @brief Returns whether the mouse position (which is relative to the parent widget) lies on top of an open menu
+        /// @return Is the mouse on top of an open menu from the menu bar?
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        bool isMouseOnWidget(Vector2f pos) const override;
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// @brief Draw the widget to a render target
+        ///
+        /// @param target Render target to draw to
+        /// @param states Current render states
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        void draw(BackendRenderTargetBase& target, RenderStates states) const override;
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// @internal
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        void leftMouseButtonNoLongerDown() override;
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// @internal
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        void mouseMoved(Vector2f pos) override;
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Makes a copy of the widget
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        Widget::Ptr clone() const override;
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    private:
+        MenuBar* m_menuBar;
+        bool m_mouseWasOnMenuBar = true; // When a menu opens then the mouse will be on top of the menu bar
     };
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

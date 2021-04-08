@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // TGUI - Texus' Graphical User Interface
-// Copyright (C) 2012-2020 Bruno Van de Velde (vdv_b@tgui.eu)
+// Copyright (C) 2012-2021 Bruno Van de Velde (vdv_b@tgui.eu)
 //
 // This software is provided 'as-is', without any express or implied warranty.
 // In no event will the authors be held liable for any damages arising from the use of this software.
@@ -28,7 +28,7 @@
 
 #include <TGUI/Widgets/ClickableWidget.hpp>
 #include <TGUI/Renderers/EditBoxRenderer.hpp>
-#include <TGUI/FloatRect.hpp>
+#include <TGUI/Rect.hpp>
 #include <TGUI/Text.hpp>
 #include <regex>
 
@@ -40,14 +40,14 @@ namespace tgui
     /// @brief Edit box widget
     ///
     /// An edit box is a single line input field. It has options like setting a password character or displaying a default text.
-    /// If you are looking for something with multiple lines, word-wrap and a scrollbar then check out the TextBox class.
+    /// If you are looking for something with multiple lines, word-wrap and a scrollbar then check out the TextArea class.
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     class TGUI_API EditBox : public ClickableWidget
     {
     public:
 
-        typedef std::shared_ptr<EditBox> Ptr; ///< Shared widget pointer
-        typedef std::shared_ptr<const EditBox> ConstPtr; ///< Shared constant widget pointer
+        typedef std::shared_ptr<EditBox> Ptr; //!< Shared widget pointer
+        typedef std::shared_ptr<const EditBox> ConstPtr; //!< Shared constant widget pointer
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -71,24 +71,21 @@ namespace tgui
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         struct Validator
         {
-#if TGUI_COMPILED_WITH_CPP_VER >= 17
-            static inline const std::string All   = ".*";                    ///< Accept any input
-            static inline const std::string Int   = "[+-]?[0-9]*";           ///< Accept negative and positive integers
-            static inline const std::string UInt  = "[0-9]*";                ///< Accept only positive integers
-            static inline const std::string Float = "[+-]?[0-9]*\\.?[0-9]*"; ///< Accept decimal numbers
-#else
-            static TGUI_API const std::string All;   ///< Accept any input
-            static TGUI_API const std::string Int;   ///< Accept negative and positive integers
-            static TGUI_API const std::string UInt;  ///< Accept only positive integers
-            static TGUI_API const std::string Float; ///< Accept decimal numbers
-#endif
+            static TGUI_API const char* All;   //!< Accept any input
+            static TGUI_API const char* Int;   //!< Accept negative and positive integers
+            static TGUI_API const char* UInt;  //!< Accept only positive integers
+            static TGUI_API const char* Float; //!< Accept decimal numbers
         };
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // Default constructor
+        /// @internal
+        /// @brief Constructor
+        /// @param typeName     Type of the widget
+        /// @param initRenderer Should the renderer be initialized? Should be true unless a derived class initializes it.
+        /// @see create
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        EditBox();
+        EditBox(const char* typeName = "EditBox", bool initRenderer = true);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -160,7 +157,7 @@ namespace tgui
         /// @see limitTextWidth
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void setText(const sf::String& text);
+        void setText(const String& text);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -169,7 +166,7 @@ namespace tgui
         /// @return The text of the edit box
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        const sf::String& getText() const;
+        const String& getText() const;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -180,7 +177,7 @@ namespace tgui
         /// @param text  The new default text
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void setDefaultText(const sf::String& text);
+        void setDefaultText(const String& text);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -191,7 +188,7 @@ namespace tgui
         /// @return The default text of the edit box
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        const sf::String& getDefaultText() const;
+        const String& getDefaultText() const;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -203,7 +200,7 @@ namespace tgui
         /// When no parameters are provided, the entire text is selected.
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void selectText(std::size_t start = 0, std::size_t length = sf::String::InvalidPos);
+        void selectText(std::size_t start = 0, std::size_t length = String::npos);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -212,7 +209,7 @@ namespace tgui
         /// @return The selected text of the edit box
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        sf::String getSelectedText() const;
+        String getSelectedText() const;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -246,7 +243,7 @@ namespace tgui
         /// @see limitTextWidth
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void setPasswordCharacter(char passwordChar);
+        void setPasswordCharacter(char32_t passwordChar);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -256,7 +253,7 @@ namespace tgui
         ///          When no password character is used then this function returns 0
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        char getPasswordCharacter() const;
+        char32_t getPasswordCharacter() const;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -379,7 +376,7 @@ namespace tgui
         /// edit2->setInputValidator("[a-zA-Z][a-zA-Z0-9]*");
         /// @endcode
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool setInputValidator(const std::string& regex = ".*");
+        bool setInputValidator(const String& regex = U".*");
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -388,7 +385,7 @@ namespace tgui
         /// @return Regex to match the text with on every text change
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        const std::string& getInputValidator() const;
+        const String& getInputValidator() const;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -398,7 +395,7 @@ namespace tgui
         ///
         /// Setting a suffix can be useful for inputting numbers where you want to unit to be displayed inside the edit box.
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void setSuffix(const sf::String& suffix);
+        void setSuffix(const String& suffix);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -406,7 +403,7 @@ namespace tgui
         ///
         /// @return Text shown on right side of edit box
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        const sf::String& getSuffix() const;
+        const String& getSuffix() const;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -424,7 +421,7 @@ namespace tgui
         /// @brief Returns whether the mouse position (which is relative to the parent widget) lies on top of the widget
         /// @return Is the mouse on top of the widget?
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool mouseOnWidget(Vector2f pos) const override;
+        bool isMouseOnWidget(Vector2f pos) const override;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -440,12 +437,12 @@ namespace tgui
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @internal
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void keyPressed(const sf::Event::KeyEvent& event) override;
+        void keyPressed(const Event::KeyEvent& event) override;
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @internal
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void textEntered(std::uint32_t Key) override;
+        void textEntered(char32_t key) override;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -455,7 +452,7 @@ namespace tgui
         /// @param states Current render states
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+        void draw(BackendRenderTargetBase& target, RenderStates states) const override;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -470,16 +467,16 @@ namespace tgui
         ///
         /// @throw Exception when the name does not match any signal
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        Signal& getSignal(std::string signalName) override;
+        Signal& getSignal(String signalName) override;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @brief Function called when one of the properties of the renderer is changed
         ///
-        /// @param property  Lowercase name of the property that was changed
+        /// @param property  Name of the property that was changed
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void rendererChanged(const std::string& property) override;
+        void rendererChanged(const String& property) override;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -544,9 +541,15 @@ namespace tgui
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Update auto-sized text
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        void updateTextSize();
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // This function is called every frame with the time passed since the last frame.
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool update(sf::Time elapsedTime) override;
+        bool updateTime(Duration elapsedTime) override;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -610,8 +613,9 @@ namespace tgui
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public:
 
-        SignalString onTextChange     = {"TextChanged"};        ///< The text was changed. Optional parameter: new text
-        SignalString onReturnKeyPress = {"ReturnKeyPressed"};   ///< The return key was pressed. Optional parameter: text in the edit box
+        SignalString onTextChange     = {"TextChanged"};        //!< The text was changed. Optional parameter: new text
+        SignalString onReturnKeyPress = {"ReturnKeyPressed"};   //!< The return key was pressed. Optional parameter: text in the edit box
+        SignalString onReturnOrUnfocus = {"ReturnOrUnfocused"}; //!< The return key was pressed or the edit box was unfocused. Optional parameter: text in the edit box
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -628,10 +632,11 @@ namespace tgui
         bool          m_readOnly = false;
 
         // The text inside the edit box
-        sf::String    m_text;
+        String m_text;
+        String m_displayedText; // Same as m_text unless a password char is set
 
-        std::string   m_regexString = ".*";
-        std::regex    m_regex = std::regex{m_regexString};
+        String m_regexString = U".*";
+        std::wregex m_regex = std::wregex{m_regexString.toWideString()};
 
         // The text alignment
         Alignment     m_textAlignment = Alignment::Left;
@@ -642,7 +647,7 @@ namespace tgui
         std::size_t   m_selEnd = 0;
 
         // The password character
-        char          m_passwordChar = '\0';
+        char32_t      m_passwordChar = '\0';
 
         // The maximum allowed characters.
         // Zero by default, meaning no limit.
@@ -655,7 +660,7 @@ namespace tgui
         FloatRect     m_selectedTextBackground;
 
         // The blinking caret
-        FloatRect     m_caret = {{0, 0, 1, 0}};
+        FloatRect     m_caret = {0, 0, 1, 0};
 
         // Is there a possibility that the user is going to double click?
         bool m_possibleDoubleClick = false;

@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // TGUI - Texus' Graphical User Interface
-// Copyright (C) 2012-2020 Bruno Van de Velde (vdv_b@tgui.eu)
+// Copyright (C) 2012-2021 Bruno Van de Velde (vdv_b@tgui.eu)
 //
 // This software is provided 'as-is', without any express or implied warranty.
 // In no event will the authors be held liable for any damages arising from the use of this software.
@@ -27,7 +27,7 @@
 #define TGUI_LAYOUT_HPP
 
 #include <TGUI/Config.hpp>
-#include <TGUI/Vector2f.hpp>
+#include <TGUI/Vector2.hpp>
 #include <type_traits>
 #include <functional>
 #include <memory>
@@ -37,7 +37,7 @@
 
 namespace tgui
 {
-    class Gui;
+    class GuiBase;
     class Widget;
     class Container;
 
@@ -60,6 +60,8 @@ namespace tgui
             Divides,
             Minimum,
             Maximum,
+            BindingPosX, // X position, same as BindingLeft if widget origin isn't changed
+            BindingPosY, // Y position, same as BindingTop if widget origin isn't changed
             BindingLeft,
             BindingTop,
             BindingWidth,
@@ -97,7 +99,7 @@ namespace tgui
         /// @param expression  String to parse
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         Layout(const char* expression) :
-            Layout{std::string{expression}}
+            Layout{String{expression}}
         {
         }
 
@@ -107,7 +109,7 @@ namespace tgui
         ///
         /// @param expression  String to parse
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        Layout(std::string expression);
+        Layout(String expression);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -178,7 +180,7 @@ namespace tgui
         ///
         /// @return String representation of layout
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        std::string toString() const;
+        String toString() const;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -232,7 +234,7 @@ namespace tgui
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Find the widget corresponding to the given name and bind it if found
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void parseBindingString(const std::string& expression, Widget* widget, bool xAxis);
+        void parseBindingString(const String& expression, Widget* widget, bool xAxis);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -244,7 +246,7 @@ namespace tgui
         std::unique_ptr<Layout> m_leftOperand = nullptr; // The left operand of the operation in case the operation is a math operation
         std::unique_ptr<Layout> m_rightOperand = nullptr; // The left operand of the operation in case the operation is a math operation
         Widget* m_boundWidget = nullptr; // The widget on which this layout depends in case the operation is a binding
-        std::string m_boundString; // String referring to a widget on which this layout depends in case the layout was created from a string and contains a binding operation
+        String m_boundString; // String referring to a widget on which this layout depends in case the layout was created from a string and contains a binding operation
         std::function<void()> m_connectedWidgetCallback = nullptr; // Function to call when the value of the layout changes in case the layout and sublayouts are not all constants
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -266,18 +268,6 @@ namespace tgui
         /// @param constant  Value of the layout
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         Layout2d(Vector2f constant = {0, 0}) :
-            x{constant.x},
-            y{constant.y}
-        {
-        }
-
-
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /// @brief Default constructor to implicitly construct from a sf::Vector2f.
-        ///
-        /// @param constant  Value of the layout
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        Layout2d(sf::Vector2f constant) :
             x{constant.x},
             y{constant.y}
         {
@@ -318,7 +308,7 @@ namespace tgui
         ///
         /// The expression will be passed to both the x and y layouts.
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        Layout2d(const std::string& expression) :
+        Layout2d(const String& expression) :
             x{expression},
             y{expression}
         {
@@ -342,7 +332,7 @@ namespace tgui
         ///
         /// @return String representation of layout
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        std::string toString() const
+        String toString() const
         {
             return "(" + x.toString() + ", " + y.toString() + ")";
         }
@@ -415,10 +405,16 @@ namespace tgui
 
     inline namespace bind_functions
     {
-        /// @brief Bind to the x position of the widget
+        /// @brief Bind to the x position of the widget (same as bindLeft unless widget origin is changed)
+        TGUI_API Layout bindPosX(std::shared_ptr<Widget> widget);
+
+        /// @brief Bind to the y position of the widget (same as bindTop unless widget origin is changed)
+        TGUI_API Layout bindPosY(std::shared_ptr<Widget> widget);
+
+        /// @brief Bind to the left position of the widget
         TGUI_API Layout bindLeft(std::shared_ptr<Widget> widget);
 
-        /// @brief Bind to the y position of the widget
+        /// @brief Bind to the top position of the widget
         TGUI_API Layout bindTop(std::shared_ptr<Widget> widget);
 
         /// @brief Bind to the width of the widget
@@ -449,13 +445,13 @@ namespace tgui
         TGUI_API Layout2d bindInnerSize(std::shared_ptr<Container> container);
 
         /// @brief Bind to the width of the gui view
-        TGUI_API Layout bindWidth(Gui& gui);
+        TGUI_API Layout bindWidth(GuiBase& gui);
 
         /// @brief Bind to the height of the gui view
-        TGUI_API Layout bindHeight(Gui& gui);
+        TGUI_API Layout bindHeight(GuiBase& gui);
 
         /// @brief Bind to the size of the gui view
-        TGUI_API Layout2d bindSize(Gui& gui);
+        TGUI_API Layout2d bindSize(GuiBase& gui);
 
         /// @brief Bind to the minimum value of two layouts
         TGUI_API Layout bindMin(const Layout& value1, const Layout& value2);

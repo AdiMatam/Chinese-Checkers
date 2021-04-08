@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // TGUI - Texus' Graphical User Interface
-// Copyright (C) 2012-2020 Bruno Van de Velde (vdv_b@tgui.eu)
+// Copyright (C) 2012-2021 Bruno Van de Velde (vdv_b@tgui.eu)
 //
 // This software is provided 'as-is', without any express or implied warranty.
 // In no event will the authors be held liable for any damages arising from the use of this software.
@@ -27,12 +27,26 @@
 #ifndef TGUI_ANY_HPP
 #define TGUI_ANY_HPP
 
+#include <TGUI/Config.hpp>
 #include <type_traits>
 #include <utility>
 #include <typeinfo>
 
+#if TGUI_COMPILED_WITH_CPP_VER >= 17
+    #include <any>
+#endif
+
 namespace tgui
 {
+#if TGUI_COMPILED_WITH_CPP_VER >= 17
+    using Any = std::any;
+
+    template<typename T>
+    T AnyCast(const Any& obj)
+    {
+        return std::any_cast<T>(obj);
+    }
+#else
     struct Any
     {
         template<class T>
@@ -158,6 +172,13 @@ namespace tgui
 
         Base* ptr;
     };
+
+    template<typename T>
+    T AnyCast(const Any& obj)
+    {
+        return obj.as<T>();
+    }
+#endif
 }
 
 #endif // TGUI_ANY_HPP

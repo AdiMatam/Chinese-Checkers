@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // TGUI - Texus' Graphical User Interface
-// Copyright (C) 2012-2020 Bruno Van de Velde (vdv_b@tgui.eu)
+// Copyright (C) 2012-2021 Bruno Van de Velde (vdv_b@tgui.eu)
 //
 // This software is provided 'as-is', without any express or implied warranty.
 // In no event will the authors be held liable for any damages arising from the use of this software.
@@ -44,21 +44,26 @@ namespace tgui
         /// @brief The side where the list will be displayed
         enum class ExpandDirection
         {
-            Down, ///< Display the list below the combo box
-            Up,   ///< Display the list above the combo box
-            Automatic  ///< Display the list below the combo box unless it wouldn't fit on the screen
+            Down, //!< Display the list below the combo box
+            Up,   //!< Display the list above the combo box
+            Automatic  //!< Display the list below the combo box unless it wouldn't fit on the screen
         };
 
     public:
 
-        typedef std::shared_ptr<ComboBox> Ptr; ///< Shared widget pointer
-        typedef std::shared_ptr<const ComboBox> ConstPtr; ///< Shared constant widget pointer
+        typedef std::shared_ptr<ComboBox> Ptr; //!< Shared widget pointer
+        typedef std::shared_ptr<const ComboBox> ConstPtr; //!< Shared constant widget pointer
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // Default constructor
+        /// @internal
+        /// @brief Constructor
+        /// @param typeName     Type of the widget
+        /// @param initRenderer Should the renderer be initialized? Should be true unless a derived class initializes it.
+        /// @see create
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ComboBox();
+        ComboBox(const char* typeName = "ComboBox", bool initRenderer = true);
+
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Copy constructor
@@ -174,16 +179,10 @@ namespace tgui
         /// @param id        Optional unique id given to this item for the purpose to later identifying this item
         ///
         /// @return
-        ///         - true when the item when it was successfully added
-        ///         - false when the combo box wasn't loaded correctly
-        ///         - false when the list is full (you have set a maximum item limit and you are trying to add more items)
-        ///         - false when there is no scrollbar and you try to have more items than the number of items to display
-        ///
-        /// @see setMaximumItems
-        /// @see setItemsToDisplay
-        ///
+        ///   - Index of inserted item if no maximum items are set or when index is still less than getMaximumItems()
+        ///   - Value of getMaximumItems() when adding item failed because there are too many items
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool addItem(const sf::String& itemName, const sf::String& id = "");
+        std::size_t addItem(const String& itemName, const String& id = "");
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -204,7 +203,7 @@ namespace tgui
         /// @see setSelectedItemById
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool setSelectedItem(const sf::String& itemName);
+        bool setSelectedItem(const String& itemName);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -225,7 +224,7 @@ namespace tgui
         /// @see setSelectedItem
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool setSelectedItemById(const sf::String& id);
+        bool setSelectedItemById(const String& id);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -265,7 +264,7 @@ namespace tgui
         ///        - false when the name did not match any item
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool removeItem(const sf::String& itemName);
+        bool removeItem(const String& itemName);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -280,7 +279,7 @@ namespace tgui
         ///        - false when there was no item with the given id
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool removeItemById(const sf::String& id);
+        bool removeItemById(const String& id);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -316,7 +315,7 @@ namespace tgui
         /// @return The requested item, or an empty string when no item matches the id
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        sf::String getItemById(const sf::String& id) const;
+        String getItemById(const String& id) const;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -326,7 +325,7 @@ namespace tgui
         ///         When no item was selected then this function will return an empty string
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        sf::String getSelectedItem() const;
+        String getSelectedItem() const;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -336,7 +335,7 @@ namespace tgui
         ///         When no item was selected then this function returns 0
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        sf::String getSelectedItemId() const;
+        String getSelectedItemId() const;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -361,7 +360,7 @@ namespace tgui
         ///        - false when none of the items had the given name
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool changeItem(const sf::String& originalValue, const sf::String& newValue);
+        bool changeItem(const String& originalValue, const String& newValue);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -377,7 +376,7 @@ namespace tgui
         ///        - false when none of the items had the given id
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool changeItemById(const sf::String& id, const sf::String& newValue);
+        bool changeItemById(const String& id, const String& newValue);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -391,7 +390,7 @@ namespace tgui
         ///        - false when the index was too high
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool changeItemByIndex(std::size_t index, const sf::String& newValue);
+        bool changeItemByIndex(std::size_t index, const String& newValue);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -409,7 +408,7 @@ namespace tgui
         /// @return items
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        std::vector<sf::String> getItems() const;
+        std::vector<String> getItems() const;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -420,7 +419,7 @@ namespace tgui
         /// Items that were not given an id simply have an empty string as id.
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        const std::vector<sf::String>& getItemIds() const;
+        std::vector<String> getItemIds() const;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -470,7 +469,7 @@ namespace tgui
         ///
         /// @param defaultText  The new default text
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void setDefaultText(const sf::String& defaultText);
+        void setDefaultText(const String& defaultText);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -478,7 +477,7 @@ namespace tgui
         ///
         /// @return The default text of the combo box
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        const sf::String& getDefaultText() const;
+        const String& getDefaultText() const;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -499,14 +498,14 @@ namespace tgui
         /// @brief Returns whether the combo box contains the given item
         /// @return Does the combo box contain the item?
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool contains(const sf::String& item) const;
+        bool contains(const String& item) const;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @brief Returns whether the combo box contains an item with the given id
         /// @return Does the combo box contain the id?
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool containsId(const sf::String& id) const;
+        bool containsId(const String& id) const;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -539,7 +538,7 @@ namespace tgui
         /// @return Is the mouse on top of the widget?
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool mouseOnWidget(Vector2f pos) const override;
+        bool isMouseOnWidget(Vector2f pos) const override;
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @internal
@@ -559,7 +558,7 @@ namespace tgui
         /// @param states Current render states
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+        void draw(BackendRenderTargetBase& target, RenderStates states) const override;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -574,16 +573,16 @@ namespace tgui
         ///
         /// @throw Exception when the name does not match any signal
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        Signal& getSignal(std::string signalName) override;
+        Signal& getSignal(String signalName) override;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @brief Function called when one of the properties of the renderer is changed
         ///
-        /// @param property  Lowercase name of the property that was changed
+        /// @param property  Name of the property that was changed
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void rendererChanged(const std::string& property) override;
+        void rendererChanged(const String& property) override;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -640,7 +639,7 @@ namespace tgui
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public:
 
-        SignalItem onItemSelect = {"ItemSelected"}; ///< An item was selected in the combo box. Optional parameter: selected item or its index
+        SignalItem onItemSelect = {"ItemSelected"}; //!< An item was selected in the combo box. Optional parameter: selected item or its index
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -657,17 +656,9 @@ namespace tgui
         Text m_defaultText;
 
         int m_previousSelectedItemIndex = -1;
-#ifdef TGUI_NEXT
         bool m_changeItemOnScroll = false;
-#else
-        bool m_changeItemOnScroll = true;
-#endif
 
-#ifdef TGUI_NEXT
         ExpandDirection m_expandDirection = ExpandDirection::Automatic;
-#else
-        ExpandDirection m_expandDirection = ExpandDirection::Down;
-#endif
 
         Sprite m_spriteBackground;
         Sprite m_spriteBackgroundDisabled;

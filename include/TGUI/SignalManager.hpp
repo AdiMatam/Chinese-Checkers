@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // TGUI - Texus' Graphical User Interface
-// Copyright (C) 2012-2020 Bruno Van de Velde (vdv_b@tgui.eu)
+// Copyright (C) 2012-2021 Bruno Van de Velde (vdv_b@tgui.eu)
 //
 // This software is provided 'as-is', without any express or implied warranty.
 // In no event will the authors be held liable for any damages arising from the use of this software.
@@ -30,6 +30,7 @@
 #include <TGUI/Widget.hpp>
 #include <memory>
 
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 namespace tgui
@@ -40,27 +41,27 @@ namespace tgui
     {
     public:
 
-        typedef std::shared_ptr<SignalManager> Ptr; ///< Shared widget pointer
-        typedef std::shared_ptr<const SignalManager> ConstPtr; ///< Shared constant widget pointer
+        typedef std::shared_ptr<SignalManager> Ptr; //!< Shared widget pointer
+        typedef std::shared_ptr<const SignalManager> ConstPtr; //!< Shared constant widget pointer
 
         using Delegate = std::function<void()>;
-        using DelegateEx = std::function<void(std::shared_ptr<Widget>, const std::string&)>;
+        using DelegateEx = std::function<void(std::shared_ptr<Widget>, const String&)>;
 
         typedef std::weak_ptr<Widget> Weak;
         typedef unsigned int SignalID;
 
         struct SignalTuple
         {
-            std::string m_widgetName;
-            std::string m_signalName;
-            std::pair<Delegate, DelegateEx> m_func;
+            String widgetName;
+            String signalName;
+            std::pair<Delegate, DelegateEx> func;
         };
 
         struct ConnectedSignalTuple
         {
-            SignalID m_signalId;
-            Weak m_widget;
-            unsigned int m_signalWidgetID;
+            SignalID signalId;
+            Weak widget;
+            unsigned int signalWidgetID;
         };
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -99,7 +100,7 @@ namespace tgui
         /// @return Unique id of the connection
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         template <typename Func, typename... BoundArgs>
-        unsigned int connect(std::string widgetName, std::string signalName, Func&& handler, const BoundArgs&... args);
+        unsigned int connect(String widgetName, String signalName, Func&& handler, const BoundArgs&... args);
 
 #else
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -113,7 +114,7 @@ namespace tgui
         /// @return Unique id of the connection
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         template <typename Func, typename... Args, typename std::enable_if<std::is_convertible<Func, std::function<void(const Args&...)>>::value>::type* = nullptr>
-        unsigned int connect(std::string widgetName, std::string signalName, Func&& handler, const Args&... args);
+        unsigned int connect(String widgetName, String signalName, Func&& handler, const Args&... args);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -128,23 +129,9 @@ namespace tgui
         /// @return Unique id of the connection
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         template <typename Func, typename... BoundArgs, typename std::enable_if<!std::is_convertible<Func, std::function<void(const BoundArgs&...)>>::value // Ambigious otherwise when passing bind expression
-                                                                                && std::is_convertible<Func, std::function<void(const BoundArgs&..., std::shared_ptr<Widget>, const std::string&)>>::value>::type* = nullptr>
-        unsigned int connect(std::string widgetName, std::string signalName, Func&& handler, BoundArgs&&... args);
+                                                                                && std::is_convertible<Func, std::function<void(const BoundArgs&..., std::shared_ptr<Widget>, const String&)>>::value>::type* = nullptr>
+        unsigned int connect(String widgetName, String signalName, Func&& handler, BoundArgs&&... args);
 #endif
-
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /// @brief Connect a signal handler to multiple signals
-        ///
-        /// @param widgetName   Name of the widget to connect to
-        /// @param signalNames  List of signal names that will trigger the signal handler
-        /// @param handler      Callback function
-        /// @param args         Optional extra arguments to pass to the signal handler when the signal is emitted
-        ///
-        /// @return Unique id of the last connection. When passing e.g. 2 signal names, the first signal will correspond to id-1.
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        template <typename Func, typename... BoundArgs>
-        unsigned int connect(std::string widgetName, std::initializer_list<std::string> signalNames, Func&& handler, BoundArgs&&... args);
-
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @brief Disconnect a signal handler
@@ -195,7 +182,7 @@ namespace tgui
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @internal
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        std::pair<Delegate, DelegateEx> makeSignal(const DelegateEx&);
+        std::pair<Delegate, DelegateEx> makeSignalEx(const DelegateEx&);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -216,6 +203,69 @@ namespace tgui
         std::map<SignalID, SignalTuple> m_signals;
         std::vector<ConnectedSignalTuple> m_connectedSignals;
     };
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#if defined(__cpp_if_constexpr) && (__cpp_if_constexpr >= 201606L)
+    template <typename Func, typename... BoundArgs>
+    unsigned int SignalManager::connect(String widgetName, String signalName, Func&& handler, const BoundArgs&... args)
+    {
+        const unsigned int id = generateUniqueId();
+
+        if constexpr (std::is_convertible_v<Func, std::function<void(const BoundArgs&...)>>
+                   && std::is_invocable_v<decltype(&handler), BoundArgs...>
+                   && !std::is_function_v<Func>)
+        {
+            // Reference to function
+            m_signals[id] = {widgetName, signalName, makeSignal([=, f=std::function<void(const BoundArgs&...)>(handler)]{ std::invoke(f, args...); })};
+        }
+        else if constexpr (std::is_convertible_v<Func, std::function<void(const BoundArgs&...)>>)
+        {
+            // Function pointer
+            m_signals[id] = {widgetName, signalName, makeSignal([=]{ std::invoke(handler, args...); })};
+        }
+        else if constexpr (std::is_convertible_v<Func, std::function<void(const BoundArgs&..., const std::shared_ptr<Widget>&, const String&)>>
+                        && std::is_invocable_v<decltype(&handler), BoundArgs..., const std::shared_ptr<Widget>&, const String&>
+                        && !std::is_function_v<Func>)
+        {
+            // Reference to function with caller arguments
+            m_signals[id] = {widgetName, signalName, makeSignalEx([=, f=std::function<void(const BoundArgs&..., const std::shared_ptr<Widget>& w, const String& s)>(handler)](const std::shared_ptr<Widget>& w, const String& s){ std::invoke(f, args..., w, s); })};
+        }
+        else
+        {
+            // Function pointer with caller arguments
+            m_signals[id] = {widgetName, signalName, makeSignalEx([=](const std::shared_ptr<Widget>& w, const String& s){ std::invoke(handler, args..., w, s); })};
+        }
+
+        connect(id);
+        return id;
+    }
+#else
+    template <typename Func, typename... Args, typename std::enable_if<std::is_convertible<Func, std::function<void(const Args&...)>>::value>::type*>
+    unsigned int SignalManager::connect(String widgetName, String signalName, Func&& handler, const Args&... args)
+    {
+        const unsigned int id = generateUniqueId();
+        m_signals[id] = {widgetName, signalName, makeSignal([f=std::function<void(const Args&...)>(handler),args...](){ f(args...); })};
+
+        connect(id);
+        return id;
+    }
+
+    template <typename Func, typename... BoundArgs, typename std::enable_if<!std::is_convertible<Func, std::function<void(const BoundArgs&...)>>::value // Ambigious otherwise when passing bind expression
+                                                                            && std::is_convertible<Func, std::function<void(const BoundArgs&..., std::shared_ptr<Widget>, const String&)>>::value>::type*>
+    unsigned int SignalManager::connect(String widgetName, String signalName, Func&& handler, BoundArgs&&... args)
+    {
+        const unsigned int id = generateUniqueId();
+        m_signals[id] = {widgetName, signalName, makeSignalEx(
+                [f=std::function<void(const BoundArgs&..., const std::shared_ptr<Widget>&, const String&)>(handler), args...]
+                        (const std::shared_ptr<Widget>& w, const String& s)
+                { f(args..., w, s); }
+        )};
+
+        connect(id);
+        return id;
+    }
+#endif
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }

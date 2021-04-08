@@ -2,7 +2,6 @@
 #define HELPERS_H
 
 #include "pch.hpp"
-#include <dirent.h>
 
 extern float HEIGHT        ; 
 extern float BOARD_DIAMETER; 

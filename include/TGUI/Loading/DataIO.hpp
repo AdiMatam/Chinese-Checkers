@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // TGUI - Texus' Graphical User Interface
-// Copyright (C) 2012-2020 Bruno Van de Velde (vdv_b@tgui.eu)
+// Copyright (C) 2012-2021 Bruno Van de Velde (vdv_b@tgui.eu)
 //
 // This software is provided 'as-is', without any express or implied warranty.
 // In no event will the authors be held liable for any damages arising from the use of this software.
@@ -28,8 +28,7 @@
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#include <TGUI/Config.hpp>
-#include <SFML/System/String.hpp>
+#include <TGUI/String.hpp>
 #include <sstream>
 #include <memory>
 #include <vector>
@@ -57,8 +56,8 @@ namespace tgui
         {
             Node* parent = nullptr;
             std::vector<std::unique_ptr<Node>> children;
-            std::map<std::string, std::unique_ptr<ValueNode>> propertyValuePairs;
-            std::string name;
+            std::map<String, std::unique_ptr<ValueNode>> propertyValuePairs;
+            String name;
         };
 
 
@@ -67,11 +66,11 @@ namespace tgui
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         struct ValueNode
         {
-            ValueNode(const std::string& v = "") : value(v) {}
+            ValueNode(const String& v = "") : value(v) {}
 
-            std::string value;
+            String value;
             bool listNode = false;
-            std::vector<std::string> valueList;
+            std::vector<String> valueList;
         };
 
 

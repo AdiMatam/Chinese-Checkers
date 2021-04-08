@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // TGUI - Texus' Graphical User Interface
-// Copyright (C) 2012-2020 Bruno Van de Velde (vdv_b@tgui.eu)
+// Copyright (C) 2012-2021 Bruno Van de Velde (vdv_b@tgui.eu)
 //
 // This software is provided 'as-is', without any express or implied warranty.
 // In no event will the authors be held liable for any damages arising from the use of this software.
@@ -39,8 +39,8 @@ namespace tgui
     {
     public:
 
-        typedef std::shared_ptr<Grid> Ptr; ///< Shared widget pointer
-        typedef std::shared_ptr<const Grid> ConstPtr; ///< Shared constant widget pointer
+        typedef std::shared_ptr<Grid> Ptr; //!< Shared widget pointer
+        typedef std::shared_ptr<const Grid> ConstPtr; //!< Shared constant widget pointer
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -52,22 +52,26 @@ namespace tgui
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         enum class Alignment
         {
-            Center,      ///< Center the widget in the cell
-            UpperLeft,   ///< Draw the widget in the upper left corner of the cell
-            Up,          ///< Draw the widget at the upper side of the cell (horizontally centered)
-            UpperRight,  ///< Draw the widget in the upper right corner of the cell
-            Right,       ///< Draw the widget at the right side of the cell (vertically centered)
-            BottomRight, ///< Draw the widget in the bottom right corner of the cell
-            Bottom,      ///< Draw the widget at the bottom of the cell (horizontally centered)
-            BottomLeft,  ///< Draw the widget in the bottom left corner of the cell
-            Left         ///< Draw the widget at the left side of the cell (vertically centered)
+            Center,      //!< Center the widget in the cell
+            UpperLeft,   //!< Draw the widget in the upper left corner of the cell
+            Up,          //!< Draw the widget at the upper side of the cell (horizontally centered)
+            UpperRight,  //!< Draw the widget in the upper right corner of the cell
+            Right,       //!< Draw the widget at the right side of the cell (vertically centered)
+            BottomRight, //!< Draw the widget in the bottom right corner of the cell
+            Bottom,      //!< Draw the widget at the bottom of the cell (horizontally centered)
+            BottomLeft,  //!< Draw the widget in the bottom left corner of the cell
+            Left         //!< Draw the widget at the left side of the cell (vertically centered)
         };
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // Default constructor
+        /// @internal
+        /// @brief Constructor
+        /// @param typeName     Type of the widget
+        /// @param initRenderer Should the renderer be initialized? Should be true unless a derived class initializes it.
+        /// @see create
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        Grid();
+        Grid(const char* typeName = "Grid", bool initRenderer = true);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -155,9 +159,6 @@ namespace tgui
         /// @brief Removes a single widget that was added to the container
         ///
         /// @param widget  Pointer to the widget to remove
-        ///
-        /// @see remove(sf::String)
-        ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         bool remove(const Widget::Ptr& widget) override;
 
@@ -182,8 +183,8 @@ namespace tgui
         void addWidget(const Widget::Ptr& widget,
                        std::size_t        row,
                        std::size_t        column,
-                       const Padding&     padding   = Padding{0},
-                       Alignment          alignment = Alignment::Center);
+                       Alignment          alignment = Alignment::Center,
+                       const Padding&     padding   = Padding{0});
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -311,17 +312,7 @@ namespace tgui
         /// @return Is the mouse on top of the widget?
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool mouseOnWidget(Vector2f pos) const override;
-
-
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /// @brief Draw the widget to a render target
-        ///
-        /// @param target Render target to draw to
-        /// @param states Current render states
-        ///
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+        bool isMouseOnWidget(Vector2f pos) const override;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -378,7 +369,7 @@ namespace tgui
         std::vector<float> m_rowHeight;
         std::vector<float> m_columnWidth;
 
-        std::map<Widget::Ptr, unsigned int> m_connectedCallbacks;
+        std::map<Widget::Ptr, unsigned int> m_connectedSizeCallbacks;
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     };

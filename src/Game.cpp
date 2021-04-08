@@ -21,7 +21,6 @@ int main() {
                 game.processClick(event.mouseButton.x, event.mouseButton.y, false);
             else if (keyPressed(event, sf::Keyboard::Enter) && game.movedAtAll())
                 game.switchTurn();
-
         }
         game.draw();
     }

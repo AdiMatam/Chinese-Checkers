@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // TGUI - Texus' Graphical User Interface
-// Copyright (C) 2012-2020 Bruno Van de Velde (vdv_b@tgui.eu)
+// Copyright (C) 2012-2021 Bruno Van de Velde (vdv_b@tgui.eu)
 //
 // This software is provided 'as-is', without any express or implied warranty.
 // In no event will the authors be held liable for any damages arising from the use of this software.
@@ -26,7 +26,7 @@
 #ifndef TGUI_OUTLINE_HPP
 #define TGUI_OUTLINE_HPP
 
-#include <TGUI/Vector2f.hpp>
+#include <TGUI/Vector2.hpp>
 #include <TGUI/AbsoluteOrRelativeValue.hpp>
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -252,7 +252,7 @@ namespace tgui
         /// @param newParentSize  New size from which to take the relative value
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void updateParentSize(Vector2f newParentSize)
+        TGUI_CONSTEXPR void updateParentSize(Vector2f newParentSize)
         {
             m_left.updateParentSize(newParentSize.x);
             m_top.updateParentSize(newParentSize.y);
@@ -268,7 +268,7 @@ namespace tgui
         /// @return String representation of outline
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        std::string toString() const
+        String toString() const
         {
             return "(" + m_left.toString() + ", " + m_top.toString() + ", " + m_right.toString() + ", " + m_bottom.toString() + ")";
         }
@@ -277,10 +277,10 @@ namespace tgui
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     private:
 
-        AbsoluteOrRelativeValue m_left = 0;      ///< Width of the left outline
-        AbsoluteOrRelativeValue m_top = 0;       ///< Height of the top outline
-        AbsoluteOrRelativeValue m_right = 0;     ///< Width of the right outline
-        AbsoluteOrRelativeValue m_bottom = 0;    ///< Height of the bottom outline
+        AbsoluteOrRelativeValue m_left = 0;      //!< Width of the left outline
+        AbsoluteOrRelativeValue m_top = 0;       //!< Height of the top outline
+        AbsoluteOrRelativeValue m_right = 0;     //!< Width of the right outline
+        AbsoluteOrRelativeValue m_bottom = 0;    //!< Height of the bottom outline
     };
 
 

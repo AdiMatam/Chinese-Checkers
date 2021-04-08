@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // TGUI - Texus' Graphical User Interface
-// Copyright (C) 2012-2020 Bruno Van de Velde (vdv_b@tgui.eu)
+// Copyright (C) 2012-2021 Bruno Van de Velde (vdv_b@tgui.eu)
 //
 // This software is provided 'as-is', without any express or implied warranty.
 // In no event will the authors be held liable for any damages arising from the use of this software.
@@ -44,32 +44,36 @@ namespace tgui
     {
     public:
 
-        typedef std::shared_ptr<ChildWindow> Ptr; ///< Shared widget pointer
-        typedef std::shared_ptr<const ChildWindow> ConstPtr; ///< Shared constant widget pointer
+        typedef std::shared_ptr<ChildWindow> Ptr; //!< Shared widget pointer
+        typedef std::shared_ptr<const ChildWindow> ConstPtr; //!< Shared constant widget pointer
 
 
         /// Title alignments, possible options for the setTitleAlignment function
         enum class TitleAlignment
         {
-            Left,   ///< Places the title on the left side of the title bar
-            Center, ///< Places the title in the middle of the title bar
-            Right   ///< Places the title on the right side of the title bar
+            Left,   //!< Places the title on the left side of the title bar
+            Center, //!< Places the title in the middle of the title bar
+            Right   //!< Places the title on the right side of the title bar
         };
 
 
         /// Title buttons (use bitwise OR to combine)
         enum TitleButton
         {
-            None     = 0,      ///< No buttons
-            Close    = 1 << 0, ///< Include a close button
-            Maximize = 1 << 1, ///< Include a maximize button
-            Minimize = 1 << 2  ///< Include a minimize button
+            None     = 0,      //!< No buttons
+            Close    = 1 << 0, //!< Include a close button
+            Maximize = 1 << 1, //!< Include a maximize button
+            Minimize = 1 << 2  //!< Include a minimize button
         };
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // Default constructor
+        /// @internal
+        /// @brief Constructor
+        /// @param typeName     Type of the widget
+        /// @param initRenderer Should the renderer be initialized? Should be true unless a derived class initializes it.
+        /// @see create
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ChildWindow(const sf::String& title = "", unsigned int titleButtons = TitleButton::Close);
+        ChildWindow(const char* typeName = "ChildWindow", bool initRenderer = true);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -78,7 +82,7 @@ namespace tgui
         /// @return The new child window
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        static ChildWindow::Ptr create(const sf::String& title = "", unsigned int titleButtons = TitleButton::Close);
+        static ChildWindow::Ptr create(const String& title = "", unsigned int titleButtons = TitleButton::Close);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -129,22 +133,40 @@ namespace tgui
         ///
         /// @param size   Sets the new size of the child window
         ///
-        /// This is the size of the child window, without the title bar nor the borders.
-        ///
+        /// This is the size of the entire child window, including the title bar and the borders.
+        /// To set the size of the contents of the window (exluding the title bar and borders), use setClientSize instead.
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         void setSize(const Layout2d& size) override;
         using Widget::setSize;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /// @brief Returns the size of the full child window
+        /// @brief Returns the space available for widgets inside the container
+        /// @return Size without borders title bar
         ///
-        /// @return Size of the child window
-        ///
-        /// The size returned by this function is the size of the child window, including the title bar and the borders.
-        ///
+        /// For ChildWindow, the inner size is the same as the client size.
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        Vector2f getFullSize() const override;
+        Vector2f getInnerSize() const override;
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// @brief Changes the client size of the child window
+        ///
+        /// @param size  New size of the child window contents
+        ///
+        /// This sets the size of the child window excluding the title bar and the borders.
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        void setClientSize(Vector2f size);
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// @brief Returns the client size of the child window
+        ///
+        /// @return Size of the child window contents
+        ///
+        /// This sets the size of the child window excluding the title bar and the borders.
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        Vector2f getClientSize() const;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -152,9 +174,8 @@ namespace tgui
         ///
         /// @param size   Sets the new maximum size of the child window
         ///
-        /// This function sets the maximum size of the window excluding borders and titlebar.
+        /// This function sets the maximum size of the entire window, including borders and titlebar.
         /// If the window is larger than the new maximum size, it will automatically be shrunk.
-        ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         void setMaximumSize(Vector2f size);
 
@@ -164,8 +185,7 @@ namespace tgui
         ///
         /// @return Maximum size of the child window
         ///
-        /// The size returned by this function is the maximum size of the child window, excluding the title bar and the borders.
-        ///
+        /// This size includes the title bar and the borders.
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         Vector2f getMaximumSize() const;
 
@@ -175,9 +195,8 @@ namespace tgui
         ///
         /// @param size   Sets the new minimum size of the child window
         ///
-        /// This function sets the minimum size of the window excluding borders and titlebar.
+        /// This function sets the minimum size of the entire window, including borders and titlebar.
         /// If the window is smaller than the new minimum size, it will automatically be enlarged.
-        ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         void setMinimumSize(Vector2f size);
 
@@ -187,8 +206,7 @@ namespace tgui
         ///
         /// @return Minimum size of the child window
         ///
-        /// The size returned by this function is the minimum size of the child window, excluding the title bar and the borders.
-        ///
+        /// This size includes the title bar and the borders.
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         Vector2f getMinimumSize() const;
 
@@ -199,7 +217,7 @@ namespace tgui
         /// @param title  New title for the child window
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void setTitle(const sf::String& title);
+        void setTitle(const String& title);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -208,7 +226,7 @@ namespace tgui
         /// @return Title of the child window
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        const sf::String& getTitle() const;
+        const String& getTitle() const;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -271,18 +289,19 @@ namespace tgui
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @brief Try to close the window
         ///
-        /// This will trigger the Closed signal. If no callback is requested then the window will be closed.
+        /// This will trigger the onClosing signal. If a callback function for this signal sets the abort parameter to true then
+        /// the window will remain open. Otherwise the onClose signal is triggered and the window is removed from its parent.
+        ///
+        /// If you want to close the window without those callbacks being triggered then you need to use the destroy() function.
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         void close();
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /// @brief Destroys the window
+        /// @brief Closes the window
         ///
-        /// When no callback is requested when closing the window, this function will be called automatically.
-        ///
-        /// When you requested a callback on close then you get the opportunity to cancel the closing of the window.
-        /// If you want to keep it open then don't do anything, if you want to close it then just call this function.
+        /// This function is equivalent to removing the window from its parent. If you want to be receive a callback and have
+        /// the ability to abort the operation then you should use the close() function instead.
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         void destroy();
 
@@ -365,7 +384,7 @@ namespace tgui
         /// @return Is the mouse on top of the widget?
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool mouseOnWidget(Vector2f pos) const override;
+        bool isMouseOnWidget(Vector2f pos) const override;
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @internal
@@ -395,7 +414,7 @@ namespace tgui
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @internal
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void keyPressed(const sf::Event::KeyEvent& event) override;
+        void keyPressed(const Event::KeyEvent& event) override;
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @internal
@@ -415,7 +434,7 @@ namespace tgui
         /// @param states Current render states
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+        void draw(BackendRenderTargetBase& target, RenderStates states) const override;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -428,6 +447,12 @@ namespace tgui
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Updates the mouse cursor for resizable child windows
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        void updateResizeMouseCursor(Vector2f mousePos);
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @brief Retrieves a signal based on its name
         ///
         /// @param signalName  Name of the signal
@@ -436,16 +461,16 @@ namespace tgui
         ///
         /// @throw Exception when the name does not match any signal
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        Signal& getSignal(std::string signalName) override;
+        Signal& getSignal(String signalName) override;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @brief Function called when one of the properties of the renderer is changed
         ///
-        /// @param property  Lowercase name of the property that was changed
+        /// @param property  Name of the property that was changed
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void rendererChanged(const std::string& property) override;
+        void rendererChanged(const String& property) override;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -461,6 +486,18 @@ namespace tgui
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// @brief This function is called when the mouse enters the widget
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        void mouseEnteredWidget() override;
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// @brief This function is called when the mouse leaves the widget
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        void mouseLeftWidget() override;
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Makes a copy of the widget
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         Widget::Ptr clone() const override
@@ -472,11 +509,17 @@ namespace tgui
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public:
 
-        Signal            onMousePress = {"MousePressed"};  ///< The mouse went down on the widget
-        SignalChildWindow onClose      = {"Closed"};        ///< The window was closed. Optional parameter: pointer to the window
-        SignalChildWindow onMinimize   = {"Minimized"};     ///< The window was minimized. Optional parameter: pointer to the window
-        SignalChildWindow onMaximize   = {"Maximized"};     ///< The window was maximized. Optional parameter: pointer to the window
-        SignalChildWindow onEscapeKeyPressed = {"EscapeKeyPressed"}; ///< The escape key was pressed while the child window was focused. Optional parameter: pointer to the window
+        Signal            onMousePress = {"MousePressed"};  //!< The mouse went down on the widget
+        SignalChildWindow onClose      = {"Closed"};        //!< The window was closed. Optional parameter: pointer to the window
+        SignalChildWindow onMinimize   = {"Minimized"};     //!< The window was minimized. Optional parameter: pointer to the window
+        SignalChildWindow onMaximize   = {"Maximized"};     //!< The window was maximized. Optional parameter: pointer to the window
+        SignalChildWindow onEscapeKeyPress = {"EscapeKeyPressed"}; //!< The escape key was pressed while the child window was focused. Optional parameter: pointer to the window
+
+        /// The window is about to be closed, unless the "abort" parameter is set to true.
+        /// @code
+        /// window->onClosing([](bool* abort) { *abort = true; });
+        /// @endcode
+        SignalTyped<bool*> onClosing = {"Closing"};
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -502,6 +545,7 @@ namespace tgui
         TitleAlignment m_titleAlignment = TitleAlignment::Center;
         unsigned int   m_titleButtons   = TitleButton::Close;
         unsigned int   m_titleTextSize  = 0;
+        Cursor::Type   m_currentChildWindowMouseCursor = Cursor::Type::Arrow;
 
         CopiedSharedPtr<Button> m_closeButton;
         CopiedSharedPtr<Button> m_minimizeButton;
@@ -528,7 +572,7 @@ namespace tgui
         float   m_borderBelowTitleBarCached = 0;
         float   m_distanceToSideCached = 0;
         float   m_paddingBetweenButtonsCached = 0;
-        float   m_minimumResizableBorderWidthCached = 5;
+        float   m_minimumResizableBorderWidthCached = 10;
         bool    m_showTextOnTitleButtonsCached = false;
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

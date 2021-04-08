@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // TGUI - Texus' Graphical User Interface
-// Copyright (C) 2012-2020 Bruno Van de Velde (vdv_b@tgui.eu)
+// Copyright (C) 2012-2021 Bruno Van de Velde (vdv_b@tgui.eu)
 //
 // This software is provided 'as-is', without any express or implied warranty.
 // In no event will the authors be held liable for any damages arising from the use of this software.
@@ -26,10 +26,18 @@
 #ifndef TGUI_UTF_HPP
 #define TGUI_UTF_HPP
 
+#include <TGUI/Config.hpp>
 #include <string>
 #include <array>
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Disable warning in Visual Studio about being able to use "if constexpr".
+// The code would use "if constexpr" if the compiler would just define __cpp_if_constexpr
+#if defined TGUI_SYSTEM_WINDOWS && defined _MSC_VER
+    #pragma warning(push)
+    #pragma warning(disable:4127)
+#endif
 
 namespace tgui
 {
@@ -268,18 +276,10 @@ namespace tgui
             std::wstring outStr;
             outStr.reserve(strUtf32.length() + 1);
 
-
 #if defined(__cpp_if_constexpr) && (__cpp_if_constexpr >= 201606L)
             if constexpr (sizeof(wchar_t) == 4)
 #else
-    #if defined TGUI_SYSTEM_WINDOWS && defined _MSC_VER
-        #pragma warning(push)
-        #pragma warning(disable:4127)
-    #endif
             if (sizeof(wchar_t) == 4)
-    #if defined TGUI_SYSTEM_WINDOWS && defined _MSC_VER
-        #pragma warning(pop)
-    #endif
 #endif
             {
                 // On Unix, wide characters are UCS-4 and we can just copy the characters
@@ -334,6 +334,10 @@ namespace tgui
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     }
 }
+
+#if defined TGUI_SYSTEM_WINDOWS && defined _MSC_VER
+    #pragma warning(pop)
+#endif
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

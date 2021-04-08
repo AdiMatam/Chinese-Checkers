@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // TGUI - Texus' Graphical User Interface
-// Copyright (C) 2012-2020 Bruno Van de Velde (vdv_b@tgui.eu)
+// Copyright (C) 2012-2021 Bruno Van de Velde (vdv_b@tgui.eu)
 //
 // This software is provided 'as-is', without any express or implied warranty.
 // In no event will the authors be held liable for any damages arising from the use of this software.
@@ -78,7 +78,7 @@ namespace tgui
         /// @param string  String to store
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ObjectConverter(const char* string) :
-            ObjectConverter{sf::String{string}}
+            ObjectConverter{String{string}}
         {
         }
 
@@ -88,18 +88,7 @@ namespace tgui
         ///
         /// @param string  String to store
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ObjectConverter(const std::string& string) :
-            ObjectConverter{sf::String{string}}
-        {
-        }
-
-
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /// @brief Stores a string for later retrieval
-        ///
-        /// @param string  String to store
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ObjectConverter(const sf::String& string) :
+        ObjectConverter(const String& string) :
             m_type      {Type::String},
             m_value     {string},
             m_serialized{true},
@@ -117,18 +106,6 @@ namespace tgui
         ObjectConverter(Font font) :
             m_type {Type::Font},
             m_value{std::move(font)}
-        {
-        }
-
-
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /// @brief Stores a color object for later retrieval
-        ///
-        /// @param color  Color to store
-        ///
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ObjectConverter(sf::Color color) :
-            ObjectConverter(Color{color})
         {
         }
 
@@ -199,15 +176,13 @@ namespace tgui
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /// @brief Stores a text style for later retrieval
+        /// @brief Stores a single text style for later retrieval
         ///
         /// @param style  Text style to store
-        ///
-        /// To combine multiple text styles, wrap the value inside the TextStyle object before passing it.
-        ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ObjectConverter(sf::Text::Style style) :
-            ObjectConverter(TextStyle(style))
+        ObjectConverter(TextStyle style) :
+            m_type {Type::TextStyle},
+            m_value{TextStyles(style)}
         {
         }
 
@@ -216,9 +191,8 @@ namespace tgui
         /// @brief Stores a text style for later retrieval
         ///
         /// @param style  Text style to store
-        ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ObjectConverter(TextStyle style) :
+        ObjectConverter(TextStyles style) :
             m_type {Type::TextStyle},
             m_value{style}
         {
@@ -244,7 +218,7 @@ namespace tgui
         /// @return The saved string or a serialized string
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        const sf::String& getString();
+        const String& getString();
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -309,8 +283,7 @@ namespace tgui
         /// This function will assert when something other than a texture was saved
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        Texture& getTexture();
-        // TGUI_NEXT: const reference
+        const Texture& getTexture();
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -321,7 +294,7 @@ namespace tgui
         /// This function will assert when something other than a text style was saved
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        const TextStyle& getTextStyle();
+        const TextStyles& getTextStyle();
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -364,10 +337,10 @@ namespace tgui
     private:
         Type m_type = Type::None;
 
-        Variant<sf::String, Font, Color, Outline, bool, float, Texture, TextStyle, std::shared_ptr<RendererData>> m_value;
+        Variant<String, Font, Color, Outline, bool, float, Texture, TextStyles, std::shared_ptr<RendererData>> m_value;
 
         bool m_serialized = false;
-        sf::String m_string;
+        String m_string;
     };
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

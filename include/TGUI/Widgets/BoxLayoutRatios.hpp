@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // TGUI - Texus' Graphical User Interface
-// Copyright (C) 2012-2020 Bruno Van de Velde (vdv_b@tgui.eu)
+// Copyright (C) 2012-2021 Bruno Van de Velde (vdv_b@tgui.eu)
 //
 // This software is provided 'as-is', without any express or implied warranty.
 // In no event will the authors be held liable for any damages arising from the use of this software.
@@ -40,14 +40,18 @@ namespace tgui
     {
     public:
 
-        typedef std::shared_ptr<BoxLayoutRatios> Ptr; ///< Shared widget pointer
-        typedef std::shared_ptr<const BoxLayoutRatios> ConstPtr; ///< Shared constant widget pointer
+        typedef std::shared_ptr<BoxLayoutRatios> Ptr; //!< Shared widget pointer
+        typedef std::shared_ptr<const BoxLayoutRatios> ConstPtr; //!< Shared constant widget pointer
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // Default constructor
+        /// @internal
+        /// @brief Constructor
+        /// @param typeName     Type of the widget
+        /// @param initRenderer Should the renderer be initialized? Should be true unless a derived class initializes it.
+        /// @see create
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        BoxLayoutRatios(const Layout2d& size = {"100%", "100%"});
+        BoxLayoutRatios(const char* typeName, bool initRenderer);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -58,7 +62,7 @@ namespace tgui
         ///
         /// The widget will have a ratio of 1.
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void add(const Widget::Ptr& widget, const sf::String& widgetName = "") override;
+        void add(const Widget::Ptr& widget, const String& widgetName = "") override;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -68,7 +72,7 @@ namespace tgui
         /// @param ratio       Ratio to determine the size compared to other widgets
         /// @param widgetName  An identifier to access to the widget later
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void add(const Widget::Ptr& widget, float ratio, const sf::String& widgetName = "");
+        void add(const Widget::Ptr& widget, float ratio, const String& widgetName = "");
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -82,7 +86,7 @@ namespace tgui
         ///
         /// If the index is too high, the widget will simply be added at the end of the list.
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void insert(std::size_t index, const Widget::Ptr& widget, const sf::String& widgetName = "") override;
+        void insert(std::size_t index, const Widget::Ptr& widget, const String& widgetName = "") override;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -98,7 +102,7 @@ namespace tgui
         ///
         /// If the index is too high, the widget will simply be added at the end of the list.
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void insert(std::size_t index, const Widget::Ptr& widget, float ratio, const sf::String& widgetName = "");
+        void insert(std::size_t index, const Widget::Ptr& widget, float ratio, const String& widgetName = "");
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

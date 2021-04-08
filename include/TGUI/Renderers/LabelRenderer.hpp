@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // TGUI - Texus' Graphical User Interface
-// Copyright (C) 2012-2020 Bruno Van de Velde (vdv_b@tgui.eu)
+// Copyright (C) 2012-2021 Bruno Van de Velde (vdv_b@tgui.eu)
 //
 // This software is provided 'as-is', without any express or implied warranty.
 // In no event will the authors be held liable for any damages arising from the use of this software.
@@ -140,14 +140,14 @@ namespace tgui
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @brief Changes the style of the text
         ///
-        /// The possible styles can be found in the sf::Text::Style enum.
-        /// You can also pass a combination of multiple styles, for example sf::Text::Bold | sf::Text::Italic.
-        /// The default style is sf::Text::Regular.
+        /// The possible styles can be found in the tgui::TextStyles enum.
+        /// You can also pass a combination of multiple styles, for example tgui::TextStyle::Bold | tgui::TextStyle::Italic.
+        /// The default style is tgui::TextStyle::Regular.
         ///
         /// @param style  New text style
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void setTextStyle(TextStyle style);
+        void setTextStyle(TextStyles style);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -156,7 +156,7 @@ namespace tgui
         /// @return The current text style
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        TextStyle getTextStyle() const;
+        TextStyles getTextStyle() const;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -202,7 +202,7 @@ namespace tgui
         ///
         /// @return Background texture
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        Texture& getTextureBackground() const;
+        const Texture& getTextureBackground() const;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

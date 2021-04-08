@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // TGUI - Texus' Graphical User Interface
-// Copyright (C) 2012-2020 Bruno Van de Velde (vdv_b@tgui.eu)
+// Copyright (C) 2012-2021 Bruno Van de Velde (vdv_b@tgui.eu)
 //
 // This software is provided 'as-is', without any express or implied warranty.
 // In no event will the authors be held liable for any damages arising from the use of this software.
@@ -45,8 +45,7 @@ namespace tgui
         ///
         /// @param color  The new track color
         ///
-        /// Note that this color is ignored when all normal images have been set.
-        ///
+        /// Note that this color is ignored when the track texture is set.
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         void setTrackColor(Color color);
 
@@ -83,8 +82,7 @@ namespace tgui
         ///
         /// @param color  The new thumb color
         ///
-        /// Note that this color is ignored when all normal images have been set.
-        ///
+        /// Note that this color is ignored when the thumb texture is set.
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         void setThumbColor(Color color);
 
@@ -121,8 +119,7 @@ namespace tgui
         ///
         /// @param color  The new arrow background color
         ///
-        /// Note that this color is ignored when all normal images have been set.
-        ///
+        /// Note that this color is ignored when the arrow up and down textures are set.
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         void setArrowBackgroundColor(Color color);
 
@@ -159,8 +156,7 @@ namespace tgui
         ///
         /// @param color  The new arrow color
         ///
-        /// Note that this color is ignored when all normal images have been set.
-        ///
+        /// Note that this color is ignored when the arrow up and down textures are set.
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         void setArrowColor(Color color);
 
@@ -197,8 +193,7 @@ namespace tgui
         ///
         /// @param texture  The new track texture
         ///
-        /// When all textures are set, then the alternative color properties will be ignored.
-        ///
+        /// When this texture is set then the track color will be ignored.
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         void setTextureTrack(const Texture& texture);
 
@@ -209,7 +204,7 @@ namespace tgui
         /// @return Track texture
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        Texture& getTextureTrack() const;
+        const Texture& getTextureTrack() const;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -227,7 +222,7 @@ namespace tgui
         /// @return Hover track texture
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        Texture& getTextureTrackHover() const;
+        const Texture& getTextureTrackHover() const;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -235,8 +230,7 @@ namespace tgui
         ///
         /// @param texture  The new thumb texture
         ///
-        /// When all textures are set, then the alternative color properties will be ignored.
-        ///
+        /// When this texture is set then the thumb color will be ignored
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         void setTextureThumb(const Texture& texture);
 
@@ -247,7 +241,7 @@ namespace tgui
         /// @return Thumb texture
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        Texture& getTextureThumb() const;
+        const Texture& getTextureThumb() const;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -265,7 +259,7 @@ namespace tgui
         /// @return Hover thumb texture
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        Texture& getTextureThumbHover() const;
+        const Texture& getTextureThumbHover() const;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -273,8 +267,7 @@ namespace tgui
         ///
         /// @param texture  The new up arrow texture
         ///
-        /// When all textures are set, then the alternative color properties will be ignored.
-        ///
+        /// When this texture is set then the arrow background color and arrow color will be ignored for the up arrow
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         void setTextureArrowUp(const Texture& texture);
 
@@ -285,7 +278,7 @@ namespace tgui
         /// @return Up arrow texture
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        Texture& getTextureArrowUp() const;
+        const Texture& getTextureArrowUp() const;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -303,7 +296,7 @@ namespace tgui
         /// @return Hover up arrow texture
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        Texture& getTextureArrowUpHover() const;
+        const Texture& getTextureArrowUpHover() const;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -311,8 +304,7 @@ namespace tgui
         ///
         /// @param texture  The new down arrow texture
         ///
-        /// When all textures are set, then the alternative color properties will be ignored.
-        ///
+        /// When this texture is set then the arrow background color and arrow color will be ignored for the down arrow
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         void setTextureArrowDown(const Texture& texture);
 
@@ -323,7 +315,7 @@ namespace tgui
         /// @return Down arrow texture
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        Texture& getTextureArrowDown() const;
+        const Texture& getTextureArrowDown() const;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -341,7 +333,7 @@ namespace tgui
         /// @return Hover down arrow texture
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        Texture& getTextureArrowDownHover() const;
+        const Texture& getTextureArrowDownHover() const;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

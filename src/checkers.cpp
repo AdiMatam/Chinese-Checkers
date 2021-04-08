@@ -1,3 +1,4 @@
+#include "pch.hpp"
 #include "checkers.hpp"
 
 int Checkers::sINDICES[18] = {
@@ -24,7 +25,8 @@ void Checkers::switchTurn() {
 
 bool Checkers::movedAtAll() {
     if (!mEnableMouse) {
-        if (mSelected != nullptr) mSelected->resetFill();
+        if (mSelected != nullptr) 
+            mSelected->resetFill();
         return true;
     }
     return false;
@@ -102,7 +104,7 @@ void Checkers::processClick(float x, float y, bool force) {
     if (clicked == nullptr) 
         return;
     int id = getIdentity(clicked);
-    if (force || (id == mTurn && mEnableMouse)) {
+    if (force || (id == int(mTurn) && mEnableMouse)) {
         if (mSelected != nullptr) 
             mSelected->resetFill();
         clicked->pick();

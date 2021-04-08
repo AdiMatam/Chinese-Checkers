@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // TGUI - Texus' Graphical User Interface
-// Copyright (C) 2012-2020 Bruno Van de Velde (vdv_b@tgui.eu)
+// Copyright (C) 2012-2021 Bruno Van de Velde (vdv_b@tgui.eu)
 //
 // This software is provided 'as-is', without any express or implied warranty.
 // In no event will the authors be held liable for any damages arising from the use of this software.
@@ -41,23 +41,27 @@ namespace tgui
     {
     public:
 
-        typedef std::shared_ptr<Scrollbar> Ptr; ///< Shared widget pointer
-        typedef std::shared_ptr<const Scrollbar> ConstPtr; ///< Shared constant widget pointer
+        typedef std::shared_ptr<Scrollbar> Ptr; //!< Shared widget pointer
+        typedef std::shared_ptr<const Scrollbar> ConstPtr; //!< Shared constant widget pointer
 
 
         /// @brief Defines when the scrollbar shows up
         enum class Policy
         {
-            Automatic,  ///< Show the scrollbar only when needed (default)
-            Always,     ///< Always show the scrollbar, even when the contents fits
-            Never       ///< Never show the scrollbar, even if the contents does not fit
+            Automatic,  //!< Show the scrollbar only when needed (default)
+            Always,     //!< Always show the scrollbar, even when the contents fits
+            Never       //!< Never show the scrollbar, even if the contents does not fit
         };
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // Default constructor
+        /// @internal
+        /// @brief Constructor
+        /// @param typeName     Type of the widget
+        /// @param initRenderer Should the renderer be initialized? Should be true unless a derived class initializes it.
+        /// @see create
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        Scrollbar();
+        Scrollbar(const char* typeName = "Scrollbar", bool initRenderer = true);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -240,7 +244,7 @@ namespace tgui
         /// @return Is the mouse on top of the widget?
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool mouseOnWidget(Vector2f pos) const override;
+        bool isMouseOnWidget(Vector2f pos) const override;
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @internal
@@ -275,7 +279,7 @@ namespace tgui
         /// @param states Current render states
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+        void draw(BackendRenderTargetBase& target, RenderStates states) const override;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -297,16 +301,16 @@ namespace tgui
         ///
         /// @throw Exception when the name does not match any signal
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        Signal& getSignal(std::string signalName) override;
+        Signal& getSignal(String signalName) override;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @brief Function called when one of the properties of the renderer is changed
         ///
-        /// @param property  Lowercase name of the property that was changed
+        /// @param property  Name of the property that was changed
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void rendererChanged(const std::string& property) override;
+        void rendererChanged(const String& property) override;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -339,7 +343,7 @@ namespace tgui
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public:
 
-        SignalUInt onValueChange = {"ValueChanged"}; ///< Value of the scrollbar changed. Optional parameter: new value
+        SignalUInt onValueChange = {"ValueChanged"}; //!< Value of the scrollbar changed. Optional parameter: new value
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -420,15 +424,7 @@ namespace tgui
     public:
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /// @brief Returns whether the mouse is on top of the scrollbar
-        ///
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool isMouseDown() const;
-
-
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /// @brief Returns whether the mouse is on top of the thumb of the scrollbar
-        ///
+        /// @brief Returns whether the left mouse button has been pressed on top of the thumb of the scrollbar
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         bool isMouseDownOnThumb() const;
 
@@ -440,6 +436,15 @@ namespace tgui
         /// The scrollbar is visible when auto hide is disabled or when the maximum is higher than the viewport size
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         bool isShown() const;
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// @brief Draw the widget to a render target
+        ///
+        /// @param target Render target to draw to
+        /// @param states Current render states
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        void draw(BackendRenderTargetBase& target, RenderStates states) const override;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

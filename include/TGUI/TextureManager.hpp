@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // TGUI - Texus' Graphical User Interface
-// Copyright (C) 2012-2020 Bruno Van de Velde (vdv_b@tgui.eu)
+// Copyright (C) 2012-2021 Bruno Van de Velde (vdv_b@tgui.eu)
 //
 // This software is provided 'as-is', without any express or implied warranty.
 // In no event will the authors be held liable for any damages arising from the use of this software.
@@ -49,14 +49,14 @@ namespace tgui
         ///
         /// @param texture    The texture object to store the loaded image
         /// @param filename   Filename of the image to load
-        /// @param partRect   Load only part of the image. Don't pass this parameter if you want to load the full image
+        /// @param smooth     Enable smoothing on the texture
         ///
         /// The second time you call this function with the same filename, the previously loaded image will be reused.
         ///
         /// @return Texture data when loaded successfully, nullptr otherwise
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        static std::shared_ptr<TextureData> getTexture(Texture& texture, const sf::String& filename, const sf::IntRect& partRect = sf::IntRect(0, 0, 0, 0));
+        static std::shared_ptr<TextureData> getTexture(Texture& texture, const String& filename, bool smooth);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -80,9 +80,20 @@ namespace tgui
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// @internal
+        /// @brief Returns how many textures are stored in the texture manager
+        ///
+        /// @return Number of images in the texture manager
+        ///
+        /// This function is used in the tests to verify that there are no textures being leaked when the tests are finished.
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        static std::size_t getCachedImagesCount();
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     protected:
 
-        static std::map<sf::String, std::list<TextureDataHolder>> m_imageMap;
+        static std::map<String, std::list<TextureDataHolder>> m_imageMap;
     };
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

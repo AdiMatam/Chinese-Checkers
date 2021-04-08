@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // TGUI - Texus' Graphical User Interface
-// Copyright (C) 2012-2020 Bruno Van de Velde (vdv_b@tgui.eu)
+// Copyright (C) 2012-2021 Bruno Van de Velde (vdv_b@tgui.eu)
 //
 // This software is provided 'as-is', without any express or implied warranty.
 // In no event will the authors be held liable for any damages arising from the use of this software.
@@ -49,7 +49,7 @@ namespace tgui
         struct ConstNode
         {
             bool expanded;
-            sf::String text;
+            String text;
             std::vector<ConstNode> nodes;
         };
 
@@ -65,9 +65,14 @@ namespace tgui
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // Default constructor
+        /// @internal
+        /// @brief Constructor
+        /// @param typeName     Type of the widget
+        /// @param initRenderer Should the renderer be initialized? Should be true unless a derived class initializes it.
+        /// @see create
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        TreeView();
+        TreeView(const char* typeName = "TreeView", bool initRenderer = true);
+
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Copy constructor
@@ -138,7 +143,7 @@ namespace tgui
         ///
         /// @return True when the item was added (always the case if createParents is true)
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool addItem(const std::vector<sf::String>& hierarchy, bool createParents = true);
+        bool addItem(const std::vector<String>& hierarchy, bool createParents = true);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -146,7 +151,7 @@ namespace tgui
         ///
         /// @param hierarchy  Hierarchy of items, identifying the node that has to be expanded
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void expand(const std::vector<sf::String>& hierarchy);
+        void expand(const std::vector<String>& hierarchy);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -160,7 +165,7 @@ namespace tgui
         ///
         /// @param hierarchy  Hierarchy of items, identifying the node that has to be collapsed
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void collapse(const std::vector<sf::String>& hierarchy);
+        void collapse(const std::vector<String>& hierarchy);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -176,7 +181,7 @@ namespace tgui
         ///
         /// @return True when the item was selected, false when hierarchy was incorrect
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool selectItem(const std::vector<sf::String>& hierarchy);
+        bool selectItem(const std::vector<String>& hierarchy);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -193,7 +198,7 @@ namespace tgui
         ///
         /// @return True when the item existed and was removed, false when hierarchy was incorrect
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool removeItem(const std::vector<sf::String>& hierarchy, bool removeParentsWhenEmpty = true);
+        bool removeItem(const std::vector<String>& hierarchy, bool removeParentsWhenEmpty = true);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -206,7 +211,7 @@ namespace tgui
         /// @brief Returns the selected item
         /// @return Hierarchy of items, identifying the selected node, or an empty list when no item was selected
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        std::vector<sf::String> getSelectedItem() const;
+        std::vector<String> getSelectedItem() const;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -280,7 +285,7 @@ namespace tgui
         ///
         /// @return Is the mouse on top of the widget?
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool mouseOnWidget(Vector2f pos) const override;
+        bool isMouseOnWidget(Vector2f pos) const override;
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @internal
@@ -330,7 +335,7 @@ namespace tgui
         /// @param states Current render states
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+        void draw(BackendRenderTargetBase& target, RenderStates states) const override;
 
 
 
@@ -346,16 +351,16 @@ namespace tgui
         ///
         /// @throw Exception when the name does not match any signal
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        Signal& getSignal(std::string signalName) override;
+        Signal& getSignal(String signalName) override;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @brief Function called when one of the properties of the renderer is changed
         ///
-        /// @param property  Lowercase name of the property that was changed
+        /// @param property  Name of the property that was changed
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void rendererChanged(const std::string& property) override;
+        void rendererChanged(const String& property) override;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -385,7 +390,7 @@ namespace tgui
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // This function is called every frame with the time passed since the last frame.
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool update(sf::Time elapsedTime) override;
+        bool updateTime(Duration elapsedTime) override;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -406,13 +411,13 @@ namespace tgui
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @internal
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void createNode(std::vector<std::shared_ptr<Node>>& menus, Node* parent, const sf::String& text);
+        void createNode(std::vector<std::shared_ptr<Node>>& menus, Node* parent, const String& text);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @internal
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        Node* findParentNode(const std::vector<sf::String>& hierarchy, unsigned int parentIndex, std::vector<std::shared_ptr<Node>>& nodes, Node* parent, bool createParents);
+        Node* findParentNode(const std::vector<String>& hierarchy, unsigned int parentIndex, std::vector<std::shared_ptr<Node>>& nodes, Node* parent, bool createParents);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -424,7 +429,7 @@ namespace tgui
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Expands or collapses a node
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool expandOrCollapse(const std::vector<sf::String>& hierarchy, bool expand);
+        bool expandOrCollapse(const std::vector<String>& hierarchy, bool expand);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -460,11 +465,11 @@ namespace tgui
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public:
 
-        SignalItemHierarchy onItemSelect = {"ItemSelected"};   ///< An node was selected in the tree view. Optional parameter: selected node
-        SignalItemHierarchy onDoubleClick = {"DoubleClicked"}; ///< A leaf node was double clicked. Optional parameter: selected node
-        SignalItemHierarchy onExpand = {"Expanded"};           ///< A branch node was expanded in the tree view. Optional parameter: expanded node
-        SignalItemHierarchy onCollapse = {"Collapsed"};        ///< A branch node was collapsed in the tree view. Optional parameter: collapsed node
-        SignalItemHierarchy onRightClick = {"RightClicked"};   ///< A node was right clicked. Optional parameter: node below mouse
+        SignalItemHierarchy onItemSelect = {"ItemSelected"};   //!< An node was selected in the tree view. Optional parameter: selected node
+        SignalItemHierarchy onDoubleClick = {"DoubleClicked"}; //!< A leaf node was double clicked. Optional parameter: selected node
+        SignalItemHierarchy onExpand = {"Expanded"};           //!< A branch node was expanded in the tree view. Optional parameter: expanded node
+        SignalItemHierarchy onCollapse = {"Collapsed"};        //!< A branch node was collapsed in the tree view. Optional parameter: collapsed node
+        SignalItemHierarchy onRightClick = {"RightClicked"};   //!< A node was right clicked. Optional parameter: node below mouse
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     protected:
@@ -506,7 +511,7 @@ namespace tgui
         Color     m_selectedBackgroundColorCached;
         Color     m_selectedBackgroundColorHoverCached;
         Color     m_backgroundColorHoverCached;
-        TextStyle m_textStyleCached;
+        TextStyles m_textStyleCached;
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     };

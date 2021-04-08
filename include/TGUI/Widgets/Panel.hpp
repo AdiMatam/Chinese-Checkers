@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // TGUI - Texus' Graphical User Interface
-// Copyright (C) 2012-2020 Bruno Van de Velde (vdv_b@tgui.eu)
+// Copyright (C) 2012-2021 Bruno Van de Velde (vdv_b@tgui.eu)
 //
 // This software is provided 'as-is', without any express or implied warranty.
 // In no event will the authors be held liable for any damages arising from the use of this software.
@@ -41,17 +41,18 @@ namespace tgui
     {
     public:
 
-        typedef std::shared_ptr<Panel> Ptr; ///< Shared widget pointer
-        typedef std::shared_ptr<const Panel> ConstPtr; ///< Shared constant widget pointer
+        typedef std::shared_ptr<Panel> Ptr; //!< Shared widget pointer
+        typedef std::shared_ptr<const Panel> ConstPtr; //!< Shared constant widget pointer
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /// @brief Default constructor
-        ///
-        /// @param size  Size of the panel
-        ///
+        /// @internal
+        /// @brief Constructor
+        /// @param typeName     Type of the widget
+        /// @param initRenderer Should the renderer be initialized? Should be true unless a derived class initializes it.
+        /// @see create
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        Panel(const Layout2d& size = {"100%", "100%"});
+        Panel(const char* typeName = "Panel", bool initRenderer = true);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -125,7 +126,7 @@ namespace tgui
         /// @return Is the mouse on top of the widget?
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool mouseOnWidget(Vector2f pos) const override;
+        bool isMouseOnWidget(Vector2f pos) const override;
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @internal
@@ -160,7 +161,7 @@ namespace tgui
         /// @param states Current render states
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+        void draw(BackendRenderTargetBase& target, RenderStates states) const override;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -175,16 +176,22 @@ namespace tgui
         ///
         /// @throw Exception when the name does not match any signal
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        Signal& getSignal(std::string signalName) override;
+        Signal& getSignal(String signalName) override;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @brief Function called when one of the properties of the renderer is changed
         ///
-        /// @param property  Lowercase name of the property that was changed
+        /// @param property  Name of the property that was changed
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void rendererChanged(const std::string& property) override;
+        void rendererChanged(const String& property) override;
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // This function is called every frame with the time passed since the last frame.
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        bool updateTime(Duration elapsedTime) override;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -199,13 +206,14 @@ namespace tgui
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public:
 
-        SignalVector2f onMousePress   = {"MousePressed"};   ///< The mouse went down on the panel. Optional parameter: mouse position relative to panel
-        SignalVector2f onMouseRelease = {"MouseReleased"};  ///< The mouse was released on top of the panel. Optional parameter: mouse position relative to panel
-        SignalVector2f onClick        = {"Clicked"};        ///< The panel was clicked. Optional parameter: mouse position relative to panel
+        SignalVector2f onMousePress   = {"MousePressed"};   //!< The mouse went down on the panel. Optional parameter: mouse position relative to panel
+        SignalVector2f onMouseRelease = {"MouseReleased"};  //!< The mouse was released on top of the panel. Optional parameter: mouse position relative to panel
+        SignalVector2f onClick        = {"Clicked"};        //!< The panel was clicked. Optional parameter: mouse position relative to panel
+        SignalVector2f onDoubleClick  = {"DoubleClicked"};  //!< The panel was double clicked. Optional parameter: mouse position relative to panel
 
-        SignalVector2f onRightMousePress   = {"RightMousePressed"};   ///< The right mouse button went down on the panel. Optional parameter: mouse position relative to panel
-        SignalVector2f onRightMouseRelease = {"RightMouseReleased"};  ///< The right mouse button was released on top of the panel. Optional parameter: mouse position relative to panel
-        SignalVector2f onRightClick        = {"RightClicked"};        ///< The panel was right clicked. Optional parameter: mouse position relative to panel
+        SignalVector2f onRightMousePress   = {"RightMousePressed"};   //!< The right mouse button went down on the panel. Optional parameter: mouse position relative to panel
+        SignalVector2f onRightMouseRelease = {"RightMouseReleased"};  //!< The right mouse button was released on top of the panel. Optional parameter: mouse position relative to panel
+        SignalVector2f onRightClick        = {"RightClicked"};        //!< The panel was right clicked. Optional parameter: mouse position relative to panel
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -218,6 +226,9 @@ namespace tgui
         Sprite  m_spriteBackground;
 
         bool    m_rightMouseDown = false;
+
+        // Will be set to true after the first click, but gets reset to false when the second click does not occur soon after
+        bool m_possibleDoubleClick = false;
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     };

@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // TGUI - Texus' Graphical User Interface
-// Copyright (C) 2012-2020 Bruno Van de Velde (vdv_b@tgui.eu)
+// Copyright (C) 2012-2021 Bruno Van de Velde (vdv_b@tgui.eu)
 //
 // This software is provided 'as-is', without any express or implied warranty.
 // In no event will the authors be held liable for any damages arising from the use of this software.
@@ -29,12 +29,16 @@
 #include <TGUI/Config.hpp>
 #include <TGUI/Utf.hpp>
 #include <string>
+#include <vector>
 #include <cstring>
 #include <locale>
+#include <iomanip>
 #include <ostream>
 #include <sstream>
 
-#include <SFML/System/String.hpp>
+#if TGUI_HAS_BACKEND_SFML
+    #include <SFML/System/String.hpp>
+#endif
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -49,55 +53,7 @@ namespace tgui
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /// @brief Checks if a character is a whitespace character (space, tab, carriage return or line feed)
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#ifdef TGUI_NEXT
-    TGUI_API bool isWhitespace(uint32_t character);
-#else
-    TGUI_API bool isWhitespace(sf::Uint32 character);
-#endif
-
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// @brief Converts a string to an int
-    ///
-    /// @param str           The string to parse
-    /// @param defaultValue  Value to return when the string didn't contain an int
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    TGUI_API int strToInt(const std::string& str, int defaultValue = 0);
-
-
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// @brief Converts a string to an unsigned int
-    ///
-    /// @param str           The string to parse
-    /// @param defaultValue  Value to return when the string didn't contain an int
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    TGUI_API unsigned int strToUInt(const std::string& str, unsigned int defaultValue = 0);
-
-
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// @brief Converts a string to a float
-    ///
-    /// @param str           The string to parse
-    /// @param defaultValue  Value to return when the string didn't contain a float
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    TGUI_API float strToFloat(const std::string& str, float defaultValue = 0);
-
-
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// @brief Converts a string to lowercase
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    TGUI_API std::string toLower(const std::string& str);
-
-
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// @brief Converts a string to uppercase
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    TGUI_API std::string toUpper(const std::string& str);
-
-
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// @brief Trims the whitespace from a string
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    TGUI_API std::string trim(const std::string& str);
+    TGUI_API bool isWhitespace(char32_t character);
 
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -108,8 +64,7 @@ namespace tgui
     /// The interface is similar to std::basic_string, but functions accept char, wchar_t, char8_t, char16_t and char32_t.
     /// Some extra helper functions are also provided to e.g. convert the string to an integer or float or to lowercase.
     ///
-    /// Note that when converting to std::string, an UTF-8 encoded string will be returned, even by the asAnsiString function.
-    /// This is done to be able to use UTF-8 without c++20 support (the toUtf8 function always returns an std::u8string).
+    /// Note that when converting to std::string, an UTF-8 encoded string will be returned.
     /// Similarly, when passing an std::string or const char* to this class, the encoding is assumed to be UTF-8.
     ///
     /// Data is stored in UTF-32, so any parameter or operator using a different encoding will have to convert the string
@@ -139,9 +94,39 @@ namespace tgui
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @brief Converts the string to an integer
         ///
+        /// @param result  Integer value if the string contains a base 10 integer. Unmodified if string is invalid.
+        ///
+        /// @return Returns whether the string was valid and a value has been placed into the reference parameter.
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        bool attemptToInt(int& result) const;
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// @brief Converts the string to an unsigned int
+        ///
+        /// @param result  Unsigned integer value if the string contains a base 10 unsigned int. Unmodified if string is invalid.
+        ///
+        /// @return Returns whether the string was valid and a value has been placed into the reference parameter.
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        bool attemptToUInt(unsigned int& result) const;
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// @brief Converts the string to a float
+        ///
+        /// @param result  Float value if the string contains a float. Unmodified if string is invalid.
+        ///
+        /// @return Returns whether the string was valid and a value has been placed into the reference parameter.
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        bool attemptToFloat(float& result) const;
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// @brief Converts the string to an integer
+        ///
         /// @param defaultValue  Value to return if conversion fails
         ///
-        /// @brief Returns the integer value or defaultValue if the string didn't contain a base 10 integer
+        /// @return Returns the integer value or defaultValue if the string didn't contain a base 10 integer
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         int toInt(int defaultValue = 0) const;
 
@@ -151,7 +136,7 @@ namespace tgui
         ///
         /// @param defaultValue  Value to return if conversion fails
         ///
-        /// @brief Returns the unsigned integer value or defaultValue if the string didn't contain a base 10 unsigned integer
+        /// @return Returns the unsigned integer value or defaultValue if the string didn't contain a base 10 unsigned integer
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         unsigned int toUInt(unsigned int defaultValue = 0) const;
 
@@ -161,35 +146,65 @@ namespace tgui
         ///
         /// @param defaultValue  Value to return if conversion fails
         ///
-        /// @brief Returns the float value or defaultValue if the string didn't contain an float
+        /// @return Returns the float value or defaultValue if the string didn't contain an float
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         float toFloat(float defaultValue = 0) const;
 
 
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @brief Returns a string with the whitespace at the start and end of this string removed
         ///
         /// @return Trimmed string
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         String trim() const;
 
 
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @brief Converts the ASCII characters in the string to lowercase
         ///
         /// @return Lowercase string
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         String toLower() const;
 
 
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @brief Converts the ASCII characters in the string to uppercase
         ///
         /// @return Uppercase string
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         String toUpper() const;
 
-#ifdef TGUI_NEXT // Code not working on GCC 4.9
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// @brief Compares this string to another and checks if they are equal if ASCII letters would have been lowercase
+        ///
+        /// @param other  The other string to compare this one with
+        ///
+        /// @return Are the strings equal except for the case of ASCII letters?
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        bool equalIgnoreCase(const String& other) const;
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// @brief Checks whether the first part of the string matches the given substring
+        ///
+        /// @param substring  Characters to compare against the first part of the string
+        ///
+        /// @return Does the first part of the string match the given substring?
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        bool startsWith(const String& substring) const;
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// @brief Checks whether the last part of the string matches the given substring
+        ///
+        /// @param substring  Characters to compare against the final part of the string
+        ///
+        /// @return Does the back of the string match the given substring?
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        bool endsWith(const String& substring) const;
+
+
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @brief Replaces all occurrences of a substring with a replacement string
         ///
@@ -199,15 +214,32 @@ namespace tgui
         /// @return Reference to this object.
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         String& replace(const String& searchFor, const String& replaceWith);
-#endif
 
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// @brief Splits the string into multiple substrings given the delimiter that separates them
+        ///
+        /// @param delimiter  Character that separates the substrings
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        std::vector<String> split(char32_t delimiter) const;
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// @brief Joins multiple string segments into a single string
+        ///
+        /// @param segments   Substrings that need to concatenated behind each other (with optional separators inbetween)
+        /// @param separator  Character that separates the substrings
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        static String join(const std::vector<String>& segments, const String& separator);
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @brief Construct the string from a number
         ///
         /// @param value  Number to convert to string
         ///
         /// @return String representing given number
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         template <typename T>
         static String fromNumber(T value)
         {
@@ -218,7 +250,25 @@ namespace tgui
         }
 
 
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// @brief Construct the string from a floating point number, keeping only a certain amount of decimals behind the comma
+        ///
+        /// @param value     Number to convert to string
+        /// @param decimals  Digits to keep behind the comma
+        ///
+        /// @return String representing given number, rounded to the given decimals
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        template <typename T>
+        static String fromNumberRounded(T value, int decimals)
+        {
+            std::ostringstream oss;
+            oss.imbue(std::locale::classic());
+            oss << std::fixed << std::setprecision(decimals);
+            oss << value;
+            return String(oss.str());
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public:
 
         String() = default;
@@ -228,8 +278,8 @@ namespace tgui
         String(const std::u16string& str);
         String(const std::u32string& str);
 
-        String(std::u32string&& str)
-            : m_string{std::move(str)}
+        String(std::u32string&& str) :
+            m_string{std::move(str)}
         {
         }
 
@@ -241,7 +291,17 @@ namespace tgui
         String(const char* str);
         String(const wchar_t* str);
         String(const char16_t* str);
-        String(const char32_t* str);
+        String(const char32_t* str) :
+            m_string{str}
+        {
+        }
+
+        // Constructor to initialize the string from a number (integer or float)
+        template <typename T, typename = typename std::enable_if<std::is_arithmetic<T>::value, T>::type>
+        explicit String(T number) :
+            String{fromNumber(number)}
+        {
+        }
 
         String(std::size_t count, char ch);
         String(std::size_t count, wchar_t ch);
@@ -263,16 +323,19 @@ namespace tgui
         String(const char16_t* str, std::size_t count);
         String(const char32_t* str, std::size_t count);
 
-        String(std::initializer_list<char> chars);
-        String(std::initializer_list<wchar_t> chars);
-        String(std::initializer_list<char16_t> chars);
-        String(std::initializer_list<char32_t> chars);
+        explicit String(std::initializer_list<char> chars);
+        explicit String(std::initializer_list<wchar_t> chars);
+        explicit String(std::initializer_list<char16_t> chars);
+        explicit String(std::initializer_list<char32_t> chars);
 
-        String(std::string::const_iterator first, std::string::const_iterator last);
-        String(std::wstring::const_iterator first, std::wstring::const_iterator last);
-        String(std::u16string::const_iterator first, std::u16string::const_iterator last);
-        String(std::u32string::const_iterator first, std::u32string::const_iterator last);
+        // Constructors using iterators have to be explicit to prevent {"1", "2"} to be ambiguous between String and std::vector<String>.
+        // The reason these constructors were considered a candicate to clang is due to a private constructor in the iterator class.
+        explicit String(std::string::const_iterator first, std::string::const_iterator last);
+        explicit String(std::wstring::const_iterator first, std::wstring::const_iterator last);
+        explicit String(std::u16string::const_iterator first, std::u16string::const_iterator last);
+        explicit String(std::u32string::const_iterator first, std::u32string::const_iterator last);
 
+#if TGUI_HAS_BACKEND_SFML
         // This constructor has to be explicit or it will cause MSVC to no longer compile code that performs sf::String + std::string
         explicit String(const sf::String& str)
             : m_string{reinterpret_cast<const char32_t*>(str.toUtf32().c_str())}
@@ -283,6 +346,7 @@ namespace tgui
         {
             return sf::String::fromUtf32(m_string.begin(), m_string.end());
         }
+#endif
 
         explicit operator std::string() const;
         explicit operator std::wstring() const;
@@ -292,10 +356,26 @@ namespace tgui
             return m_string;
         }
 
-        std::string toAnsiString() const;
+        TGUI_DEPRECATED("Use toStdString instead") std::string toAnsiString() const;
+        std::string toStdString() const;
         std::wstring toWideString() const;
         std::u16string toUtf16() const;
-        const std::u32string& toUtf32() const;
+        const std::u32string& toUtf32() const
+        {
+            return m_string;
+        }
+
+#if defined(__cpp_lib_char8_t) && (__cpp_lib_char8_t >= 201811L)
+        std::u8string toUtf8() const
+        {
+            return utf::convertUtf32toUtf8(m_string);
+        }
+#else
+        TGUI_DEPRECATED("Use toStdString instead") std::string toUtf8() const
+        {
+            return toStdString();
+        }
+#endif
 
         String& assign(std::size_t count, char ch);
         String& assign(std::size_t count, wchar_t ch);
@@ -352,14 +432,21 @@ namespace tgui
         reference       back();
         const_reference back() const;
 
-        const char32_t* data() const noexcept;
+        const char32_t* data() const noexcept
+        {
+            return m_string.data();
+        }
+
 #if __cplusplus >= 201703L
         char32_t* data() noexcept
         {
             return m_string.data();
         }
 #endif
-        const char32_t* c_str() const noexcept;
+        const char32_t* c_str() const noexcept
+        {
+            return m_string.c_str();
+        }
 
         iterator begin() noexcept;
         const_iterator begin() const noexcept;
@@ -377,9 +464,21 @@ namespace tgui
         const_reverse_iterator rend() const noexcept;
         const_reverse_iterator crend() const noexcept;
 
-        bool empty() const noexcept;
-        std::size_t size() const noexcept;
-        std::size_t length() const noexcept;
+        bool empty() const noexcept
+        {
+            return m_string.empty();
+        }
+
+        std::size_t size() const noexcept
+        {
+            return m_string.size();
+        }
+
+        std::size_t length() const noexcept
+        {
+            return m_string.length();
+        }
+
         std::size_t max_size() const noexcept;
 
         void reserve(std::size_t newCap);
@@ -387,7 +486,7 @@ namespace tgui
         void shrink_to_fit();
 
         void clear() noexcept;
-#ifdef TGUI_NEXT // Code not working on GCC 4.9
+
         String& insert(std::size_t index, std::size_t count, char ch);
         String& insert(std::size_t index, std::size_t count, wchar_t ch);
         String& insert(std::size_t index, std::size_t count, char16_t ch);
@@ -439,7 +538,7 @@ namespace tgui
 
         iterator erase(const_iterator position);
         iterator erase(const_iterator first, const_iterator last);
-#endif
+
         void push_back(char ch);
         void push_back(wchar_t ch);
         void push_back(char16_t ch);
@@ -518,7 +617,7 @@ namespace tgui
         int compare(std::size_t pos1, std::size_t count1, const wchar_t* s, std::size_t count2) const;
         int compare(std::size_t pos1, std::size_t count1, const char16_t* s, std::size_t count2) const;
         int compare(std::size_t pos1, std::size_t count1, const char32_t* s, std::size_t count2) const;
-#ifdef TGUI_NEXT // Code not working on GCC 4.9
+
         String& replace(std::size_t pos, std::size_t count, const std::string& str);
         String& replace(std::size_t pos, std::size_t count, const std::wstring& str);
         String& replace(std::size_t pos, std::size_t count, const std::u16string& str);
@@ -576,7 +675,7 @@ namespace tgui
         String& replace(const_iterator first, const_iterator last, std::initializer_list<wchar_t> chars);
         String& replace(const_iterator first, const_iterator last, std::initializer_list<char16_t> chars);
         String& replace(const_iterator first, const_iterator last, std::initializer_list<char32_t> chars);
-#endif
+
         String substr(std::size_t pos = 0, std::size_t count = npos) const;
 
         std::size_t copy(char32_t* dest, std::size_t count, std::size_t pos = 0) const;
@@ -739,8 +838,6 @@ namespace tgui
 
         explicit operator std::u8string() const;
 
-        std::u8string toUtf8() const;
-
         String& assign(std::size_t count, char8_t ch);
         String& assign(const std::u8string& str);
         String& assign(const std::u8string& str, std::size_t pos, std::size_t count = npos);
@@ -819,7 +916,7 @@ namespace tgui
         std::size_t find_last_not_of(const char8_t* s, std::size_t pos = npos) const;
         std::size_t find_last_not_of(char8_t ch, std::size_t pos = npos) const noexcept;
 
-        friend std::basic_ostream<char8_t>& operator<<(std::basic_ostream<char8_t>& os, const String& str);
+        //friend std::basic_ostream<char8_t>& operator<<(std::basic_ostream<char8_t>& os, const String& str);
 #endif
     };
 
@@ -929,11 +1026,6 @@ namespace tgui
     inline String::operator std::u8string() const
     {
         return toUtf8();
-    }
-
-    inline std::u8string String::toUtf8() const
-    {
-        return utf::convertUtf32toUtf8(m_string);
     }
 
     inline String& String::assign(std::size_t count, char8_t ch)
@@ -1285,11 +1377,12 @@ namespace tgui
         return m_string.find_last_not_of(static_cast<char8_t>(ch), pos);
     }
 
-    inline std::basic_ostream<char8_t>& operator<<(std::basic_ostream<char8_t>& os, const String& str)
-    {
-        os << std::u8string(str);
-        return os;
-    }
+    // Doesn't compile with libc++
+    //inline std::basic_ostream<char8_t>& operator<<(std::basic_ostream<char8_t>& os, const String& str)
+    //{
+    //    os << std::u8string(str);
+    //    return os;
+    //}
 #endif
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

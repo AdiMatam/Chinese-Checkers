@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // TGUI - Texus' Graphical User Interface
-// Copyright (C) 2012-2020 Bruno Van de Velde (vdv_b@tgui.eu)
+// Copyright (C) 2012-2021 Bruno Van de Velde (vdv_b@tgui.eu)
 //
 // This software is provided 'as-is', without any express or implied warranty.
 // In no event will the authors be held liable for any damages arising from the use of this software.
@@ -29,8 +29,8 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include <TGUI/Config.hpp>
-#include <SFML/Window/Event.hpp>
-#include <SFML/Window/Keyboard.hpp>
+#include <TGUI/Event.hpp>
+#include <TGUI/Backend.hpp>
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -42,7 +42,21 @@ namespace tgui
 
         inline bool isShiftPressed()
         {
-            return sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) || sf::Keyboard::isKeyPressed(sf::Keyboard::RShift);
+            return getBackend()->isKeyboardModifierPressed(Event::KeyModifier::Shift);
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        inline void openVirtualKeyboard(const FloatRect& inputRect)
+        {
+            getBackend()->openVirtualKeyboard(inputRect);
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        inline void closeVirtualKeyboard()
+        {
+            getBackend()->closeVirtualKeyboard();
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -50,159 +64,159 @@ namespace tgui
         inline bool isMultiselectModifierPressed()
         {
 #ifdef TGUI_SYSTEM_MACOS
-            return sf::Keyboard::isKeyPressed(sf::Keyboard::LSystem) || sf::Keyboard::isKeyPressed(sf::Keyboard::RSystem);
+            return getBackend()->isKeyboardModifierPressed(Event::KeyModifier::System);
 #else
-            return sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) || sf::Keyboard::isKeyPressed(sf::Keyboard::RControl);
+            return getBackend()->isKeyboardModifierPressed(Event::KeyModifier::Control);
 #endif
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        inline bool isKeyPressCopy(const sf::Event::KeyEvent& event)
+        inline bool isKeyPressCopy(const Event::KeyEvent& event)
         {
 #ifdef TGUI_SYSTEM_MACOS
-            return (event.code == sf::Keyboard::Key::C) && !event.control && !event.alt && !event.shift && event.system;
+            return (event.code == Event::KeyboardKey::C) && !event.control && !event.alt && !event.shift && event.system;
 #else
-            return (event.code == sf::Keyboard::Key::C) && event.control && !event.alt && !event.shift && !event.system;
+            return (event.code == Event::KeyboardKey::C) && event.control && !event.alt && !event.shift && !event.system;
 #endif
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        inline bool isKeyPressCut(const sf::Event::KeyEvent& event)
+        inline bool isKeyPressCut(const Event::KeyEvent& event)
         {
 #ifdef TGUI_SYSTEM_MACOS
-            return (event.code == sf::Keyboard::Key::X) && !event.control && !event.alt && !event.shift && event.system;
+            return (event.code == Event::KeyboardKey::X) && !event.control && !event.alt && !event.shift && event.system;
 #else
-            return (event.code == sf::Keyboard::Key::X) && event.control && !event.alt && !event.shift && !event.system;
+            return (event.code == Event::KeyboardKey::X) && event.control && !event.alt && !event.shift && !event.system;
 #endif
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        inline bool isKeyPressPaste(const sf::Event::KeyEvent& event)
+        inline bool isKeyPressPaste(const Event::KeyEvent& event)
         {
 #ifdef TGUI_SYSTEM_MACOS
-            return (event.code == sf::Keyboard::Key::V) && !event.control && !event.alt && !event.shift && event.system;
+            return (event.code == Event::KeyboardKey::V) && !event.control && !event.alt && !event.shift && event.system;
 #else
-            return (event.code == sf::Keyboard::Key::V) && event.control && !event.alt && !event.shift && !event.system;
+            return (event.code == Event::KeyboardKey::V) && event.control && !event.alt && !event.shift && !event.system;
 #endif
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        inline bool isKeyPressSelectAll(const sf::Event::KeyEvent& event)
+        inline bool isKeyPressSelectAll(const Event::KeyEvent& event)
         {
 #ifdef TGUI_SYSTEM_MACOS
-            return (event.code == sf::Keyboard::Key::A) && !event.control && !event.alt && !event.shift && event.system;
+            return (event.code == Event::KeyboardKey::A) && !event.control && !event.alt && !event.shift && event.system;
 #else
-            return (event.code == sf::Keyboard::Key::A) && event.control && !event.alt && !event.shift && !event.system;
+            return (event.code == Event::KeyboardKey::A) && event.control && !event.alt && !event.shift && !event.system;
 #endif
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        inline bool isKeyPressMoveCaretLeft(const sf::Event::KeyEvent& event)
+        inline bool isKeyPressMoveCaretLeft(const Event::KeyEvent& event)
         {
-            return (event.code == sf::Keyboard::Key::Left) && !event.control && !event.alt && !event.system;
+            return (event.code == Event::KeyboardKey::Left) && !event.control && !event.alt && !event.system;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        inline bool isKeyPressMoveCaretRight(const sf::Event::KeyEvent& event)
+        inline bool isKeyPressMoveCaretRight(const Event::KeyEvent& event)
         {
-            return (event.code == sf::Keyboard::Key::Right) && !event.control && !event.alt && !event.system;
+            return (event.code == Event::KeyboardKey::Right) && !event.control && !event.alt && !event.system;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        inline bool isKeyPressMoveCaretWordBegin(const sf::Event::KeyEvent& event)
+        inline bool isKeyPressMoveCaretWordBegin(const Event::KeyEvent& event)
         {
 #ifdef TGUI_SYSTEM_MACOS
-            return (event.code == sf::Keyboard::Key::Left) && !event.control && event.alt && !event.system;
+            return (event.code == Event::KeyboardKey::Left) && !event.control && event.alt && !event.system;
 #else
-            return (event.code == sf::Keyboard::Key::Left) && event.control && !event.alt && !event.system;
+            return (event.code == Event::KeyboardKey::Left) && event.control && !event.alt && !event.system;
 #endif
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        inline bool isKeyPressMoveCaretWordEnd(const sf::Event::KeyEvent& event)
+        inline bool isKeyPressMoveCaretWordEnd(const Event::KeyEvent& event)
         {
 #ifdef TGUI_SYSTEM_MACOS
-            return (event.code == sf::Keyboard::Key::Right) && !event.control && event.alt && !event.system;
+            return (event.code == Event::KeyboardKey::Right) && !event.control && event.alt && !event.system;
 #else
-            return (event.code == sf::Keyboard::Key::Right) && event.control && !event.alt && !event.system;
+            return (event.code == Event::KeyboardKey::Right) && event.control && !event.alt && !event.system;
 #endif
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        inline bool isKeyPressMoveCaretUp(const sf::Event::KeyEvent& event)
+        inline bool isKeyPressMoveCaretUp(const Event::KeyEvent& event)
         {
 #ifdef TGUI_SYSTEM_MACOS
             // Option+UpArrow should actually move to the beginning of the paragraph (or the previous one), but we don't support this
-            return (event.code == sf::Keyboard::Key::Up) && !event.control && !event.system;
+            return (event.code == Event::KeyboardKey::Up) && !event.control && !event.system;
 #else
-            return (event.code == sf::Keyboard::Key::Up) && !event.alt && !event.system;
+            return (event.code == Event::KeyboardKey::Up) && !event.alt && !event.system;
 #endif
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        inline bool isKeyPressMoveCaretDown(const sf::Event::KeyEvent& event)
+        inline bool isKeyPressMoveCaretDown(const Event::KeyEvent& event)
         {
 #ifdef TGUI_SYSTEM_MACOS
             // Option+DownArrow should actually move to the end of the paragraph (or the next one), but we don't support this
-            return (event.code == sf::Keyboard::Key::Down) && !event.control && !event.system;
+            return (event.code == Event::KeyboardKey::Down) && !event.control && !event.system;
 #else
-            return (event.code == sf::Keyboard::Key::Down) && !event.alt && !event.system;
+            return (event.code == Event::KeyboardKey::Down) && !event.alt && !event.system;
 #endif
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        inline bool isKeyPressMoveCaretLineStart(const sf::Event::KeyEvent& event)
+        inline bool isKeyPressMoveCaretLineStart(const Event::KeyEvent& event)
         {
 #ifdef TGUI_SYSTEM_MACOS
-            if ((event.code == sf::Keyboard::Key::Left) && !event.control && !event.alt && event.system)
+            if ((event.code == Event::KeyboardKey::Left) && !event.control && !event.alt && event.system)
                 return true;
 #endif
-            return (event.code == sf::Keyboard::Key::Home) && !event.control && !event.alt && !event.system;
+            return (event.code == Event::KeyboardKey::Home) && !event.control && !event.alt && !event.system;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        inline bool isKeyPressMoveCaretLineEnd(const sf::Event::KeyEvent& event)
+        inline bool isKeyPressMoveCaretLineEnd(const Event::KeyEvent& event)
         {
 #ifdef TGUI_SYSTEM_MACOS
-            if ((event.code == sf::Keyboard::Key::Right) && !event.control && !event.alt && event.system)
+            if ((event.code == Event::KeyboardKey::Right) && !event.control && !event.alt && event.system)
                 return true;
 #endif
-            return (event.code == sf::Keyboard::Key::End) && !event.control && !event.alt && !event.system;
+            return (event.code == Event::KeyboardKey::End) && !event.control && !event.alt && !event.system;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        inline bool isKeyPressMoveCaretDocumentBegin(const sf::Event::KeyEvent& event)
+        inline bool isKeyPressMoveCaretDocumentBegin(const Event::KeyEvent& event)
         {
 #ifdef TGUI_SYSTEM_MACOS
-            return ((event.code == sf::Keyboard::Key::Up) && !event.control && !event.alt && event.system)
-                || ((event.code == sf::Keyboard::Key::Home) && !event.control && !event.alt && event.system);
+            return ((event.code == Event::KeyboardKey::Up) && !event.control && !event.alt && event.system)
+                || ((event.code == Event::KeyboardKey::Home) && !event.control && !event.alt && event.system);
 #else
-            return (event.code == sf::Keyboard::Key::Home) && event.control && !event.alt && !event.system;
+            return (event.code == Event::KeyboardKey::Home) && event.control && !event.alt && !event.system;
 #endif
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        inline bool isKeyPressMoveCaretDocumentEnd(const sf::Event::KeyEvent& event)
+        inline bool isKeyPressMoveCaretDocumentEnd(const Event::KeyEvent& event)
         {
 #ifdef TGUI_SYSTEM_MACOS
-            return ((event.code == sf::Keyboard::Key::Down) && !event.control && !event.alt && event.system)
-                || ((event.code == sf::Keyboard::Key::End) && !event.control && !event.alt && event.system);
+            return ((event.code == Event::KeyboardKey::Down) && !event.control && !event.alt && event.system)
+                || ((event.code == Event::KeyboardKey::End) && !event.control && !event.alt && event.system);
 #else
-            return (event.code == sf::Keyboard::Key::End) && event.control && !event.alt && !event.system;
+            return (event.code == Event::KeyboardKey::End) && event.control && !event.alt && !event.system;
 #endif
         }
 
@@ -213,3 +227,4 @@ namespace tgui
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #endif // TGUI_KEYBOARD_HPP
+

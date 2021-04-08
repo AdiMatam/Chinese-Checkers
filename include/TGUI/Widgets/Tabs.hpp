@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // TGUI - Texus' Graphical User Interface
-// Copyright (C) 2012-2020 Bruno Van de Velde (vdv_b@tgui.eu)
+// Copyright (C) 2012-2021 Bruno Van de Velde (vdv_b@tgui.eu)
 //
 // This software is provided 'as-is', without any express or implied warranty.
 // In no event will the authors be held liable for any damages arising from the use of this software.
@@ -37,19 +37,26 @@ namespace tgui
 {
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /// @brief Tabs widget
+    ///
+    /// If you are looking for something that allow holds multiple panels,
+    /// displayed one panel at a time then check out the TabContainer class.
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     class TGUI_API Tabs : public Widget
     {
     public:
 
-        typedef std::shared_ptr<Tabs> Ptr; ///< Shared widget pointer
-        typedef std::shared_ptr<const Tabs> ConstPtr; ///< Shared constant widget pointer
+        typedef std::shared_ptr<Tabs> Ptr; //!< Shared widget pointer
+        typedef std::shared_ptr<const Tabs> ConstPtr; //!< Shared constant widget pointer
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // Default constructor
+        /// @internal
+        /// @brief Constructor
+        /// @param typeName     Type of the widget
+        /// @param initRenderer Should the renderer be initialized? Should be true unless a derived class initializes it.
+        /// @see create
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        Tabs();
+        Tabs(const char* typeName = "Tabs", bool initRenderer = true);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -147,7 +154,7 @@ namespace tgui
         /// @warning The index returned by this function may no longer be correct when a tab is removed
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        std::size_t add(const sf::String& text, bool select = true);
+        std::size_t add(const String& text, bool select = true);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -158,7 +165,7 @@ namespace tgui
         /// @param select  Do you want the new tab to be selected immediately?
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void insert(std::size_t index, const sf::String& text, bool select = true);
+        void insert(std::size_t index, const String& text, bool select = true);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -169,7 +176,7 @@ namespace tgui
         /// @return The text on the tab or an empty string when index was too high
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        sf::String getText(std::size_t index) const;
+        String getText(std::size_t index) const;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -181,7 +188,7 @@ namespace tgui
         /// @return True when text was successfully changed, false when index was too high
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool changeText(std::size_t index, const sf::String& text);
+        bool changeText(std::size_t index, const String& text);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -193,14 +200,14 @@ namespace tgui
         /// If there are multiple tabs with the same text then the first one will be selected.
         /// When false is returned, the selected tab will still be deselected.
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool select(const sf::String& text);
+        bool select(const String& text);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @brief Selects the tab with a given index
         /// @param index  The index of the tab to select
         /// @return Whether a tab was selected, false is returned if the index was too high or if tab is invisible or disabled
-        /// @see select(sf::String)
+        /// @see select(String)
         ///
         /// When false is returned, the selected tab will still be deselected.
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -220,14 +227,14 @@ namespace tgui
         /// @return Whether a tab was removed, false is returned when the text didn't match any tab
         /// @see remove(std::size_t)
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool remove(const sf::String& text);
+        bool remove(const String& text);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @brief Removes a tab with a given index
         /// @param index  The index of the tab to remove
         /// @return Whether a tab was removed, false is returned when the index was too high
-        /// @see remove(sf::String)
+        /// @see remove(String)
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         bool remove(std::size_t index);
@@ -247,7 +254,7 @@ namespace tgui
         ///         When no tab is selected then this function returns an empty string
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        sf::String getSelected() const;
+        String getSelected() const;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -385,7 +392,7 @@ namespace tgui
         /// @return Is the mouse on top of the widget?
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool mouseOnWidget(Vector2f pos) const override;
+        bool isMouseOnWidget(Vector2f pos) const override;
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @internal
@@ -410,7 +417,7 @@ namespace tgui
         /// @param states Current render states
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+        void draw(BackendRenderTargetBase& target, RenderStates states) const override;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -425,7 +432,7 @@ namespace tgui
         ///
         /// @throw Exception when the name does not match any signal
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        Signal& getSignal(std::string signalName) override;
+        Signal& getSignal(String signalName) override;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -443,10 +450,10 @@ namespace tgui
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @brief Function called when one of the properties of the renderer is changed
         ///
-        /// @param property  Lowercase name of the property that was changed
+        /// @param property  Name of the property that was changed
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void rendererChanged(const std::string& property) override;
+        void rendererChanged(const String& property) override;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -473,7 +480,7 @@ namespace tgui
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public:
 
-        SignalString onTabSelect = {"TabSelected"}; ///< A tab that was selected. Optional parameter: selected item
+        SignalString onTabSelect = {"TabSelected"}; //!< A tab that was selected. Optional parameter: selected item
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -503,6 +510,9 @@ namespace tgui
         // Cached renderer properties
         Borders   m_bordersCached;
         Color     m_borderColorCached;
+        Color     m_borderColorHoverCached;
+        Color     m_selectedBorderColorCached;
+        Color     m_selectedBorderColorHoverCached;
         Color     m_backgroundColorCached;
         Color     m_backgroundColorHoverCached;
         Color     m_backgroundColorDisabledCached;

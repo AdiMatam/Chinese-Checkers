@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // TGUI - Texus' Graphical User Interface
-// Copyright (C) 2012-2020 Bruno Van de Velde (vdv_b@tgui.eu)
+// Copyright (C) 2012-2021 Bruno Van de Velde (vdv_b@tgui.eu)
 //
 // This software is provided 'as-is', without any express or implied warranty.
 // In no event will the authors be held liable for any damages arising from the use of this software.
@@ -42,14 +42,18 @@ namespace tgui
     {
     public:
 
-        typedef std::shared_ptr<RadioButton> Ptr; ///< Shared widget pointer
-        typedef std::shared_ptr<const RadioButton> ConstPtr; ///< Shared constant widget pointer
+        typedef std::shared_ptr<RadioButton> Ptr; //!< Shared widget pointer
+        typedef std::shared_ptr<const RadioButton> ConstPtr; //!< Shared constant widget pointer
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // Default constructor
+        /// @internal
+        /// @brief Constructor
+        /// @param typeName     Type of the widget
+        /// @param initRenderer Should the renderer be initialized? Should be true unless a derived class initializes it.
+        /// @see create
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        RadioButton();
+        RadioButton(const char* typeName = "RadioButton", bool initRenderer = true);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -147,7 +151,7 @@ namespace tgui
         /// @param text  The new text to draw next to the radio button
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void setText(const sf::String& text);
+        void setText(const String& text);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -156,7 +160,7 @@ namespace tgui
         /// @return The text that is drawn next to the radio button
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        const sf::String& getText() const;
+        const String& getText() const;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -200,7 +204,7 @@ namespace tgui
         /// @return Is the mouse on top of the widget?
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool mouseOnWidget(Vector2f pos) const override;
+        bool isMouseOnWidget(Vector2f pos) const override;
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @internal
@@ -210,7 +214,7 @@ namespace tgui
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @internal
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void keyPressed(const sf::Event::KeyEvent& event) override;
+        void keyPressed(const Event::KeyEvent& event) override;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -220,7 +224,7 @@ namespace tgui
         /// @param states Current render states
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+        void draw(BackendRenderTargetBase& target, RenderStates states) const override;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -235,16 +239,16 @@ namespace tgui
         ///
         /// @throw Exception when the name does not match any signal
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        Signal& getSignal(std::string signalName) override;
+        Signal& getSignal(String signalName) override;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @brief Function called when one of the properties of the renderer is changed
         ///
-        /// @param property  Lowercase name of the property that was changed
+        /// @param property  Name of the property that was changed
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void rendererChanged(const std::string& property) override;
+        void rendererChanged(const String& property) override;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -319,9 +323,9 @@ namespace tgui
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public:
 
-        SignalBool onCheck   = {"Checked"};   ///< Radio button was checked. Optional parameter: bool which is always true
-        SignalBool onUncheck = {"Unchecked"}; ///< Radio button was unchecked. Optional parameter: bool which is always false
-        SignalBool onChange  = {"Changed"};   ///< Radio button was checked or unchecked. Optional parameter: bool indicating whether it is checked
+        SignalBool onCheck   = {"Checked"};   //!< Radio button was checked. Optional parameter: bool which is always true
+        SignalBool onUncheck = {"Unchecked"}; //!< Radio button was unchecked. Optional parameter: bool which is always false
+        SignalBool onChange  = {"Changed"};   //!< Radio button was checked or unchecked. Optional parameter: bool indicating whether it is checked
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -347,8 +351,8 @@ namespace tgui
 
         // Cached renderer properties
         Borders   m_bordersCached;
-        TextStyle m_textStyleCached;
-        TextStyle m_textStyleCheckedCached;
+        TextStyles m_textStyleCached;
+        TextStyles m_textStyleCheckedCached;
         Color     m_checkColorCached;
         Color     m_checkColorHoverCached;
         Color     m_checkColorDisabledCached;

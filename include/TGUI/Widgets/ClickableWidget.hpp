@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // TGUI - Texus' Graphical User Interface
-// Copyright (C) 2012-2020 Bruno Van de Velde (vdv_b@tgui.eu)
+// Copyright (C) 2012-2021 Bruno Van de Velde (vdv_b@tgui.eu)
 //
 // This software is provided 'as-is', without any express or implied warranty.
 // In no event will the authors be held liable for any damages arising from the use of this software.
@@ -40,15 +40,18 @@ namespace tgui
     {
     public:
 
-        typedef std::shared_ptr<ClickableWidget> Ptr; ///< Shared widget pointer
-        typedef std::shared_ptr<const ClickableWidget> ConstPtr; ///< Shared constant widget pointer
+        typedef std::shared_ptr<ClickableWidget> Ptr; //!< Shared widget pointer
+        typedef std::shared_ptr<const ClickableWidget> ConstPtr; //!< Shared constant widget pointer
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /// @brief Default constructor
-        ///
+        /// @internal
+        /// @brief Constructor
+        /// @param typeName     Type of the widget
+        /// @param initRenderer Should the renderer be initialized? Should be true unless a derived class initializes it.
+        /// @see create
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ClickableWidget();
+        ClickableWidget(const char* typeName = "ClickableWidget", bool initRenderer = true);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -77,7 +80,7 @@ namespace tgui
         /// @brief Returns whether the mouse position (which is relative to the parent widget) lies on top of the widget
         /// @return Is the mouse on top of the widget?
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool mouseOnWidget(Vector2f pos) const override;
+        bool isMouseOnWidget(Vector2f pos) const override;
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @internal
@@ -112,7 +115,7 @@ namespace tgui
         /// @param states Current render states
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+        void draw(BackendRenderTargetBase& target, RenderStates states) const override;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -127,7 +130,7 @@ namespace tgui
         ///
         /// @throw Exception when the name does not match any signal
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        Signal& getSignal(std::string signalName) override;
+        Signal& getSignal(String signalName) override;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -142,13 +145,13 @@ namespace tgui
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public:
 
-        SignalVector2f onMousePress   = {"MousePressed"};   ///< The mouse went down on the widget. Optional parameter: mouse position relative to widget
-        SignalVector2f onMouseRelease = {"MouseReleased"};  ///< The mouse was released on top of the widget. Optional parameter: mouse position relative to widget
-        SignalVector2f onClick        = {"Clicked"};        ///< The widget was clicked. Optional parameter: mouse position relative to widget
+        SignalVector2f onMousePress   = {"MousePressed"};   //!< The mouse went down on the widget. Optional parameter: mouse position relative to widget
+        SignalVector2f onMouseRelease = {"MouseReleased"};  //!< The mouse was released on top of the widget. Optional parameter: mouse position relative to widget
+        SignalVector2f onClick        = {"Clicked"};        //!< The widget was clicked. Optional parameter: mouse position relative to widget
 
-        SignalVector2f onRightMousePress   = {"RightMousePressed"};   ///< The right mouse button went down on the widget. Optional parameter: mouse position relative to widget
-        SignalVector2f onRightMouseRelease = {"RightMouseReleased"};  ///< The right mouse button was released on top of the widget. Optional parameter: mouse position relative to widget
-        SignalVector2f onRightClick        = {"RightClicked"};        ///< The widget was right clicked. Optional parameter: mouse position relative to widget
+        SignalVector2f onRightMousePress   = {"RightMousePressed"};   //!< The right mouse button went down on the widget. Optional parameter: mouse position relative to widget
+        SignalVector2f onRightMouseRelease = {"RightMouseReleased"};  //!< The right mouse button was released on top of the widget. Optional parameter: mouse position relative to widget
+        SignalVector2f onRightClick        = {"RightClicked"};        //!< The widget was right clicked. Optional parameter: mouse position relative to widget
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

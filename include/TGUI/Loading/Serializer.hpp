@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // TGUI - Texus' Graphical User Interface
-// Copyright (C) 2012-2020 Bruno Van de Velde (vdv_b@tgui.eu)
+// Copyright (C) 2012-2021 Bruno Van de Velde (vdv_b@tgui.eu)
 //
 // This software is provided 'as-is', without any express or implied warranty.
 // In no event will the authors be held liable for any damages arising from the use of this software.
@@ -40,9 +40,9 @@ namespace tgui
     class TGUI_API Serializer
     {
     public:
-        using SerializeFunc = std::function<std::string(ObjectConverter&&)>;
+        using SerializeFunc = std::function<String(ObjectConverter&&)>;
 
-        static std::string serialize(ObjectConverter&& object);
+        static String serialize(ObjectConverter&& object);
 
         static void setFunction(ObjectConverter::Type type, const SerializeFunc& serializer);
         static const SerializeFunc& getFunction(ObjectConverter::Type type);

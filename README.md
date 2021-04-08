@@ -16,9 +16,9 @@ A simple **Chinese Checkers** game developed on C++ -> **SFML** Graphics Library
 - res     - misc files, images, fonts.
 
 ## **Building**
-- Developed with MinGW GCC
-- MinGW - ```make``` in terminal.
-- Updates coming soon for other compilers...
+- Developed with MSVC (VS2019)
+- Open SLN file in Visual Studio and run
+- Updates coming soon for GCC and other compilers...
 
 ## **Playing**
 1. Run Game.exe (or whatever extension)

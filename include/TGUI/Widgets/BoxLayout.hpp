@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // TGUI - Texus' Graphical User Interface
-// Copyright (C) 2012-2020 Bruno Van de Velde (vdv_b@tgui.eu)
+// Copyright (C) 2012-2021 Bruno Van de Velde (vdv_b@tgui.eu)
 //
 // This software is provided 'as-is', without any express or implied warranty.
 // In no event will the authors be held liable for any damages arising from the use of this software.
@@ -41,14 +41,18 @@ namespace tgui
     {
     public:
 
-        typedef std::shared_ptr<BoxLayout> Ptr; ///< Shared widget pointer
-        typedef std::shared_ptr<const BoxLayout> ConstPtr; ///< Shared constant widget pointer
+        typedef std::shared_ptr<BoxLayout> Ptr; //!< Shared widget pointer
+        typedef std::shared_ptr<const BoxLayout> ConstPtr; //!< Shared constant widget pointer
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // Default constructor
+        /// @internal
+        /// @brief Constructor
+        /// @param typeName     Type of the widget
+        /// @param initRenderer Should the renderer be initialized? Should be true unless a derived class initializes it.
+        /// @see create
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        BoxLayout(const Layout2d& size = {"100%", "100%"});
+        BoxLayout(const char* typeName, bool initRenderer);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -84,7 +88,7 @@ namespace tgui
         /// @param widgetName  An identifier to access to the widget later
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void add(const Widget::Ptr& widget, const sf::String& widgetName = "") override;
+        void add(const Widget::Ptr& widget, const String& widgetName = "") override;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -97,7 +101,7 @@ namespace tgui
         /// If the index is too high, the widget will simply be added at the end of the list.
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        virtual void insert(std::size_t index, const Widget::Ptr& widget, const sf::String& widgetName = "");
+        virtual void insert(std::size_t index, const Widget::Ptr& widget, const String& widgetName = "");
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -140,10 +144,10 @@ namespace tgui
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @brief Function called when one of the properties of the renderer is changed
         ///
-        /// @param property  Lowercase name of the property that was changed
+        /// @param property  Name of the property that was changed
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void rendererChanged(const std::string& property) override;
+        void rendererChanged(const String& property) override;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
