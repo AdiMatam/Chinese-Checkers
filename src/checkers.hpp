@@ -23,9 +23,11 @@ private:
 
     static int sINDICES[18];
 
-    enum MoveType {
+    enum class MoveType {
         INVALID, SINGLE, MULTIPLE
     };
+    
+    void correct(float* x, float* y);
     
 public:
     Checkers(sf::RenderWindow& win, sf::Color& fill);

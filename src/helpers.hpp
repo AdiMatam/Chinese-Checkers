@@ -6,7 +6,8 @@
 extern float HEIGHT        ; 
 extern float BOARD_DIAMETER; 
 extern float GAP           ;
-extern float STEP          ;
+extern float YSTEP         ;
+extern float XSTEP         ;
 extern float RADIUS        ;
 extern float THICK         ; 
 

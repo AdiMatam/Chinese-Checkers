@@ -1,5 +1,4 @@
 #include "pch.hpp"
-
 #include "slot.hpp"
 
 Slot::Slot(float x, float y, const sf::Color& c) {
