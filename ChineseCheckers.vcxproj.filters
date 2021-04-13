@@ -45,4 +45,7 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="res\todo.txt" />
+  </ItemGroup>
 </Project>

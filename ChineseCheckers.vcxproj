@@ -34,6 +34,9 @@
     </ClCompile>
     <ClCompile Include="src\slot.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="res\todo.txt" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>

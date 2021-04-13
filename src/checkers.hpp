@@ -18,16 +18,15 @@ private:
     Slot* mSelected;
     bool mEnableMouse;
 
-    const sf::Vector2f mCENTER = sf::Vector2f(HEIGHT / 2, HEIGHT / 2);
+    const sf::Vector2f mCENTER = sf::Vector2f(SIZE / 2, SIZE / 2);
     const float RADIAN = 3.1415f / 180.f;
-
-    static int sINDICES[18];
 
     enum class MoveType {
         INVALID, SINGLE, MULTIPLE
     };
-    
+           
     void correct(float* x, float* y);
+    void addSlotRow(float* oY, int row, int buffer);
     
 public:
     Checkers(sf::RenderWindow& win, sf::Color& fill);

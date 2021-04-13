@@ -1,0 +1,4 @@
+-> colors in a custom object (with better names and retrieval)
+	-> easier to use/read than vector
+
+-> do not pass in fill into Checkers constructor (internalize it)

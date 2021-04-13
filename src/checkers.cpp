@@ -1,12 +1,10 @@
 #include "pch.hpp"
 #include "checkers.hpp"
 
-int Checkers::sINDICES[18] = {
-    0, 1, 3, 6, 10, 23, 35, 46, 56,
-    65, 75, 86, 98, 111, 115, 118, 120, 121
-};
-
-
+//int Checkers::sINDICES[18] = {
+//    0, 1, 3, 6, 10, 23, 35, 46, 56,
+//    65, 75, 86, 98, 111, 115, 118, 120, 121
+//};
 
 Checkers::Checkers(sf::RenderWindow& win, sf::Color& fill)
     : mWin(&win), mFill(&fill), mTurn(true), mSelected(nullptr), mEnableMouse(true)
@@ -35,7 +33,7 @@ void Checkers::draw() const {
     mWin->draw(mOutline);
     for (auto& s : mSlots) {
         mWin->draw(s, mTrans);
-        mWin->draw(s.mOverlay, mTrans);
+        mWin->draw(s.overlay, mTrans);
     }
     mWin->display();
 }
@@ -55,49 +53,6 @@ void Checkers::rotateBoard() {
     }
 }
 
-void Checkers::resetBoard() {
-    float x;
-    float y = 2 * RADIUS;
-    sf::Color* colorStepper = &mColors[0];
-    int rowCount;
-
-    int guide[20] = {0,0,0,0,-1,2,3,3,4,5,-2,4,3,3,2,-2,0,0,0,0};
-    int* guidePtr = &guide[0];
-
-    for (int i = 0; i < 17; i++) {
-        rowCount = sINDICES[i+1] - sINDICES[i];
-        if (*guidePtr < 0) {
-            colorStepper += abs(*guidePtr);
-            guidePtr++;
-        }
-        x = HEIGHT / 2;
-        if (rowCount % 2 == 0)
-            x -= XSTEP / 2.f;
-        else {
-            if (rowCount > 4) 
-                mSlots.emplace_back(x, y, *mFill);
-            else              
-                mSlots.emplace_back(x, y, *colorStepper);
-            x -= XSTEP;
-        }       
-        for (int j = 0; j < rowCount / 2; j++) {
-            if (j >= *guidePtr) {
-                mSlots.emplace_back(x, y, *colorStepper);
-                if (rowCount > 4)
-                    mSlots.emplace_back(HEIGHT - x, y, *(colorStepper+1));
-                else
-                    mSlots.emplace_back(HEIGHT - x, y, *colorStepper);
-            }
-            else {
-                mSlots.emplace_back(x, y, *mFill);
-                mSlots.emplace_back(HEIGHT - x, y, *mFill);
-            }
-            x -= XSTEP;
-        }
-        y += YSTEP;
-        guidePtr++;
-    }
-}
 
 void Checkers::processClick(float x, float y, bool force) {
     correct(&x, &y);
@@ -154,11 +109,9 @@ bool Checkers::foundLegal(float x, float y) {
 }
 
 Slot* Checkers::find(float x, float y) {
-    int row = int( (y - RADIUS + THICK) / YSTEP);
-    for (int i = sINDICES[row]; i < sINDICES[row+1]; i++) {
-        Slot* curr = &mSlots[i];
-        if (curr->clicked(x, y))
-            return curr;
+    for (auto& s : mSlots) {
+        if (s.clicked(x, y))
+            return &s;
     }
     return nullptr;
 }
@@ -188,17 +141,75 @@ Checkers::MoveType Checkers::validateMove(const Slot* s1, const Slot* s2) {
     return MoveType::INVALID;
 }
 
+
+void Checkers::resetBoard() {
+    float X = HALF, Y = HALF;
+    // 9 ROW
+    mSlots.emplace_back(X, Y, 9);
+    for (int i = 0; i < 4; i++) {
+        X -= XSTEP;
+        mSlots.emplace_back(X, Y, 9);
+        mSlots.emplace_back(SIZE - X, Y, 9);
+    }
+    Y -= YSTEP;
+    int layout[8] = { 10, 11, 12, 13, 4, 3, 2, 1 };
+    int buffer;
+    for (int row : layout) {
+        switch (row) {
+        case 10: buffer = 3; break;
+        case 11: buffer = 2; break;
+        case 12: buffer = 2; break;
+        case 13: buffer = 1; break;
+        default: buffer = 0; break;
+        }
+        addSlotRow(&Y, row, buffer);
+    }
+}
+
+void Checkers::addSlotRow(float* oY, int row, int buffer) {
+    float X = HALF;
+    float Y = *oY;
+    int current = row;
+
+    if (row % 2 == 0)
+        X -= XSTEP / 2.f;
+    else {
+        if (buffer > 0)
+            current = 0;
+        else
+            current = row;
+        mSlots.emplace_back(X, Y, current);
+        mSlots.emplace_back(X, SIZE - Y, current);
+        X -= XSTEP;
+    }
+    int bound = row / 2;
+    for (int j = 0; j < bound; j++) {
+        if (buffer > 0) {
+            if (j > buffer)
+                current = row;
+            else
+                current = 0;
+        }
+        mSlots.emplace_back(X, Y, current);
+        mSlots.emplace_back(X, SIZE - Y, current);
+        mSlots.emplace_back(SIZE - X, Y, current);
+        mSlots.emplace_back(SIZE - X, SIZE - Y, current);
+        X -= XSTEP;
+    }
+    *oY -= YSTEP;
+}
+
 void Checkers::correct(float* x, float* y) {
     if (!mTurn) {
-        *x = HEIGHT - *x;
-        *y = HEIGHT - *y;
+        *x = SIZE - *x;
+        *y = SIZE - *y;
     }
 }
 
 void Checkers::config() {
     mOutline.setPosition(mCENTER);
     mOutline.setFillColor(*mFill);
-    mOutline.setRadius(BOARD_DIAMETER / 2);
+    mOutline.setRadius((SIZE - 10) / 2);
     mOutline.setOutlineColor(sf::Color::Black);
     mOutline.setOutlineThickness(THICK);
     mOutline.setPointCount(mOutline.getPointCount() * 2);
@@ -213,4 +224,6 @@ void Checkers::config() {
     mColors.push_back(sf::Color::Green);
     mColors.push_back(sf::Color::Yellow);
     mColors.push_back(sf::Color(90, 90, 90));
+    Slot::colors = &mColors;
+    Slot::fill = mFill;
 }

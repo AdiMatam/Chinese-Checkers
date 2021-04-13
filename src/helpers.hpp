@@ -3,13 +3,14 @@
 
 #include "pch.hpp"
 
-extern float HEIGHT        ; 
-extern float BOARD_DIAMETER; 
-extern float GAP           ;
-extern float YSTEP         ;
-extern float XSTEP         ;
-extern float RADIUS        ;
-extern float THICK         ; 
+extern float SIZE  ; 
+extern float HALF  ; 
+extern float GAP   ;
+extern float YSTEP ;
+extern float XSTEP ;
+extern float RADIUS;
+extern float THICK ; 
+
 
 void logColor(const sf::Color& color); 
 
