@@ -9,9 +9,12 @@ namespace Pref {
 };
 
 int main() {
-    sf::RenderWindow window(sf::VideoMode(SIZE, SIZE), Pref::TITLE, Pref::STYLE);
-    Checkers game(window, Pref::BG);
+    auto STYLE = sf::Style::Titlebar | sf::Style::Close;
+    sf::RenderWindow window(sf::VideoMode(SIZE, SIZE), "Chinese Checkers", STYLE);
     sf::Event event;
+    
+    Theme main;
+    Checkers game(&window, &main);
 
     while (window.isOpen()) {
         while (window.pollEvent(event)) {

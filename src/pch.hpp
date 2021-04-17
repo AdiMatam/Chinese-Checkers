@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <array>
 
 #include <SFML/Graphics.hpp>
 

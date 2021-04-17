@@ -8,11 +8,12 @@
 class Checkers {
 private:
     sf::RenderWindow* mWin;
-    sf::Color* mFill;
+    Theme* mTheme;
+    //sf::Color* mFill;
     sf::CircleShape mOutline;
     sf::Transform mTrans;
     std::vector<Slot> mSlots;
-    std::vector<sf::Color> mColors;
+    //std::vector<sf::Color> mColors;
     
     bool mTurn;
     Slot* mSelected;
@@ -29,7 +30,7 @@ private:
     void addSlotRow(float* oY, int row, int buffer);
     
 public:
-    Checkers(sf::RenderWindow& win, sf::Color& fill);
+    Checkers(sf::RenderWindow* win, Theme* theme);
     ~Checkers() = default;
 
     void rotateBoard();
@@ -37,7 +38,7 @@ public:
     void resetBoard();
     
     Slot* find(float x, float y);
-    int getIdentity(const Slot* slot);
+    //int getIdentity(const Slot* slot);
     MoveType validateMove(const Slot* s1, const Slot* s2);
     void processClick(float x, float y, bool force);
     bool foundLegal(float x, float y);

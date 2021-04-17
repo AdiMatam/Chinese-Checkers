@@ -23,7 +23,7 @@
     <ClInclude Include="src\helpers.hpp" />
     <ClInclude Include="src\pch.hpp" />
     <ClInclude Include="src\slot.hpp" />
-    <ClInclude Include="src\theme.h" />
+    <ClInclude Include="src\theme.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\checkers.cpp" />

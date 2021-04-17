@@ -1,5 +1,5 @@
 #include "pch.hpp"
-#include "theme.h"
+#include "theme.hpp"
 
 Theme::Theme() {
 	mBackground = sf::Color(255, 239, 201);
@@ -16,4 +16,12 @@ void Theme::setBackground(const sf::Color& background) {
 }
 void Theme::setColor(Index which, const sf::Color& color) {
 	mColors[int(which)] = color;
+}
+
+sf::Color& Theme::getBackground() {
+	return mBackground;
+}
+
+sf::Color& Theme::getColor(Index which) {
+	return mColors[int(which)];
 }

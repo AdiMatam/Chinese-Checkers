@@ -27,7 +27,7 @@
     <ClInclude Include="src\pch.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\theme.h">
+    <ClInclude Include="src\theme.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

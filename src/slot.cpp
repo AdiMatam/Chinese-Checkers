@@ -1,9 +1,7 @@
 #include "pch.hpp"
 #include "slot.hpp"
 
-sf::Color* Slot::fill;
-std::vector<sf::Color>* Slot::colors;
-
+Theme* Slot::theme;
 
 Slot::Slot(float x, float y, int row) {
 	setup();
@@ -25,6 +23,15 @@ void Slot::resetFill() {
     overlay.setFillColor(getFillColor());
 }
 
+int Slot::getIdentity() {
+	sf::Color fill = getFillColor();
+	if (fill == theme->getBackground()) return -1;
+	// FIRST 3 -> return 0
+	// ELSE    -> return 1
+	return (fill == theme->getColor(Theme::BOTTOM) || 
+		    fill == theme->getColor(Theme::BOTTOM_LEFT) || 
+		    fill == theme->getColor(Theme::BOTTOM_RIGHT));
+}
 
 void Slot::setup() {
 	setOutlineColor(sf::Color::Black);
@@ -38,19 +45,19 @@ void Slot::setup() {
 void Slot::determineColor(float x, float y, int row) {
 	sf::Color* color;
 	if (row == 9 or row == 0)
-		color = fill;
+		color = &theme->getBackground();
 	else if (row <= 4 and row >= 1) {
-		if (y > HALF) color = &colors->at(ColorIndex::BOTTOM);
-		else          color = &colors->at(ColorIndex::TOP);
+		if (y > HALF) color = &theme->getColor(Theme::BOTTOM);
+		else          color = &theme->getColor(Theme::TOP);
 	}
 	else {
 		if (x > HALF) {
-			if (y > HALF) color = &colors->at(ColorIndex::BOTTOM_RIGHT);
-			else          color = &colors->at(ColorIndex::TOP_RIGHT);
+			if (y > HALF) color = &theme->getColor(Theme::BOTTOM_RIGHT);
+			else          color = &theme->getColor(Theme::TOP_RIGHT);
 		}
 		else {
-			if (y > HALF) color = &colors->at(ColorIndex::BOTTOM_LEFT);
-			else          color = &colors->at(ColorIndex::TOP_LEFT);
+			if (y > HALF) color = &theme->getColor(Theme::BOTTOM_LEFT);
+			else          color = &theme->getColor(Theme::TOP_LEFT);
 		}
 	}
 	setFillColor(*color);

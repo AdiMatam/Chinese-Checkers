@@ -1,10 +1,10 @@
 #include "pch.hpp"
 #include "checkers.hpp"
 
-Checkers::Checkers(sf::RenderWindow& win, sf::Color& fill)
-    : mWin(&win), mFill(&fill), mTurn(true), mSelected(nullptr), mEnableMouse(true)
+Checkers::Checkers(sf::RenderWindow* win, Theme* theme)
+    : mWin(win), mTheme(theme), mTurn(true), mSelected(nullptr), mEnableMouse(true)
 {
-    config();   
+    config();
     resetBoard();
 }
 
@@ -24,7 +24,7 @@ bool Checkers::movedAtAll() {
 }
 
 void Checkers::draw() const {
-    mWin->clear(*mFill);
+    mWin->clear(mTheme->getBackground());
     mWin->draw(mOutline);
     for (auto& s : mSlots) {
         mWin->draw(s, mTrans);
@@ -55,7 +55,7 @@ void Checkers::processClick(float x, float y, bool force) {
     Slot* clicked = find(x, y);
     if (clicked == nullptr) 
         return;
-    int id = getIdentity(clicked);
+    int id = clicked->getIdentity();
     if (force || (id == int(mTurn) && mEnableMouse)) {
         if (mSelected != nullptr) 
             mSelected->resetFill();
@@ -74,7 +74,7 @@ void Checkers::processClick(float x, float y, bool force) {
             clicked->setFillColor(mSelected->getFillColor());
             clicked->resetFill();
 
-            mSelected->setFillColor(*mFill);
+            mSelected->setFillColor(mTheme->getBackground());
             mSelected->resetFill();
 
             if (ender) {
@@ -97,7 +97,7 @@ bool Checkers::foundLegal(float x, float y) {
         nx = x + length * cosf(angle * RADIAN);
         ny = y + length * sinf(angle * RADIAN);
         Slot* temp = find(nx, ny);
-        if (temp != nullptr && getIdentity(temp) == -1)
+        if (temp != nullptr && temp->getIdentity() == -1)
             return true;
     }
     return false;
@@ -109,14 +109,6 @@ Slot* Checkers::find(float x, float y) {
             return &s;
     }
     return nullptr;
-}
-
-int Checkers::getIdentity(const Slot* slot) {
-    sf::Color fill = slot->getFillColor();
-    if (fill == *mFill) return -1;
-    // FIRST 3 -> return 0
-    // ELSE    -> return 1
-    return (fill == mColors[3] || fill == mColors[4] || fill == mColors[5]);
 }
 
 Checkers::MoveType Checkers::validateMove(const Slot* s1, const Slot* s2) {
@@ -131,7 +123,7 @@ Checkers::MoveType Checkers::validateMove(const Slot* s1, const Slot* s2) {
     float midX = (s1pos.x + s2pos.x) / 2.f;
     float midY = (s1pos.y + s2pos.y) / 2.f;
     Slot* midPoint = find(midX, midY);
-    if (midPoint != nullptr && getIdentity(midPoint) != -1)
+    if (midPoint != nullptr && midPoint->getIdentity() != -1)
         return MoveType::MULTIPLE;
     return MoveType::INVALID;
 }
@@ -203,7 +195,7 @@ void Checkers::correct(float* x, float* y) {
 
 void Checkers::config() {
     mOutline.setPosition(mCENTER);
-    mOutline.setFillColor(*mFill);
+    mOutline.setFillColor(mTheme->getBackground());
     mOutline.setRadius((SIZE - 10) / 2);
     mOutline.setOutlineColor(sf::Color::Black);
     mOutline.setOutlineThickness(THICK);
@@ -212,6 +204,7 @@ void Checkers::config() {
 
     // FIRST 3 -> mTurn = FALSE
     // LAST  3 -> mTurn = TRUE
+    /*
     mColors.reserve(6);
     mColors.push_back(sf::Color::White);
     mColors.push_back(sf::Color::Red);
@@ -219,6 +212,6 @@ void Checkers::config() {
     mColors.push_back(sf::Color::Green);
     mColors.push_back(sf::Color::Yellow);
     mColors.push_back(sf::Color(90, 90, 90));
-    Slot::colors = &mColors;
-    Slot::fill = mFill;
+    */
+    Slot::theme = mTheme;
 }

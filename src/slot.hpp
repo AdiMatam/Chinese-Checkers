@@ -3,13 +3,10 @@
 
 #include "pch.hpp"
 #include "helpers.hpp"
+#include "theme.hpp"
 
 struct Slot : public sf::CircleShape {
-    static sf::Color* fill;
-    static std::vector<sf::Color>* colors;
-    enum ColorIndex {
-        TOP, TOP_RIGHT, TOP_LEFT, BOTTOM, BOTTOM_RIGHT, BOTTOM_LEFT
-    };
+    static Theme* theme;
     sf::CircleShape overlay;
 
     Slot() = default;
@@ -19,6 +16,7 @@ struct Slot : public sf::CircleShape {
     bool clicked(float mouseX, float mouseY) const;
     void pick();
     void resetFill();
+    int getIdentity();
 
 private:
     void determineColor(float x, float y, int row);
