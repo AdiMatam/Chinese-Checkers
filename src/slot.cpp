@@ -36,23 +36,23 @@ void Slot::setup() {
 }
 
 void Slot::determineColor(float x, float y, int row) {
-	sf::Color color;
+	sf::Color* color;
 	if (row == 9 or row == 0)
-		color = *fill;
+		color = fill;
 	else if (row <= 4 and row >= 1) {
-		if (y > HALF) color = colors->at(3);
-		else          color = colors->at(0);
+		if (y > HALF) color = &colors->at(ColorIndex::BOTTOM);
+		else          color = &colors->at(ColorIndex::TOP);
 	}
 	else {
 		if (x > HALF) {
-			if (y > HALF) color = colors->at(4);
-			else          color = colors->at(1);
+			if (y > HALF) color = &colors->at(ColorIndex::BOTTOM_RIGHT);
+			else          color = &colors->at(ColorIndex::TOP_RIGHT);
 		}
 		else {
-			if (y > HALF) color = colors->at(5);
-			else          color = colors->at(2);
+			if (y > HALF) color = &colors->at(ColorIndex::BOTTOM_LEFT);
+			else          color = &colors->at(ColorIndex::TOP_LEFT);
 		}
 	}
-	setFillColor(color);
-	overlay.setFillColor(color);
+	setFillColor(*color);
+	overlay.setFillColor(*color);
 }

@@ -1,11 +1,6 @@
 #include "pch.hpp"
 #include "checkers.hpp"
 
-//int Checkers::sINDICES[18] = {
-//    0, 1, 3, 6, 10, 23, 35, 46, 56,
-//    65, 75, 86, 98, 111, 115, 118, 120, 121
-//};
-
 Checkers::Checkers(sf::RenderWindow& win, sf::Color& fill)
     : mWin(&win), mFill(&fill), mTurn(true), mSelected(nullptr), mEnableMouse(true)
 {

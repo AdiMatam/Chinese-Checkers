@@ -7,6 +7,9 @@
 struct Slot : public sf::CircleShape {
     static sf::Color* fill;
     static std::vector<sf::Color>* colors;
+    enum ColorIndex {
+        TOP, TOP_RIGHT, TOP_LEFT, BOTTOM, BOTTOM_RIGHT, BOTTOM_LEFT
+    };
     sf::CircleShape overlay;
 
     Slot() = default;

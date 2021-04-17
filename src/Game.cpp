@@ -27,3 +27,13 @@ int main() {
         game.draw();
     }
 }
+
+
+/*
+else if (keyPressed(event, sf::Keyboard::S)) {
+    sf::Texture tex;
+    tex.create(window.getSize().x, window.getSize().y);
+    tex.update(window);
+    tex.copyToImage().saveToFile("res/img/myBoard.png");
+}
+*/
