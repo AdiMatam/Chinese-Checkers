@@ -26,8 +26,8 @@ void Slot::resetFill() {
 int Slot::getIdentity() {
 	sf::Color fill = getFillColor();
 	if (fill == theme->getBackground()) return -1;
-	// FIRST 3 -> return 0
-	// ELSE    -> return 1
+	// TOP -> RET 0
+	// BOT -> RET 1
 	return (fill == theme->getColor(Theme::BOTTOM) || 
 		    fill == theme->getColor(Theme::BOTTOM_LEFT) || 
 		    fill == theme->getColor(Theme::BOTTOM_RIGHT));

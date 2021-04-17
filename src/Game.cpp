@@ -2,12 +2,6 @@
 #include "helpers.hpp"
 #include "checkers.hpp"
 
-namespace Pref {
-    int         STYLE = sf::Style::Titlebar | sf::Style::Close;
-    std::string TITLE = "Chinese Checkers";
-    sf::Color   BG    = sf::Color(222, 237, 255);
-};
-
 int main() {
     auto STYLE = sf::Style::Titlebar | sf::Style::Close;
     sf::RenderWindow window(sf::VideoMode(SIZE, SIZE), "Chinese Checkers", STYLE);
@@ -30,13 +24,3 @@ int main() {
         game.draw();
     }
 }
-
-
-/*
-else if (keyPressed(event, sf::Keyboard::S)) {
-    sf::Texture tex;
-    tex.create(window.getSize().x, window.getSize().y);
-    tex.update(window);
-    tex.copyToImage().saveToFile("res/img/myBoard.png");
-}
-*/
