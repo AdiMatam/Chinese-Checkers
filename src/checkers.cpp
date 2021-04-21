@@ -30,7 +30,6 @@ void Checkers::draw() const {
         mWin->draw(s, mTrans);
         mWin->draw(s.overlay, mTrans);
     }
-    mWin->display();
 }
 
 void Checkers::rotateBoard() {
@@ -39,6 +38,7 @@ void Checkers::rotateBoard() {
     int delay = 400;
     while (rotation < 180) {
         draw();
+        mWin->display();
         if (c.getElapsedTime().asMilliseconds() >= delay) {
             rotation++;
             mTrans.rotate(1, mCENTER);
