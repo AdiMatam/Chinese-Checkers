@@ -25,3 +25,16 @@ sf::Color& Theme::getBackground() {
 sf::Color& Theme::getColor(Index which) {
 	return mColors[int(which)];
 }
+
+//void Theme::finalize() {
+//	auto searchPoint = mColors.rend();
+//	int otherIndex;
+//	for (int i = 0; i < mColors.size(); i++) {
+//		otherIndex = std::distance(std::find(mColors.rbegin(), searchPoint--, mColors[i]), mColors.rend() - 1);
+//		if (otherIndex != -1) {
+//			if (i != otherIndex or mColors[i] == mBackground) {
+//				//mColors[i]
+//			}
+//		}
+//	}
+//}

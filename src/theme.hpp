@@ -17,6 +17,7 @@ public:
 	void setColor(Index which, const sf::Color& color);
 	sf::Color& getBackground();
 	sf::Color& getColor(Index which);
+	//void finalize();
 
 };
 
