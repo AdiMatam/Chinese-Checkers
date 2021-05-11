@@ -24,7 +24,7 @@ bool Checkers::movedAtAll() {
 }
 
 void Checkers::draw() const {
-    mWin->clear(mTheme->getBackground());
+    mWin->clear(mTheme->getColor(Theme::BACKGROUND));
     mWin->draw(mOutline);
     for (auto& s : mSlots) {
         mWin->draw(s, mTrans);
@@ -74,7 +74,7 @@ void Checkers::processClick(float x, float y, bool force) {
             clicked->setFillColor(mSelected->getFillColor());
             clicked->resetFill();
 
-            mSelected->setFillColor(mTheme->getBackground());
+            mSelected->setFillColor(mTheme->getColor(Theme::BACKGROUND));
             mSelected->resetFill();
 
             if (ender) {
@@ -195,23 +195,12 @@ void Checkers::correct(float* x, float* y) {
 
 void Checkers::config() {
     mOutline.setPosition(mCENTER);
-    mOutline.setFillColor(mTheme->getBackground());
+    mOutline.setFillColor(mTheme->getColor(Theme::BACKGROUND));
     mOutline.setRadius((SIZE - 10) / 2);
     mOutline.setOutlineColor(sf::Color::Black);
     mOutline.setOutlineThickness(THICK);
     mOutline.setPointCount(mOutline.getPointCount() * 2);
     mOutline.setOrigin(mOutline.getRadius(), mOutline.getRadius());
 
-    // FIRST 3 -> mTurn = FALSE
-    // LAST  3 -> mTurn = TRUE
-    /*
-    mColors.reserve(6);
-    mColors.push_back(sf::Color::White);
-    mColors.push_back(sf::Color::Red);
-    mColors.push_back(sf::Color::Blue);
-    mColors.push_back(sf::Color::Green);
-    mColors.push_back(sf::Color::Yellow);
-    mColors.push_back(sf::Color(90, 90, 90));
-    */
     Slot::theme = mTheme;
 }

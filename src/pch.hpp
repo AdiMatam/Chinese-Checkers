@@ -11,5 +11,6 @@
 #include <array>
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Network.hpp>
 
 #endif

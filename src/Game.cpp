@@ -19,11 +19,17 @@ int main() {
             else if (mousePressed(event, sf::Mouse::Left))
                 game.processClick(event.mouseButton.x, event.mouseButton.y, false);
 
+            //else if (mousePressed(event, sf::Mouse::Right)) {
+            //    game.themer(event.mouseButton.x, event.mouseButton.y);
+            //}
+
             else if (keyPressed(event, sf::Keyboard::Enter) && game.movedAtAll())
                 game.switchTurn();
         }
-        game.draw();
-        window.display();
+        if (window.hasFocus()) {
+            game.draw();
+            window.display();
+        }
     }
 }
 

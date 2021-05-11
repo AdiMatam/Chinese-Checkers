@@ -25,10 +25,7 @@ private:
     enum class MoveType {
         INVALID, SINGLE, MULTIPLE
     };
-           
-    void correct(float* x, float* y);
-    void addSlotRow(float* oY, int row, int buffer);
-    
+   
 public:
     Checkers(sf::RenderWindow* win, Theme* theme);
     ~Checkers() = default;
@@ -38,16 +35,18 @@ public:
     void resetBoard();
     
     Slot* find(float x, float y);
-    //int getIdentity(const Slot* slot);
     MoveType validateMove(const Slot* s1, const Slot* s2);
-    void processClick(float x, float y, bool force);
     bool foundLegal(float x, float y);
+    void processClick(float x, float y, bool force);
+    //void themer(float x, float y);
 
     void switchTurn();
     bool movedAtAll();
 
 private:
     void config();
+    void correct(float* x, float* y);
+    void addSlotRow(float* oY, int row, int buffer);
 };
 
 #endif

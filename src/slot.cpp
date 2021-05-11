@@ -25,7 +25,7 @@ void Slot::resetFill() {
 
 int Slot::getIdentity() {
 	sf::Color fill = getFillColor();
-	if (fill == theme->getBackground()) return -1;
+	if (fill == theme->getColor(Theme::BACKGROUND)) return -1;
 	// TOP -> RET 0
 	// BOT -> RET 1
 	return (fill == theme->getColor(Theme::BOTTOM) || 
@@ -45,7 +45,7 @@ void Slot::setup() {
 void Slot::determineColor(float x, float y, int row) {
 	sf::Color* color;
 	if (row == 9 or row == 0)
-		color = &theme->getBackground();
+		color = &theme->getColor(Theme::BACKGROUND);
 	else if (row <= 4 and row >= 1) {
 		if (y > HALF) color = &theme->getColor(Theme::BOTTOM);
 		else          color = &theme->getColor(Theme::TOP);
