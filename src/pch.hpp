@@ -1,6 +1,7 @@
 #ifndef PCH_H
 #define PCH_H
 
+// Standard imports (may remove/add as needed)
 #include <iostream>
 #include <cmath>
 #include <algorithm>
@@ -10,6 +11,7 @@
 #include <vector>
 #include <array>
 
+// Dependency - graphics library
 #include <SFML/Graphics.hpp>
 
 #endif
