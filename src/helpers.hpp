@@ -11,4 +11,10 @@ extern float XSTEP ;
 extern float RADIUS;
 extern float THICK ; 
 
+extern sf::Color OUTLINE;
+extern sf::Color BACKGROUND;
+extern sf::Color COLORS[6];
+
+void logColor(const sf::Color& color);
+
 #endif

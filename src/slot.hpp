@@ -3,11 +3,11 @@
 
 class Slot : public sf::CircleShape {
 private:
+	sf::Color m_GoalColor;
 	int m_Owner;
 public:
 	Slot(float x, float y, int owner);
-	int getOwner();
-	void setOwner(int owner);
+	bool clicked(float x, float y) const;
 private:
 	void config();
 };

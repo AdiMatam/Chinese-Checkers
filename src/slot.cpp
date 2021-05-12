@@ -1,20 +1,15 @@
 #include "pch.hpp"
 #include "slot.hpp"
 
-Slot::Slot(float x, float y, int owner)
-{
-	m_Owner = 0;
+Slot::Slot(float x, float y, int owner) {
+	//m_Owner = 0;
 }
 
-int Slot::getOwner()
-{
-	return 0;
+bool Slot::clicked(float mouseX, float mouseY) const {
+    sf::Vector2f pos = getPosition();
+    bool x = (pos.x - RADIUS <= mouseX) && (mouseX <= pos.x + RADIUS);
+    return x && (pos.y - RADIUS <= mouseY) && (mouseY <= pos.y + RADIUS);
 }
 
-void Slot::setOwner(int owner)
-{
-}
-
-void Slot::config()
-{
+void Slot::config() {
 }

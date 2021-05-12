@@ -22,6 +22,7 @@
     <ClInclude Include="src\checkers.hpp" />
     <ClInclude Include="src\helpers.hpp" />
     <ClInclude Include="src\pch.hpp" />
+    <ClInclude Include="src\slot.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\checkers.cpp" />
@@ -31,6 +32,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\slot.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="res\todo.txt" />

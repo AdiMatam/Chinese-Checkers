@@ -11,8 +11,9 @@ int main() {
 	
 	while (window.isOpen()) {
 		while (window.pollEvent(ev)) {
-
+			if (ev.type == sf::Event::Closed)
+				window.close();
 		}
-		//game.draw();
+		game.draw();
 	}
 }
