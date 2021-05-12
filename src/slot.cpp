@@ -1,8 +1,8 @@
 #include "pch.hpp"
 #include "slot.hpp"
 
-Slot::Slot(float x, float y, int owner) {
-	//m_Owner = 0;
+Slot::Slot(float x, float y, int row) {
+    
 }
 
 bool Slot::clicked(float mouseX, float mouseY) const {

@@ -22,5 +22,5 @@ public:
 	Slot* find(float x, float y);
 
 private:
-	void initiate();
+	void config();
 };

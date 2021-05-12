@@ -4,9 +4,9 @@
 class Slot : public sf::CircleShape {
 private:
 	sf::Color m_GoalColor;
-	int m_Owner;
+	sf::CircleShape m_Overlay;
 public:
-	Slot(float x, float y, int owner);
+	Slot(float x, float y, int row);
 	bool clicked(float x, float y) const;
 private:
 	void config();

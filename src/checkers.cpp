@@ -5,7 +5,7 @@ ChineseCheckers::ChineseCheckers(sf::RenderWindow* window, int playerCount)
 	: m_Window(window), m_PlayerCount(playerCount), m_CurrentPlayer(0), m_Selected(nullptr)
 {
 	std::cout << "Starting Game" << std::endl;
-	initiate();
+	config();
 	createBoard();
 }
 
@@ -26,6 +26,8 @@ void ChineseCheckers::draw() {
 
 void ChineseCheckers::createBoard() {
 	m_Slots.reserve(121);
+
+
 	
 	std::sort(m_Slots.begin(), m_Slots.end(), [](const Slot& a, const Slot& b) { return a.getPosition().y < b.getPosition().y; });
 }
@@ -54,7 +56,7 @@ Slot* ChineseCheckers::find(float wantX, float wantY) {
 	return nullptr;
 }
 
-void ChineseCheckers::initiate() {
+void ChineseCheckers::config() {
 	m_Outline.setPosition(HALF, HALF);
 	m_Outline.setRadius(HALF - 5);
 	m_Outline.setPointCount(m_Outline.getPointCount() * 2);
