@@ -8,6 +8,9 @@ private:
 public:
 	Slot(float x, float y, int row);
 	bool clicked(float x, float y) const;
+	void draw(sf::RenderWindow* win, sf::Transform* t) const;
+	sf::Color& getGoalColor();
 private:
 	void config();
+	void determineColor(int x, int y, int row);
 };

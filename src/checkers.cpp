@@ -19,17 +19,60 @@ void ChineseCheckers::nextTurn() {
 }
 
 void ChineseCheckers::draw() {
-	m_Window->clear(BACKGROUND);
 	m_Window->draw(m_Outline);
-	m_Window->display();
+	for (auto& s : m_Slots)
+		s.draw(m_Window, &m_Rotter);
 }
 
 void ChineseCheckers::createBoard() {
 	m_Slots.reserve(121);
+	float X = HALF, Y = HALF;
+	// 9 row
+	m_Slots.emplace_back(X, Y, 9);
+	for (int i = 0; i < 9 / 2; i++) {
+		X -= XSTEP;
+		m_Slots.emplace_back(X, Y, 9);
+		m_Slots.emplace_back(SIZE - X, Y, 9);
+	}
+	Y -= YSTEP;
+	int rows[8] = { 10, 11, 12, 13, 4, 3, 2, 1 };
+	for (int row : rows) {
+		addSlotRow(Y, row);
+		Y -= YSTEP;
+	}
+	std::sort (
+		m_Slots.begin(), m_Slots.end(), 
+		[](const Slot& a, const Slot& b) 
+		{ return a.getPosition().y < b.getPosition().y; }
+	);
+}
 
+void ChineseCheckers::rotateBoard() {
+	m_Rotter.rotate(360.f / m_PlayerCount, HALF, HALF);
+}
 
+bool ChineseCheckers::checkWin() {
+	int incr = 6 / m_PlayerCount; // 3
+	int index = m_CurrentPlayer * incr; // 0 | 3
+	// 2 players - 0,1,2 | 3,4,5
 	
-	std::sort(m_Slots.begin(), m_Slots.end(), [](const Slot& a, const Slot& b) { return a.getPosition().y < b.getPosition().y; });
+	sf::Color* mine = (sf::Color*)alloca(sizeof(sf::Color) * incr);
+	for (int i = index; i < index + incr; i++)
+		mine[i - index] = COLORS[i];
+
+	auto inArr = [=](const sf::Color& c) {
+		return std::find(
+			mine, mine + incr, c)
+			!= mine + incr;
+	};
+
+	for (Slot& s : m_Slots) {
+		if (!inArr(s.getFillColor()) 
+			or s.getFillColor() != s.getGoalColor()) {
+			return false;
+		}
+	}
+	return true;
 }
 
 Slot* ChineseCheckers::find(float wantX, float wantY) {
@@ -56,6 +99,43 @@ Slot* ChineseCheckers::find(float wantX, float wantY) {
 	return nullptr;
 }
 
+void ChineseCheckers::addSlotRow(float Y, int row) {
+	int buf;
+	if (row == 13)      buf = 2;
+	else if (row == 12) buf = 3;
+	else if (row == 11) buf = 3;
+	else if (row == 10) buf = 4;
+	else                buf = 0;
+
+	float X = HALF;
+	int current = row;
+	if (row % 2 == 0)
+		X -= XSTEP / 2.f;
+	else {
+		if (buf > 0)
+			current = 0;
+		else
+			current = row;
+		m_Slots.emplace_back(X, Y, current);
+		m_Slots.emplace_back(X, SIZE - Y, current);
+		X -= XSTEP;
+	}
+	int bound = row / 2;
+	for (int j = 0; j < bound; j++) {
+		if (row >= 10) {
+			if (j >= buf)
+				current = row;
+			else
+				current = 0;
+		}
+		m_Slots.emplace_back(X, Y, current);
+		m_Slots.emplace_back(X, SIZE - Y, current);
+		m_Slots.emplace_back(SIZE - X, Y, current);
+		m_Slots.emplace_back(SIZE - X, SIZE - Y, current);
+		X -= XSTEP;
+	}
+}
+
 void ChineseCheckers::config() {
 	m_Outline.setPosition(HALF, HALF);
 	m_Outline.setRadius(HALF - 5);
@@ -66,3 +146,4 @@ void ChineseCheckers::config() {
 	m_Outline.setFillColor(sf::Color::Transparent);
 	m_Outline.setOutlineThickness(THICK);
 }
+

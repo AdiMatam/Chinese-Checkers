@@ -16,5 +16,6 @@ extern sf::Color BACKGROUND;
 extern sf::Color COLORS[6];
 
 void logColor(const sf::Color& color);
+bool keyPressed(sf::Event& ev, sf::Keyboard::Key code);
 
 #endif

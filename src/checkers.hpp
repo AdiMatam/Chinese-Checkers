@@ -6,6 +6,7 @@ class ChineseCheckers {
 private:
 	sf::RenderWindow* m_Window;
 	sf::CircleShape m_Outline;
+	sf::Transform m_Rotter;
 	
 	int m_PlayerCount;
 	int m_CurrentPlayer;
@@ -19,8 +20,11 @@ public:
 	void nextTurn();
 	void draw();
 	void createBoard();
-	Slot* find(float x, float y);
+	void rotateBoard();
+	bool checkWin();
 
 private:
+	Slot* find(float x, float y);
 	void config();
+	void addSlotRow(float Y, int row);
 };
