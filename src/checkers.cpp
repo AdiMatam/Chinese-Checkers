@@ -58,8 +58,21 @@ bool CC::isGameOver() {
 	return m_GameOver;
 }
 
-CC::MoveType CC::validateMove() {
-	
+CC::MoveType CC::validateMove(Slot* s1, Slot* s2) {
+	sf::Vector2f s1pos = s1->getPosition();
+	sf::Vector2f s2pos = s2->getPosition();
+
+	float distance = sqrtf(powf(s1pos.y - s2pos.y, 2) + powf(s1pos.x - s2pos.x, 2));
+	if (distance <= 4 * RADIUS)
+		return MoveType::SINGLE;
+
+	// MIDPOINT
+	float midX = (s1pos.x + s2pos.x) / 2.f;
+	float midY = (s1pos.y + s2pos.y) / 2.f;
+	Slot* midPoint = findSlot(midX, midY);
+	if (midPoint != nullptr && !midPoint->isEmpty())
+		return MoveType::MULTIPLE;
+	return MoveType::NOHOPE;
 }
 
 Slot* CC::findSlot(float wantX, float wantY) {

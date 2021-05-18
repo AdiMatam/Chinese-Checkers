@@ -32,7 +32,7 @@ public:
 	void nextTurn();
 	int checkWin();
 	bool isGameOver();
-	MoveType validateMove();
+	MoveType validateMove(Slot*, Slot*);
 
 	Slot* findSlot(float x, float y);
 private:
