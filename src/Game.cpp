@@ -29,7 +29,8 @@ int main() {
 					sf::Vector2u(ev.size.width, ev.size.width)
 				);
 			if (keyPressed(ev, sf::Keyboard::Enter))
-				game.rotateBoard();
+				game.checkWin();
+				//game.rotateBoard();
 		}
 		window.clear(sf::Color::White);
 		window.draw(sp);

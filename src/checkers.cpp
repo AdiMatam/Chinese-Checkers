@@ -14,8 +14,7 @@ ChineseCheckers::~ChineseCheckers() {
 }
 
 void ChineseCheckers::nextTurn() {
-	if (++m_CurrentPlayer >= m_PlayerCount)
-		m_CurrentPlayer = 0;
+	++m_CurrentPlayer %= m_PlayerCount;
 }
 
 void ChineseCheckers::draw() {
@@ -68,7 +67,7 @@ bool ChineseCheckers::checkWin() {
 
 	for (Slot& s : m_Slots) {
 		if (!inArr(s.getFillColor()) 
-			or s.getFillColor() != s.getGoalColor()) {
+			and s.getFillColor() != s.getGoalColor()) {
 			return false;
 		}
 	}
