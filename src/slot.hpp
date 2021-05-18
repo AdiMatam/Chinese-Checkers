@@ -10,6 +10,8 @@ public:
 	bool clicked(float x, float y) const;
 	void draw(sf::RenderWindow* win, sf::Transform* t) const;
 	sf::Color& getGoalColor();
+	bool isMine(int currentPlayer, int totalPlayers);
+	bool isEmpty();
 private:
 	void config();
 	void determineColor(int x, int y, int row);

@@ -22,6 +22,17 @@ sf::Color& Slot::getGoalColor() {
     return m_GoalColor;
 }
 
+bool Slot::isMine(int currentPlayer, int totalPlayers) {
+    int len = 6 / totalPlayers;
+    sf::Color* colors = (sf::Color*)alloca(sizeof(sf::Color) * len);
+    getMyColors(currentPlayer, totalPlayers, colors, len);
+    return arrContains(getFillColor(), colors, len);
+}
+
+bool Slot::isEmpty() {
+    return getFillColor() == sf::Color::Transparent;
+}
+
 void Slot::config() {
     setRadius(RADIUS);
     setOrigin(getRadius(), getRadius());
