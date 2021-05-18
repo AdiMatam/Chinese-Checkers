@@ -12,7 +12,7 @@ float HALF   = SIZE / 2;
 
 //sf::Color OUTLINE    = { 199, 144, 97 };
 sf::Color OUTLINE    = { 50, 50, 50 };
-sf::Color BACKGROUND = { 105, 48, 0 };
+sf::Color BACKGROUND = { 255, 255, 255 };
 sf::Color COLORS[6]  = {
 	sf::Color(255, 255, 255),
 	sf::Color(0, 0, 255),
