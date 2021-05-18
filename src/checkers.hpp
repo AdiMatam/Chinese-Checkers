@@ -11,20 +11,31 @@ private:
 	int m_PlayerCount;
 	int m_CurrentPlayer;
 	Slot* m_Selected;
+	bool m_GameOver;
 
 	std::vector<Slot> m_Slots;
+
+	enum MoveType {
+		NOHOPE, SINGLE, MULTIPLE
+	};
 
 public:
 	ChineseCheckers(sf::RenderWindow* window, int playerCount=2);
 	~ChineseCheckers();
-	void nextTurn();
+	
 	void draw();
 	void createBoard();
-	void rotateBoard();
-	bool checkWin();
 
+	void rotateBoard();
+
+	void handleEvent(sf::Event& ev);
+	void nextTurn();
+	int checkWin();
+	bool isGameOver();
+	MoveType validateMove();
+
+	Slot* findSlot(float x, float y);
 private:
-	Slot* find(float x, float y);
 	void config();
 	void addSlotRow(float Y, int row);
 };

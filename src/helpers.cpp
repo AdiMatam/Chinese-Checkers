@@ -22,6 +22,20 @@ sf::Color COLORS[6]  = {
 	sf::Color(50, 50, 50),
 };
 
+void getMyColors(int currPlayer, int totalPlayers, sf::Color* colors, int len) {
+	int index = currPlayer * len; // 0 | 3
+	// 2 players - 0,1,2 | 3,4,5
+	for (int i = index; i < index + len; i++)
+		colors[i - index] = COLORS[i];
+}
+
+bool arrContains(const sf::Color& search, sf::Color* array, int len) {
+	auto end = array + len;
+	return std::find(
+		array, end, search)
+		!= end;
+}
+
 void logColor(const sf::Color& color) {
 	printf("%d, %d, %d\n", int(color.r), int(color.g), int(color.b));
 }
@@ -30,5 +44,12 @@ bool keyPressed(sf::Event& ev, sf::Keyboard::Key code) {
 	return (
 		ev.type == sf::Event::KeyPressed and
 		ev.key.code == code
+	);
+}
+
+bool mousePressed(sf::Event& ev, sf::Mouse::Button code) {
+	return (
+		ev.type == sf::Event::MouseButtonPressed and
+		ev.mouseButton.button == code
 	);
 }

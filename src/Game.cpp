@@ -28,8 +28,8 @@ int main() {
 				window.setSize(
 					sf::Vector2u(ev.size.width, ev.size.width)
 				);
-			if (keyPressed(ev, sf::Keyboard::Enter))
-				game.rotateBoard();
+			if (!game.isGameOver())
+				game.handleEvent(ev);
 		}
 		window.clear(BACKGROUND);
 		window.draw(sp);
