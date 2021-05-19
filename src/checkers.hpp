@@ -12,6 +12,8 @@ private:
 	
 	int m_PlayerCount;
 	int m_CurrentPlayer;
+	sf::Color m_PlayerColors[6];
+
 	Slot* m_Selected;
 	bool m_GameOver;
 	bool m_EnableMouse;
@@ -42,7 +44,7 @@ public:
 	void selector(Slot* clicked);
 	void move(Slot* clicked);
 	int checkWin();
-	bool isGameOver();
+	bool isOver();
 	
 	/* VALIDATION / AUX */
 	MoveType validateMove(Slot*, Slot*);

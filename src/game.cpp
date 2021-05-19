@@ -9,6 +9,7 @@ CC::ChineseCheckers(sf::RenderWindow* window, int playerCount)
 {
 	std::cout << "Starting Game" << std::endl;
 	config();
+	Slot::s_PlayerColors = m_PlayerColors;
 	createBoard();
 }
 
@@ -58,14 +59,11 @@ void CC::move(Slot* clicked) {
 }
 
 int CC::checkWin() {
-	int len = 6 / m_PlayerCount; // 3
-	sf::Color* mine = (sf::Color*)alloca(sizeof(sf::Color) * len);
-	
-	getMyColors(m_CurrentPlayer, m_PlayerCount, mine, len);
-
+	int len = 6 / m_PlayerCount;
+	getMyColors(m_CurrentPlayer, m_PlayerCount, m_PlayerColors, len);
 	for (Slot& s : m_Slots) {
 		if (
-			!arrContains(s.getFillColor(), mine, len) and
+			!arrContains(s.getFillColor(), m_PlayerColors, len) and
 			s.getFillColor() != s.getGoalColor()
 		)
 			return -1;
@@ -74,7 +72,7 @@ int CC::checkWin() {
 	return m_CurrentPlayer;
 }
 
-bool CC::isGameOver() {
+bool CC::isOver() {
 	return m_GameOver;
 }
 

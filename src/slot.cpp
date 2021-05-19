@@ -1,6 +1,8 @@
 #include "pch.hpp"
 #include "slot.hpp"
 
+sf::Color* Slot::s_PlayerColors;
+
 Slot::Slot(float x, float y, int row) {
     config();
     setPosition(x, y);
@@ -24,7 +26,7 @@ sf::Color& Slot::getGoalColor() {
 }
 
 void Slot::pick() {
-    m_Overlay.setFillColor(sf::Color::Black);
+    m_Overlay.setFillColor(m_GoalColor);
 }
 
 void Slot::unpick() {
@@ -33,16 +35,14 @@ void Slot::unpick() {
 
 bool Slot::isMine(int currentPlayer, int totalPlayers) {
     int len = 6 / totalPlayers;
-    sf::Color* colors = (sf::Color*)alloca(sizeof(sf::Color) * len);
-    getMyColors(currentPlayer, totalPlayers, colors, len);
-    return arrContains(getFillColor(), colors, len);
+    //sf::Color* colors = (sf::Color*)alloca(sizeof(sf::Color) * len);
+    getMyColors(currentPlayer, totalPlayers, s_PlayerColors, len);
+    return arrContains(getFillColor(), s_PlayerColors, len);
 }
 
 bool Slot::isEmpty() {
     return getFillColor() == sf::Color::Transparent;
 }
-
-
 
 
 void Slot::config() {
@@ -63,17 +63,17 @@ void Slot::determineColor(int x, int y, int row) {
     }
     else {
         if (row <= 4) {
-            if (y < HALF) c = &COLORS[0];
-            else          c = &COLORS[5];
+            if (y < HALF) c = &COLORS[5];
+            else          c = &COLORS[0];
         }
         else {
             if (x < HALF) {
-                if (y < HALF) c = &COLORS[1];
-                else          c = &COLORS[3];
+                if (y < HALF) c = &COLORS[3];
+                else          c = &COLORS[1];
             }
             else {
-                if (y < HALF) c = &COLORS[2];
-                else          c = &COLORS[4];
+                if (y < HALF) c = &COLORS[4];
+                else          c = &COLORS[2];
             }
         }
         int index = c - &COLORS[0];

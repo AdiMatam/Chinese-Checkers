@@ -6,6 +6,8 @@ private:
 	sf::Color m_GoalColor;
 	sf::CircleShape m_Overlay;
 public:
+	static sf::Color* s_PlayerColors;
+	
 	Slot(float x, float y, int row);
 	bool clicked(float x, float y) const;
 	void draw(sf::RenderWindow* win, sf::Transform* t) const;
