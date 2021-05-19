@@ -7,6 +7,8 @@ private:
 	sf::RenderWindow* m_Window;
 	sf::CircleShape m_Outline;
 	sf::Transform m_Rotter;
+	sf::Texture m_BackTex;
+	sf::Sprite m_BackImg;
 	
 	int m_PlayerCount;
 	int m_CurrentPlayer;

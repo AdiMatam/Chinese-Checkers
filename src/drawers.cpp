@@ -2,6 +2,7 @@
 #include "checkers.hpp"
 
 void ChineseCheckers::draw() {
+	m_Window->draw(m_BackImg);
 	m_Window->draw(m_Outline);
 	for (auto& s : m_Slots)
 		s.draw(m_Window, &m_Rotter);
@@ -77,4 +78,9 @@ void ChineseCheckers::config() {
 	m_Outline.setOutlineColor(OUTLINE);
 	m_Outline.setFillColor(sf::Color::Transparent);
 	m_Outline.setOutlineThickness(THICK);
+
+	m_BackTex.loadFromFile("res/img/background.jpg");
+	m_BackTex.setSmooth(true);
+	m_BackImg.setTexture(m_BackTex);
+	m_BackImg.setColor(sf::Color(255, 255, 255, 128));
 }
