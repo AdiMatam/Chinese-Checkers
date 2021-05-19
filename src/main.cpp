@@ -24,12 +24,13 @@ int main() {
 		while (window.pollEvent(ev)) {
 			if (ev.type == sf::Event::Closed)
 				window.close();
-			if (ev.type == sf::Event::Resized)
-				window.setSize(
-					sf::Vector2u(ev.size.width, ev.size.width)
-				);
-			if (!game.isGameOver())
-				game.handleEvent(ev);
+
+			if (!game.isGameOver()) {
+				if (mousePressed(ev, sf::Mouse::Left))
+					game.processClick(ev.mouseButton.x, ev.mouseButton.y);
+				if (keyPressed(ev, sf::Keyboard::Enter) && game.movedAtAll())
+					game.nextTurn();
+			}
 		}
 		window.clear(BACKGROUND);
 		window.draw(sp);

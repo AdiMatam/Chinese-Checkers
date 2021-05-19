@@ -4,6 +4,7 @@
 Slot::Slot(float x, float y, int row) {
     config();
     setPosition(x, y);
+    m_Overlay.setPosition(x, y);
     determineColor(x, y, row);
 }
 
@@ -15,11 +16,19 @@ bool Slot::clicked(float mouseX, float mouseY) const {
 
 void Slot::draw(sf::RenderWindow* win, sf::Transform* t) const {
     win->draw(*this, *t);
-    //win->draw(m_Overlay);
+    win->draw(m_Overlay, *t);
 }
 
 sf::Color& Slot::getGoalColor() {
     return m_GoalColor;
+}
+
+void Slot::pick() {
+    m_Overlay.setFillColor(sf::Color::Black);
+}
+
+void Slot::unpick() {
+    m_Overlay.setFillColor(getFillColor());
 }
 
 bool Slot::isMine(int currentPlayer, int totalPlayers) {
@@ -33,11 +42,17 @@ bool Slot::isEmpty() {
     return getFillColor() == sf::Color::Transparent;
 }
 
+
+
+
 void Slot::config() {
     setRadius(RADIUS);
     setOrigin(getRadius(), getRadius());
     setOutlineColor(OUTLINE);
     setOutlineThickness(THICK);
+
+    m_Overlay.setRadius(RADIUS / 3);
+    m_Overlay.setOrigin(m_Overlay.getRadius(), m_Overlay.getRadius());
 }
 
 void Slot::determineColor(int x, int y, int row) {
@@ -54,10 +69,10 @@ void Slot::determineColor(int x, int y, int row) {
         else {
             if (x < HALF) {
                 if (y < HALF) c = &COLORS[1];
-                else          c = &COLORS[2];
+                else          c = &COLORS[3];
             }
             else {
-                if (y < HALF) c = &COLORS[3];
+                if (y < HALF) c = &COLORS[2];
                 else          c = &COLORS[4];
             }
         }
@@ -65,4 +80,5 @@ void Slot::determineColor(int x, int y, int row) {
         m_GoalColor = COLORS[5 - index];
     }
     setFillColor(*c);
+    m_Overlay.setFillColor(*c);
 }

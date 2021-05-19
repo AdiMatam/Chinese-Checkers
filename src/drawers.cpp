@@ -31,7 +31,6 @@ void ChineseCheckers::createBoard() {
 	);
 }
 
-
 void ChineseCheckers::addSlotRow(float Y, int row) {
 	int buf;
 	if (row == 13)      buf = 2;

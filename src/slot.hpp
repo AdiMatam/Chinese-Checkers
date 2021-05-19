@@ -12,6 +12,8 @@ public:
 	sf::Color& getGoalColor();
 	bool isMine(int currentPlayer, int totalPlayers);
 	bool isEmpty();
+	void pick();
+	void unpick();
 private:
 	void config();
 	void determineColor(int x, int y, int row);
