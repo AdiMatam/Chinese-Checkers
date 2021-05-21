@@ -10,7 +10,7 @@ public:
 	
 	Slot(float x, float y, int row);
 	bool clicked(float x, float y) const;
-	void draw(sf::RenderWindow* win, sf::Transform* t) const;
+	void draw(sf::RenderWindow* win) const;
 	sf::Color& getGoalColor();
 	bool isMine(int currentPlayer, int totalPlayers);
 	bool isEmpty();

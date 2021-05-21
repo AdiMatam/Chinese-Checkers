@@ -30,12 +30,12 @@ void CC::processClick(float x, float y, bool force) {
 void CC::selector(Slot* clicked) {
 	if (m_Selected != nullptr)
 		m_Selected->unpick();
-	clicked->pick();
 	m_Selected = clicked;
+	m_Selected->pick();
 }
 
 void CC::move(Slot* clicked) {
-	MoveType type = validateMove(clicked, m_Selected);
+	MoveType type = validateMove(m_Selected, clicked);
 	if (type == MoveType::NOHOPE)
 		return;
 	bool ender = type == MoveType::SINGLE;
@@ -69,6 +69,7 @@ int CC::checkWin() {
 			return -1;
 	}
 	m_GameOver = true;
+	std::cout << "Game Over -> Player " << m_CurrentPlayer << " won the game" << std::endl;
 	return m_CurrentPlayer;
 }
 
@@ -77,12 +78,9 @@ bool CC::isOver() {
 }
 
 void ChineseCheckers::nextTurn() {
+	checkWin();
 	m_EnableMouse = true;
 	++m_CurrentPlayer %= m_PlayerCount;
-}
-
-void ChineseCheckers::rotateBoard() {
-	m_Rotter.rotate(360.f / m_PlayerCount, HALF, HALF);
 }
 
 bool ChineseCheckers::movedAtAll() {

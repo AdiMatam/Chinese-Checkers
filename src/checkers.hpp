@@ -6,7 +6,6 @@ class ChineseCheckers {
 private:
 	sf::RenderWindow* m_Window;
 	sf::CircleShape m_Outline;
-	sf::Transform m_Rotter;
 	sf::Texture m_BackTex;
 	sf::Sprite m_BackImg;
 	
@@ -35,7 +34,6 @@ public:
 	void addSlotRow(float Y, int row);
 
 	/* TURN LOGIC */
-	void rotateBoard();
 	bool movedAtAll();
 	void nextTurn();
 
@@ -46,7 +44,7 @@ public:
 	int checkWin();
 	bool isOver();
 	
-	/* VALIDATION / AUX */
+	/* EXTRA */
 	MoveType validateMove(Slot*, Slot*);
 	Slot* findSlot(float x, float y);
 };

@@ -11,7 +11,7 @@ int main() {
 		sf::VideoMode(SIZE, SIZE), TITLE, sf::Style::Default, set
 	);
 	sf::Event ev;
-	
+
 	ChineseCheckers game(&window, 2);
 
 	while (window.isOpen()) {

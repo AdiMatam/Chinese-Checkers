@@ -5,7 +5,7 @@ void ChineseCheckers::draw() {
 	m_Window->draw(m_BackImg);
 	m_Window->draw(m_Outline);
 	for (auto& s : m_Slots)
-		s.draw(m_Window, &m_Rotter);
+		s.draw(m_Window);
 }
 
 

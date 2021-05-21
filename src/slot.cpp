@@ -16,9 +16,9 @@ bool Slot::clicked(float mouseX, float mouseY) const {
     return x and (pos.y - RADIUS <= mouseY) and (mouseY <= pos.y + RADIUS);
 }
 
-void Slot::draw(sf::RenderWindow* win, sf::Transform* t) const {
-    win->draw(*this, *t);
-    win->draw(m_Overlay, *t);
+void Slot::draw(sf::RenderWindow* win) const {
+    win->draw(*this);
+    win->draw(m_Overlay);
 }
 
 sf::Color& Slot::getGoalColor() {
@@ -35,7 +35,6 @@ void Slot::unpick() {
 
 bool Slot::isMine(int currentPlayer, int totalPlayers) {
     int len = 6 / totalPlayers;
-    //sf::Color* colors = (sf::Color*)alloca(sizeof(sf::Color) * len);
     getMyColors(currentPlayer, totalPlayers, s_PlayerColors, len);
     return arrContains(getFillColor(), s_PlayerColors, len);
 }
