@@ -26,11 +26,13 @@ sf::Color& Slot::getGoalColor() {
 }
 
 void Slot::pick() {
-    m_Overlay.setFillColor(m_GoalColor);
+    sf::Color flipped = sf::Color(255, 255, 255) - getFillColor();
+    flipped.a = 255;
+    m_Overlay.setFillColor(flipped);
 }
 
 void Slot::unpick() {
-    m_Overlay.setFillColor(getFillColor());
+    m_Overlay.setFillColor(sf::Color::Transparent);
 }
 
 bool Slot::isMine(int currentPlayer, int totalPlayers) {
@@ -42,7 +44,6 @@ bool Slot::isMine(int currentPlayer, int totalPlayers) {
 bool Slot::isEmpty() {
     return getFillColor() == sf::Color::Transparent;
 }
-
 
 void Slot::config() {
     setRadius(RADIUS);

@@ -5,7 +5,7 @@
 
 CC::ChineseCheckers(sf::RenderWindow* window, int playerCount) 
 	: m_Window(window), m_PlayerCount(playerCount), m_CurrentPlayer(0), m_Selected(nullptr),
-		m_GameOver(false), m_EnableMouse(true)
+	m_GameOver(false), m_EnableMouse(true)
 {
 	std::cout << "Starting Game" << std::endl;
 	config();
