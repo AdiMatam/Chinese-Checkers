@@ -1,26 +1,22 @@
-#ifndef SLOT_H
-#define SLOT_H
-
 #include "pch.hpp"
 #include "helpers.hpp"
-#include "theme.hpp"
 
-struct Slot : public sf::CircleShape {
-    static Theme* theme;
-    sf::CircleShape overlay;
-
-    Slot() = default;
-    Slot(float x, float y, int row);
-    ~Slot() = default;
-
-    bool clicked(float mouseX, float mouseY) const;
-    void pick();
-    void resetFill();
-    int getIdentity();
-
+class Slot : public sf::CircleShape {
 private:
-    void determineColor(float x, float y, int row);
-    void setup();
+	sf::Color m_GoalColor;
+	sf::CircleShape m_Overlay;
+public:
+	static sf::Color* s_PlayerColors;
+	
+	Slot(float x, float y, int row);
+	bool clicked(float x, float y) const;
+	void draw(sf::RenderWindow* win) const;
+	sf::Color& getGoalColor();
+	bool isMine(int currentPlayer, int totalPlayers);
+	bool isEmpty();
+	void pick();
+	void unpick();
+private:
+	void config();
+	void determineColor(int x, int y, int row);
 };
-
-#endif

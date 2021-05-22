@@ -11,16 +11,14 @@ extern float XSTEP ;
 extern float RADIUS;
 extern float THICK ; 
 
+extern sf::Color OUTLINE;
+extern sf::Color BACKGROUND;
+extern sf::Color COLORS[6];
 
-void logColor(const sf::Color& color); 
-
-template <typename T>
-void logVector(const sf::Vector2<T>& vec) {
-    std::cout << "[" << vec.x << ", " << vec.y << "]\n";
-}
-
-bool keyPressed(const sf::Event& e, const sf::Keyboard::Key& code);
-bool mousePressed(const sf::Event& e, const sf::Mouse::Button& code);
-
+void getMyColors(int currPlayer, int totalPlayers, sf::Color* colors, int len);
+bool arrContains(const sf::Color& search, sf::Color* array, int len);
+void logColor(const sf::Color& color);
+bool keyPressed(sf::Event& ev, sf::Keyboard::Key code);
+bool mousePressed(sf::Event& ev, sf::Mouse::Button code);
 
 #endif

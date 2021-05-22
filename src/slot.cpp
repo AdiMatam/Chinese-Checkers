@@ -1,65 +1,84 @@
 #include "pch.hpp"
 #include "slot.hpp"
 
-Theme* Slot::theme;
+sf::Color* Slot::s_PlayerColors;
 
 Slot::Slot(float x, float y, int row) {
-	setup();
-	setPosition(sf::Vector2f(x, y));
-    overlay.setPosition(sf::Vector2f(x, y));
+    config();
+    setPosition(x, y);
+    m_Overlay.setPosition(x, y);
     determineColor(x, y, row);
 }
 
 bool Slot::clicked(float mouseX, float mouseY) const {
     sf::Vector2f pos = getPosition();
-    bool x = (pos.x - RADIUS <= mouseX) && (mouseX <= pos.x + RADIUS);
-    return x && (pos.y - RADIUS <= mouseY) && (mouseY <= pos.y + RADIUS);
+    bool x = (pos.x - RADIUS <= mouseX) and (mouseX <= pos.x + RADIUS);
+    return x and (pos.y - RADIUS <= mouseY) and (mouseY <= pos.y + RADIUS);
+}
+
+void Slot::draw(sf::RenderWindow* win) const {
+    win->draw(*this);
+    win->draw(m_Overlay);
+}
+
+sf::Color& Slot::getGoalColor() {
+    return m_GoalColor;
 }
 
 void Slot::pick() {
-    overlay.setFillColor(sf::Color::Black);
-}
-void Slot::resetFill() {
-    overlay.setFillColor(getFillColor());
-}
-
-int Slot::getIdentity() {
-	sf::Color fill = getFillColor();
-	if (fill == theme->getColor(Theme::BACKGROUND)) return -1;
-	// TOP -> RET 0
-	// BOT -> RET 1
-	return (fill == theme->getColor(Theme::BOTTOM) || 
-		    fill == theme->getColor(Theme::BOTTOM_LEFT) || 
-		    fill == theme->getColor(Theme::BOTTOM_RIGHT));
+    sf::Color flipped = sf::Color(255, 255, 255) - getFillColor();
+    flipped.a = 255;
+    m_Overlay.setFillColor(flipped);
 }
 
-void Slot::setup() {
-	setOutlineColor(sf::Color::Black);
-	setOutlineThickness(THICK);
-	setRadius(RADIUS);
-	setOrigin(getRadius(), getRadius());
-	overlay.setRadius(RADIUS / 3);
-	overlay.setOrigin(overlay.getRadius(), overlay.getRadius());
+void Slot::unpick() {
+    m_Overlay.setFillColor(sf::Color::Transparent);
 }
 
-void Slot::determineColor(float x, float y, int row) {
-	sf::Color* color;
-	if (row == 9 or row == 0)
-		color = &theme->getColor(Theme::BACKGROUND);
-	else if (row <= 4 and row >= 1) {
-		if (y > HALF) color = &theme->getColor(Theme::BOTTOM);
-		else          color = &theme->getColor(Theme::TOP);
-	}
-	else {
-		if (x > HALF) {
-			if (y > HALF) color = &theme->getColor(Theme::BOTTOM_RIGHT);
-			else          color = &theme->getColor(Theme::TOP_RIGHT);
-		}
-		else {
-			if (y > HALF) color = &theme->getColor(Theme::BOTTOM_LEFT);
-			else          color = &theme->getColor(Theme::TOP_LEFT);
-		}
-	}
-	setFillColor(*color);
-	overlay.setFillColor(*color);
+bool Slot::isMine(int currentPlayer, int totalPlayers) {
+    int len = 6 / totalPlayers;
+    getMyColors(currentPlayer, totalPlayers, s_PlayerColors, len);
+    return arrContains(getFillColor(), s_PlayerColors, len);
+}
+
+bool Slot::isEmpty() {
+    return getFillColor() == sf::Color::Transparent;
+}
+
+void Slot::config() {
+    setRadius(RADIUS);
+    setOrigin(getRadius(), getRadius());
+    setOutlineColor(OUTLINE);
+    setOutlineThickness(THICK);
+
+    m_Overlay.setRadius(RADIUS / 3);
+    m_Overlay.setOrigin(m_Overlay.getRadius(), m_Overlay.getRadius());
+}
+
+void Slot::determineColor(int x, int y, int row) {
+    const sf::Color* c;
+    if (row == 9 or row == 0) {
+        c = &sf::Color::Transparent;
+        m_GoalColor = sf::Color::Transparent;
+    }
+    else {
+        if (row <= 4) {
+            if (y < HALF) c = &COLORS[5];
+            else          c = &COLORS[0];
+        }
+        else {
+            if (x < HALF) {
+                if (y < HALF) c = &COLORS[3];
+                else          c = &COLORS[1];
+            }
+            else {
+                if (y < HALF) c = &COLORS[4];
+                else          c = &COLORS[2];
+            }
+        }
+        int index = c - &COLORS[0];
+        m_GoalColor = COLORS[5 - index];
+    }
+    setFillColor(*c);
+    m_Overlay.setFillColor(*c);
 }

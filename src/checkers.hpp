@@ -1,52 +1,50 @@
-#ifndef CHECKERS_H
-#define CHECKERS_H
-
 #include "pch.hpp"
 #include "helpers.hpp"
 #include "slot.hpp"
 
-class Checkers {
+class ChineseCheckers {
 private:
-    sf::RenderWindow* mWin;
-    Theme* mTheme;
-    //sf::Color* mFill;
-    sf::CircleShape mOutline;
-    sf::Transform mTrans;
-    std::vector<Slot> mSlots;
-    //std::vector<sf::Color> mColors;
-    
-    bool mTurn;
-    Slot* mSelected;
-    bool mEnableMouse;
+	sf::RenderWindow* m_Window;
+	sf::CircleShape m_Outline;
+	sf::Texture m_BackTex;
+	sf::Sprite m_BackImg;
+	
+	int m_PlayerCount;
+	int m_CurrentPlayer;
+	sf::Color m_PlayerColors[6];
 
-    const sf::Vector2f mCENTER = sf::Vector2f(SIZE / 2, SIZE / 2);
-    const float RADIAN = 3.1415f / 180.f;
+	Slot* m_Selected;
+	bool m_GameOver;
+	bool m_EnableMouse;
 
-    enum class MoveType {
-        INVALID, SINGLE, MULTIPLE
-    };
-   
+	std::vector<Slot> m_Slots;
+
+	enum MoveType {
+		NOHOPE, SINGLE, MULTIPLE
+	};
+
 public:
-    Checkers(sf::RenderWindow* win, Theme* theme);
-    ~Checkers() = default;
+	ChineseCheckers(sf::RenderWindow* window, int playerCount=2);
+	~ChineseCheckers();
+	
+	/* DRAWING */
+	void draw();
+	void createBoard();
+	void config();
+	void addSlotRow(float Y, int row);
 
-    void rotateBoard();
-    void draw() const;
-    void resetBoard();
-    
-    Slot* find(float x, float y);
-    MoveType validateMove(const Slot* s1, const Slot* s2);
-    bool foundLegal(float x, float y);
-    void processClick(float x, float y, bool force);
-    //void themer(float x, float y);
+	/* TURN LOGIC */
+	bool movedAtAll();
+	void nextTurn();
 
-    void switchTurn();
-    bool movedAtAll();
-
-private:
-    void config();
-    void correct(float* x, float* y);
-    void addSlotRow(float* oY, int row, int buffer);
+	/* MAIN GAME */
+	void processClick(float, float, bool force=false);
+	void selector(Slot* clicked);
+	void move(Slot* clicked);
+	int checkWin();
+	bool isOver();
+	
+	/* EXTRA */
+	MoveType validateMove(Slot*, Slot*);
+	Slot* findSlot(float x, float y);
 };
-
-#endif
