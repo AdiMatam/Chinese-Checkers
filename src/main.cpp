@@ -2,8 +2,6 @@
 #include "helpers.hpp"
 #include "checkers.hpp"
 
-void printMatrix(const float* arr);
-
 int main() {
 	const std::string TITLE = "Chinese Checkers";
 	sf::ContextSettings set;
@@ -25,18 +23,10 @@ int main() {
 					game.processClick(ev.mouseButton.x, ev.mouseButton.y);
 				if (keyPressed(ev, sf::Keyboard::Enter) and game.movedAtAll())
 					game.nextTurn();
-				if (keyPressed(ev, sf::Keyboard::Right) or keyPressed(ev, sf::Keyboard::Left))
+				if (ev.type == sf::Event::KeyPressed)
 					game.spin(ev.key.code);
 			}
 		}
 		game.draw();
-	}
-}
-
-void printMatrix(const float* arr) {
-	for (int i = 0; i < 4; i++) {
-		for (int j = 0; j < 4; j++)
-			std::cout << arr[i * 4 + j] << " ";
-		std::cout << "\n";
 	}
 }

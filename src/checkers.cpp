@@ -88,7 +88,7 @@ void ChineseCheckers::nextTurn() {
 	checkWin();
 	m_EnableMouse = true;
 	++m_CurrentPlayer %= m_PlayerCount;
-	printf("\nPlayer %d / %d:\n", m_CurrentPlayer+1, m_PlayerCount);
+	printf("\nPlayer %d / %d:\n", m_CurrentPlayer + 1, m_PlayerCount);
 }
 
 bool ChineseCheckers::movedAtAll() {
