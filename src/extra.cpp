@@ -1,6 +1,12 @@
 #include "pch.hpp"
 #include "checkers.hpp"
 
+void ChineseCheckers::correct(float* x, float* y) {
+	auto [a, b] = m_Rotater.getInverse().transformPoint(*x, *y);
+	*x = a;
+	*y = b;
+}
+
 ChineseCheckers::MoveType ChineseCheckers::validateMove(Slot* s1, Slot* s2) {
 	sf::Vector2f s1pos = s1->getPosition();
 	sf::Vector2f s2pos = s2->getPosition();
@@ -42,3 +48,4 @@ Slot* ChineseCheckers::findSlot(float wantX, float wantY) {
 	}
 	return nullptr;
 }
+

@@ -2,10 +2,12 @@
 #include "checkers.hpp"
 
 void ChineseCheckers::draw() {
-	m_Window->draw(m_BackImg);
-	m_Window->draw(m_Outline);
-	for (auto& s : m_Slots)
-		s.draw(m_Window);
+	m_Window->clear(BACKGROUND);
+		m_Window->draw(m_BackImg);
+		m_Window->draw(m_Outline);
+		for (auto& s : m_Slots)
+			s.draw(m_Window, m_Rotater);
+	m_Window->display();
 }
 
 
@@ -30,6 +32,28 @@ void ChineseCheckers::createBoard() {
 		[](const Slot& a, const Slot& b)
 		{ return a.getPosition().y < b.getPosition().y; }
 	);
+}
+
+void ChineseCheckers::spin(sf::Keyboard::Key code) {
+	sf::Clock clock;
+	int flip;
+	if (code == sf::Keyboard::Left)
+		flip = -1;
+	else
+		flip = 1;
+	int end = m_Degrees + (flip * 60);
+	for(;;) {
+		if (abs(end - m_Degrees) == 0)
+			break;
+		if (clock.getElapsedTime().asMilliseconds() % 10 == 0) {
+			m_Rotater.rotate(flip * 2, HALF, HALF);
+			m_Degrees += (flip * 2);
+		}
+		draw();
+	}
+	m_Degrees %= 360;
+	if (m_Degrees < 0) m_Degrees += 360;
+	std::cout << m_Degrees << std::endl;
 }
 
 void ChineseCheckers::addSlotRow(float Y, int row) {

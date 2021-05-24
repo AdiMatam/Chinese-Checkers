@@ -8,7 +8,8 @@ private:
 	sf::CircleShape m_Outline;
 	sf::Texture m_BackTex;
 	sf::Sprite m_BackImg;
-	
+	sf::Transform m_Rotater;
+
 	int m_PlayerCount;
 	int m_CurrentPlayer;
 	sf::Color m_PlayerColors[6];
@@ -16,6 +17,7 @@ private:
 	Slot* m_Selected;
 	bool m_GameOver;
 	bool m_EnableMouse;
+	int m_Degrees;
 
 	std::vector<Slot> m_Slots;
 
@@ -32,6 +34,7 @@ public:
 	void createBoard();
 	void config();
 	void addSlotRow(float Y, int row);
+	void spin(sf::Keyboard::Key code);
 
 	/* TURN LOGIC */
 	bool movedAtAll();
@@ -47,4 +50,5 @@ public:
 	/* EXTRA */
 	MoveType validateMove(Slot*, Slot*);
 	Slot* findSlot(float x, float y);
+	void correct(float*, float*);
 };

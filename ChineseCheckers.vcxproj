@@ -25,7 +25,7 @@
     <ClInclude Include="src\slot.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\game.cpp" />
+    <ClCompile Include="src\checkers.cpp" />
     <ClCompile Include="src\drawers.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\helpers.cpp" />

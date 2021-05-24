@@ -1,206 +1,95 @@
 #include "pch.hpp"
 #include "checkers.hpp"
 
-Checkers::Checkers(sf::RenderWindow* win, Theme* theme)
-    : mWin(win), mTheme(theme), mTurn(true), mSelected(nullptr), mEnableMouse(true)
+#define CC ChineseCheckers
+
+CC::ChineseCheckers(sf::RenderWindow* window, int playerCount)
+	: m_Window(window), m_PlayerCount(playerCount), m_CurrentPlayer(0), 
+	m_Selected(nullptr), m_GameOver(false), m_EnableMouse(true),
+	m_Degrees(0)
 {
-    config();
-    resetBoard();
+	std::cout << "Starting Game" << std::endl;
+	config();
+	Slot::s_PlayerColors = m_PlayerColors;
+	createBoard();
 }
 
-void Checkers::switchTurn() {
-    mTurn = !mTurn;
-    rotateBoard();
-    mEnableMouse = true;
+CC::~ChineseCheckers() {
+	std::cout << "Ending Game" << std::endl;
 }
 
-bool Checkers::movedAtAll() {
-    if (!mEnableMouse) {
-        if (mSelected != nullptr) 
-            mSelected->resetFill();
-        return true;
-    }
-    return false;
+void CC::processClick(float x, float y, bool force) {
+	correct(&x, &y);
+	Slot* clicked = findSlot(x, y);
+	if (clicked == nullptr) return;
+
+	if ((clicked->isMine(m_CurrentPlayer, m_PlayerCount) && m_EnableMouse) || force)
+		selector(clicked);
+	else if (clicked->isEmpty() && m_Selected != nullptr)
+		move(clicked);
 }
 
-void Checkers::draw() const {
-    mWin->clear(mTheme->getColor(Theme::BACKGROUND));
-    mWin->draw(mOutline);
-    for (auto& s : mSlots) {
-        mWin->draw(s, mTrans);
-        mWin->draw(s.overlay, mTrans);
-    }
+void CC::selector(Slot* clicked) {
+	if (m_Selected != nullptr)
+		m_Selected->unpick();
+	m_Selected = clicked;
+	m_Selected->pick();
 }
 
-void Checkers::rotateBoard() {
-    int rotation = 0;
-    sf::Clock c;
-    int delay = 400;
-    while (rotation < 180) {
-        draw();
-        mWin->display();
-        if (c.getElapsedTime().asMilliseconds() >= delay) {
-            rotation++;
-            mTrans.rotate(1, mCENTER);
-            c.restart();
-            delay = 4;
-        }
-    }
+void CC::move(Slot* clicked) {
+	MoveType type = validateMove(m_Selected, clicked);
+	if (type == MoveType::NOHOPE)
+		return;
+	bool ender = type == MoveType::SINGLE;
+	if (m_EnableMouse || !ender) {
+		clicked->setFillColor(m_Selected->getFillColor());
+		clicked->unpick();
+
+		m_Selected->setFillColor(sf::Color::Transparent);
+		m_Selected->unpick();
+
+		if (ender) {
+			m_Selected = nullptr;
+			nextTurn();
+		}
+		else {
+			m_EnableMouse = false;
+			auto [x, y] = clicked->getPosition();
+			processClick(x, y, true);
+		}
+	}
 }
 
-
-void Checkers::processClick(float x, float y, bool force) {
-    correct(&x, &y);
-
-    Slot* clicked = find(x, y);
-    if (clicked == nullptr) 
-        return;
-    int id = clicked->getIdentity();
-    if (force || (id == int(mTurn) && mEnableMouse)) {
-        if (mSelected != nullptr) 
-            mSelected->resetFill();
-        clicked->pick();
-        mSelected = clicked;
-    }
-    else if (id == -1 && mSelected != nullptr) {
-        MoveType type = validateMove(clicked, mSelected);
-        if (type == MoveType::INVALID)
-            return;
-
-        sf::Vector2f pos = mSelected->getPosition();
-        bool ender = (type == MoveType::SINGLE) || (!foundLegal(pos.x, pos.y));
-
-        if (mEnableMouse || !ender) {
-            clicked->setFillColor(mSelected->getFillColor());
-            clicked->resetFill();
-
-            mSelected->setFillColor(mTheme->getColor(Theme::BACKGROUND));
-            mSelected->resetFill();
-
-            if (ender) {
-                mSelected = nullptr;
-                switchTurn();
-            }
-            else {
-                mEnableMouse = false;
-                processClick(x, y, true);
-            }
-        }
-    }
+int CC::checkWin() {
+	int len = 6 / m_PlayerCount;
+	getMyColors(m_CurrentPlayer, m_PlayerCount, m_PlayerColors, len);
+	for (Slot& s : m_Slots) {
+		if (
+			!arrContains(s.getFillColor(), m_PlayerColors, len) and
+			s.getFillColor() != s.getGoalColor()
+			)
+			return -1;
+	}
+	m_GameOver = true;
+	std::cout << "Game Over -> Player " << m_CurrentPlayer << " won the game" << std::endl;
+	return m_CurrentPlayer;
 }
 
-
-bool Checkers::foundLegal(float x, float y) {
-    float length = RADIUS * 4;
-    float nx, ny;
-    for (int angle = 0; angle < 360; angle += 60) {
-        nx = x + length * cosf(angle * RADIAN);
-        ny = y + length * sinf(angle * RADIAN);
-        Slot* temp = find(nx, ny);
-        if (temp != nullptr && temp->getIdentity() == -1)
-            return true;
-    }
-    return false;
+bool CC::isOver() {
+	return m_GameOver;
 }
 
-Slot* Checkers::find(float x, float y) {
-    for (auto& s : mSlots) {
-        if (s.clicked(x, y))
-            return &s;
-    }
-    return nullptr;
+void ChineseCheckers::nextTurn() {
+	checkWin();
+	m_EnableMouse = true;
+	++m_CurrentPlayer %= m_PlayerCount;
 }
 
-Checkers::MoveType Checkers::validateMove(const Slot* s1, const Slot* s2) {
-    sf::Vector2f s1pos = s1->getPosition();
-    sf::Vector2f s2pos = s2->getPosition();
-
-    float distance = sqrtf(powf(s1pos.y - s2pos.y, 2) + powf(s1pos.x - s2pos.x, 2));    
-    if (distance <= 4 * RADIUS)
-        return MoveType::SINGLE;
-
-    // MIDPOINT
-    float midX = (s1pos.x + s2pos.x) / 2.f;
-    float midY = (s1pos.y + s2pos.y) / 2.f;
-    Slot* midPoint = find(midX, midY);
-    if (midPoint != nullptr && midPoint->getIdentity() != -1)
-        return MoveType::MULTIPLE;
-    return MoveType::INVALID;
-}
-
-
-void Checkers::resetBoard() {
-    float X = HALF, Y = HALF;
-    // 9 ROW
-    mSlots.emplace_back(X, Y, 9);
-    for (int i = 0; i < 4; i++) {
-        X -= XSTEP;
-        mSlots.emplace_back(X, Y, 9);
-        mSlots.emplace_back(SIZE - X, Y, 9);
-    }
-    Y -= YSTEP;
-    int layout[8] = { 10, 11, 12, 13, 4, 3, 2, 1 };
-    int buffer;
-    for (int row : layout) {
-        switch (row) {
-        case 10: buffer = 3; break;
-        case 11: buffer = 2; break;
-        case 12: buffer = 2; break;
-        case 13: buffer = 1; break;
-        default: buffer = 0; break;
-        }
-        addSlotRow(&Y, row, buffer);
-    }
-}
-
-void Checkers::addSlotRow(float* oY, int row, int buffer) {
-    float X = HALF;
-    float Y = *oY;
-    int current = row;
-
-    if (row % 2 == 0)
-        X -= XSTEP / 2.f;
-    else {
-        if (buffer > 0)
-            current = 0;
-        else
-            current = row;
-        mSlots.emplace_back(X, Y, current);
-        mSlots.emplace_back(X, SIZE - Y, current);
-        X -= XSTEP;
-    }
-    int bound = row / 2;
-    for (int j = 0; j < bound; j++) {
-        if (buffer > 0) {
-            if (j > buffer)
-                current = row;
-            else
-                current = 0;
-        }
-        mSlots.emplace_back(X, Y, current);
-        mSlots.emplace_back(X, SIZE - Y, current);
-        mSlots.emplace_back(SIZE - X, Y, current);
-        mSlots.emplace_back(SIZE - X, SIZE - Y, current);
-        X -= XSTEP;
-    }
-    *oY -= YSTEP;
-}
-
-void Checkers::correct(float* x, float* y) {
-    if (!mTurn) {
-        *x = SIZE - *x;
-        *y = SIZE - *y;
-    }
-}
-
-void Checkers::config() {
-    mOutline.setPosition(mCENTER);
-    mOutline.setFillColor(mTheme->getColor(Theme::BACKGROUND));
-    mOutline.setRadius((SIZE - 10) / 2);
-    mOutline.setOutlineColor(sf::Color::Black);
-    mOutline.setOutlineThickness(THICK);
-    mOutline.setPointCount(mOutline.getPointCount() * 2);
-    mOutline.setOrigin(mOutline.getRadius(), mOutline.getRadius());
-
-    Slot::theme = mTheme;
+bool ChineseCheckers::movedAtAll() {
+	if (!m_EnableMouse) {
+		if (m_Selected != nullptr)
+			m_Selected->unpick();
+		return true;
+	}
+	return false;
 }

@@ -16,9 +16,9 @@ bool Slot::clicked(float mouseX, float mouseY) const {
     return x and (pos.y - RADIUS <= mouseY) and (mouseY <= pos.y + RADIUS);
 }
 
-void Slot::draw(sf::RenderWindow* win) const {
-    win->draw(*this);
-    win->draw(m_Overlay);
+void Slot::draw(sf::RenderWindow* win, const sf::RenderStates& rnd) const {
+    win->draw(*this, rnd);
+    win->draw(m_Overlay, rnd);
 }
 
 sf::Color& Slot::getGoalColor() {
