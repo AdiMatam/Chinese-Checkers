@@ -53,7 +53,7 @@ void ChineseCheckers::spin(sf::Keyboard::Key code) {
 	}
 	m_Degrees %= 360;
 	if (m_Degrees < 0) m_Degrees += 360;
-	std::cout << m_Degrees << std::endl;
+	printf("Degrees: %d\n", m_Degrees);
 }
 
 void ChineseCheckers::addSlotRow(float Y, int row) {

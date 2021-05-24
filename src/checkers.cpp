@@ -8,23 +8,22 @@ CC::ChineseCheckers(sf::RenderWindow* window, int playerCount)
 	m_Selected(nullptr), m_GameOver(false), m_EnableMouse(true),
 	m_Degrees(0)
 {
-	std::cout << "Starting Game" << std::endl;
-	printf("\nPlayer %d / %d:\n", m_CurrentPlayer + 1, m_PlayerCount);
+	printf("STARTING GAME\n\nPLAYER %d / %d:\n", m_CurrentPlayer + 1, m_PlayerCount);
 	config();
 	Slot::s_PlayerColors = m_PlayerColors;
 	createBoard();
 }
 
 CC::~ChineseCheckers() {
-	std::cout << "Ending Game" << std::endl;
+	printf("ENDING GAME\n");
 }
 
-void CC::processClick(float x, float y, bool force) {
+void CC::processClick(float x, float y) {
 	normalize(&x, &y);
 	Slot* clicked = findSlot(x, y);
 	if (clicked == nullptr) return;
 
-	if ((clicked->isMine(m_CurrentPlayer, m_PlayerCount) && m_EnableMouse) || force)
+	if (clicked->isMine(m_CurrentPlayer, m_PlayerCount) && m_EnableMouse)
 		selector(clicked);
 	else if (clicked->isEmpty() && m_Selected != nullptr)
 		move(clicked);
@@ -33,7 +32,7 @@ void CC::processClick(float x, float y, bool force) {
 }
 
 void CC::selector(Slot* clicked) {
-	std::cout << "VALID SELECTION" << std::endl;
+	printf("VALID SELECTION\n");
 	if (m_Selected != nullptr)
 		m_Selected->unpick();
 	m_Selected = clicked;
@@ -43,12 +42,10 @@ void CC::selector(Slot* clicked) {
 void CC::move(Slot* clicked) {
 	MoveType type = validateMove(m_Selected, clicked);
 	if (type == MoveType::NOHOPE) {
-		std::cout << "INVALID MOVE - "
-			<< "MUST (MOVE BY 1) OR (JUMP OVER PIECE)"
-			<< std::endl;
+		printf("INVALID MOVE - MUST (MOVE BY 1) OR (JUMP OVER PIECE)\n");
 		return;
 	}
-	std::cout << "VALID MOVE" << std::endl;
+	printf("VALID MOVE\n");
 	bool ender = type == MoveType::SINGLE;
 	if (m_EnableMouse || !ender) {
 		clicked->setFillColor(m_Selected->getFillColor());
@@ -63,8 +60,7 @@ void CC::move(Slot* clicked) {
 		}
 		else {
 			m_EnableMouse = false;
-			auto [x, y] = clicked->getPosition();
-			processClick(x, y, true);
+			selector(clicked);
 		}
 	}
 }
@@ -80,7 +76,7 @@ int CC::checkWin() {
 			return -1;
 	}
 	m_GameOver = true;
-	std::cout << "Game Over -> Player " << m_CurrentPlayer << " won the game" << std::endl;
+	printf("Game Over -> Player %d won the game\n", m_CurrentPlayer);
 	return m_CurrentPlayer;
 }
 

@@ -41,7 +41,7 @@ public:
 	void nextTurn();
 
 	/* MAIN GAME */
-	void processClick(float, float, bool force=false);
+	void processClick(float x, float y);
 	void selector(Slot* clicked);
 	void move(Slot* clicked);
 	int checkWin();

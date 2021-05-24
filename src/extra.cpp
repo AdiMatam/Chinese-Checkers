@@ -51,15 +51,12 @@ Slot* ChineseCheckers::findSlot(float wantX, float wantY) {
 
 void ChineseCheckers::showErrors(Slot* clicked) {
 	if (m_Selected == nullptr) {
-		std::cout << "INVALID SELECTION: ";
+		printf("INVALID SELECTION: ");
 		if (clicked->isEmpty()) 
-			std::cout << "NO PIECE HERE" << std::endl;
+			printf("NO PIECE HERE\n");
 		else 
-			std::cout << "OPPONENT PIECE HERE" << std::endl;
+			printf("OPPONENT PIECE HERE\n");
 	}
-	else {
-		std::cout << "INVALID MOVE - "
-		<< "MUST (MOVE BY 1) OR (JUMP OVER PIECE)"
-		<< std::endl;
-	}
+	else
+		printf("INVALID MOVE - MUST (MOVE BY 1) OR (JUMP OVER PIECE)\n");
 }
