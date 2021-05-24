@@ -48,7 +48,8 @@ public:
 	bool isOver();
 	
 	/* EXTRA */
-	MoveType validateMove(Slot*, Slot*);
+	MoveType validateMove(Slot* s1, Slot* s2);
 	Slot* findSlot(float x, float y);
-	void normalize(float*, float*);
+	void normalize(float* x, float* y);
+	void showErrors(Slot* clicked);
 };

@@ -9,6 +9,7 @@ CC::ChineseCheckers(sf::RenderWindow* window, int playerCount)
 	m_Degrees(0)
 {
 	std::cout << "Starting Game" << std::endl;
+	printf("\nPlayer %d / %d:\n", m_CurrentPlayer + 1, m_PlayerCount);
 	config();
 	Slot::s_PlayerColors = m_PlayerColors;
 	createBoard();
@@ -27,9 +28,12 @@ void CC::processClick(float x, float y, bool force) {
 		selector(clicked);
 	else if (clicked->isEmpty() && m_Selected != nullptr)
 		move(clicked);
+	else
+		showErrors(clicked);
 }
 
 void CC::selector(Slot* clicked) {
+	std::cout << "VALID SELECTION" << std::endl;
 	if (m_Selected != nullptr)
 		m_Selected->unpick();
 	m_Selected = clicked;
@@ -38,8 +42,13 @@ void CC::selector(Slot* clicked) {
 
 void CC::move(Slot* clicked) {
 	MoveType type = validateMove(m_Selected, clicked);
-	if (type == MoveType::NOHOPE)
+	if (type == MoveType::NOHOPE) {
+		std::cout << "INVALID MOVE - "
+			<< "MUST (MOVE BY 1) OR (JUMP OVER PIECE)"
+			<< std::endl;
 		return;
+	}
+	std::cout << "VALID MOVE" << std::endl;
 	bool ender = type == MoveType::SINGLE;
 	if (m_EnableMouse || !ender) {
 		clicked->setFillColor(m_Selected->getFillColor());
@@ -83,6 +92,7 @@ void ChineseCheckers::nextTurn() {
 	checkWin();
 	m_EnableMouse = true;
 	++m_CurrentPlayer %= m_PlayerCount;
+	printf("\nPlayer %d / %d:\n", m_CurrentPlayer+1, m_PlayerCount);
 }
 
 bool ChineseCheckers::movedAtAll() {
