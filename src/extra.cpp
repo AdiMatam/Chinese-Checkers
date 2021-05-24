@@ -1,7 +1,7 @@
 #include "pch.hpp"
 #include "checkers.hpp"
 
-void ChineseCheckers::correct(float* x, float* y) {
+void ChineseCheckers::normalize(float* x, float* y) {
 	auto [a, b] = m_Rotater.getInverse().transformPoint(*x, *y);
 	*x = a;
 	*y = b;

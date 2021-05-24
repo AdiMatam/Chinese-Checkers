@@ -19,7 +19,7 @@ CC::~ChineseCheckers() {
 }
 
 void CC::processClick(float x, float y, bool force) {
-	correct(&x, &y);
+	normalize(&x, &y);
 	Slot* clicked = findSlot(x, y);
 	if (clicked == nullptr) return;
 

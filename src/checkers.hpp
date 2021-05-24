@@ -50,5 +50,5 @@ public:
 	/* EXTRA */
 	MoveType validateMove(Slot*, Slot*);
 	Slot* findSlot(float x, float y);
-	void correct(float*, float*);
+	void normalize(float*, float*);
 };
