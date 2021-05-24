@@ -2,22 +2,22 @@
 #include "checkers.hpp"
 
 void ChineseCheckers::normalize(float* x, float* y) {
-	auto [a, b] = m_Rotater.getInverse().transformPoint(*x, *y);
-	*x = a;
-	*y = b;
+	sf::Vector2f pos = m_Rotater.getInverse().transformPoint(*x, *y);
+	*x = pos.x;
+	*y = pos.y;
 }
 
 ChineseCheckers::MoveType ChineseCheckers::validateMove(Slot* s1, Slot* s2) {
-	sf::Vector2f s1pos = s1->getPosition();
-	sf::Vector2f s2pos = s2->getPosition();
+	sf::Vector2f pos1 = s1->getPosition();
+	sf::Vector2f pos2 = s2->getPosition();
 
-	float distance = sqrtf(powf(s1pos.y - s2pos.y, 2) + powf(s1pos.x - s2pos.x, 2));
+	float distance = sqrtf(powf(pos1.y - pos2.y, 2) + powf(pos1.x - pos2.x, 2));
 	if (distance <= 4 * RADIUS)
 		return MoveType::SINGLE;
 
 	// MIDPOINT
-	float midX = (s1pos.x + s2pos.x) / 2.f;
-	float midY = (s1pos.y + s2pos.y) / 2.f;
+	float midX = (pos1.x + pos2.x) / 2.f;
+	float midY = (pos1.y + pos2.y) / 2.f;
 	Slot* midPoint = findSlot(midX, midY);
 	if (midPoint != nullptr && !midPoint->isEmpty())
 		return MoveType::MULTIPLE;
