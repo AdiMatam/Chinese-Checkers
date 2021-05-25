@@ -17,7 +17,6 @@ extern sf::Color COLORS[6];
 
 void getMyColors(int currPlayer, int totalPlayers, sf::Color* colors, int len);
 bool arrContains(const sf::Color& search, sf::Color* array, int len);
-void logColor(const sf::Color& color);
 bool keyPressed(sf::Event& ev, sf::Keyboard::Key code);
 bool mousePressed(sf::Event& ev, sf::Mouse::Button code);
 

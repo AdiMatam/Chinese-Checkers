@@ -1,13 +1,38 @@
 #include "pch.hpp"
 #include "checkers.hpp"
 
+// CLEAR SCREEN, DRAW GEOMETRY, RENDER GEOMETRY
 void ChineseCheckers::draw() {
 	m_Window->clear(BACKGROUND);
-		m_Window->draw(m_BackImg);
-		m_Window->draw(m_Outline);
-		for (auto& s : m_Slots)
-			s.draw(m_Window, m_Rotater);
+	m_Window->draw(m_BackImg);
+	m_Window->draw(m_Outline);
+	for (auto& s : m_Slots)
+		s.draw(m_Window, m_Rotater); 
 	m_Window->display();
+}
+
+// ROTATE BOARD WHEN ARROW KEY PRESSED
+void ChineseCheckers::spin(sf::Keyboard::Key code) {
+	sf::Clock clock;
+	int flip;
+	int degrees = 0;
+	if (code == sf::Keyboard::Left)
+		flip = -1;
+	else
+		flip = 1;
+	for(;;) {
+		if (abs(degrees) == 60)
+			break;
+		// will rotate 2 degrees (left or right) every 10 seconds
+		if (clock.getElapsedTime().asMilliseconds() % 10 == 0) {
+			m_Rotater.rotate(flip * 2, HALF, HALF); //transform that is "applied" when drawing board
+			degrees += (flip * 2);
+		}
+		draw();
+	}
+	// clamp degrees value (0->360 domain)
+	degrees %= 360;
+	if (degrees < 0) degrees += 360;
 }
 
 
@@ -34,27 +59,6 @@ void ChineseCheckers::createBoard() {
 	);
 }
 
-void ChineseCheckers::spin(sf::Keyboard::Key code) {
-	sf::Clock clock;
-	int flip;
-	if (code == sf::Keyboard::Left)
-		flip = -1;
-	else
-		flip = 1;
-	int end = m_Degrees + (flip * 60);
-	for(;;) {
-		if (abs(end - m_Degrees) == 0)
-			break;
-		if (clock.getElapsedTime().asMilliseconds() % 10 == 0) {
-			m_Rotater.rotate(flip * 2, HALF, HALF);
-			m_Degrees += (flip * 2);
-		}
-		draw();
-	}
-	m_Degrees %= 360;
-	if (m_Degrees < 0) m_Degrees += 360;
-	printf("Degrees: %d\n", m_Degrees);
-}
 
 void ChineseCheckers::addSlotRow(float Y, int row) {
 	int buf;
@@ -93,7 +97,9 @@ void ChineseCheckers::addSlotRow(float Y, int row) {
 	}
 }
 
+// INITIALIZING GEOMETRY OBJECTS UPON CONSTRUCTION
 void ChineseCheckers::config() {
+	// outside circle - setting attributes
 	m_Outline.setPosition(HALF, HALF);
 	m_Outline.setRadius(HALF - 5);
 	m_Outline.setPointCount(m_Outline.getPointCount() * 2);
@@ -103,6 +109,7 @@ void ChineseCheckers::config() {
 	m_Outline.setFillColor(sf::Color::Transparent);
 	m_Outline.setOutlineThickness(THICK);
 
+	// loading background "wood" texture.
 	m_BackTex.loadFromFile("res/img/background.jpg");
 	m_BackTex.setSmooth(true);
 	m_BackImg.setTexture(m_BackTex);

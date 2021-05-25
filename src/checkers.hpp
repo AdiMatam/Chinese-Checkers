@@ -17,7 +17,6 @@ private:
 	Slot* m_Selected;
 	bool m_GameOver;
 	bool m_EnableMouse;
-	int m_Degrees;
 
 	std::vector<Slot> m_Slots;
 
@@ -52,4 +51,5 @@ public:
 	Slot* findSlot(float x, float y);
 	void normalize(float* x, float* y);
 	void showErrors(Slot* clicked);
+	//void save(const std::string& filepath);
 };
