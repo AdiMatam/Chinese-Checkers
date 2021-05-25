@@ -27,7 +27,8 @@ A simple **Chinese Checkers** game developed on C++ -> **SFML** Graphics Library
 4. Turn system  
     a. If **SINGLE MOVE** or **NO LEGAL MOVES** -> turn switches automatically  
     b. Else -> press **ENTER KEY** when done with turn  
-5. Repeat... (end of game not checked yet...)
+5. Repeat... (end of game not checked yet...)  
+6. When a player has won, gameplay will stop -> end board will be displayed until window closed.
 
 ## **To-do**
 - [ ] - LAN Multiplayer option  
