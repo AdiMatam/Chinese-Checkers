@@ -35,18 +35,15 @@ int main() {
 			if (ev.type == sf::Event::Closed or keyPressed(ev, sf::Keyboard::Escape))
 				window.close();
 
+			if (keyPressed(ev, sf::Keyboard::Left) or keyPressed(ev, sf::Keyboard::Right))
+				game.spin(ev.key.code);
+
 			else if (!game.isOver()) {
 				if (mousePressed(ev, sf::Mouse::Left))
 					game.processClick(ev.mouseButton.x, ev.mouseButton.y);
 				
 				else if (keyPressed(ev, sf::Keyboard::Enter) and game.movedAtAll())
 					game.nextTurn();
-				
-				else if (keyPressed(ev, sf::Keyboard::Left) or keyPressed(ev, sf::Keyboard::Right))
-					game.spin(ev.key.code);
-
-				//else if (ev.key.control and keyPressed(ev, sf::Keyboard::S))
-				//	game.save("test.chk");
 			}
 		}
 		game.draw();
