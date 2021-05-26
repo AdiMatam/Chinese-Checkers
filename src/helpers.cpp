@@ -16,13 +16,14 @@ sf::Color OUTLINE    = { 50, 50, 50 };
 sf::Color BACKGROUND = { 255, 255, 255 };
 
 // SLOT COLORS
-sf::Color COLORS[6]  = {
-	sf::Color(255, 255, 255),
-	sf::Color(0, 0, 255),
-	sf::Color(255, 0, 0),
-	sf::Color(230, 245, 66),
-	sf::Color(0, 255, 0),
-	sf::Color(50, 50, 50),
+sf::Color COLORS[6] = {
+	sf::Color(0, 0, 255),     // BOTTOM LEFT
+	sf::Color(255, 255, 255), // BOTTOM CENTER
+	sf::Color(255, 0, 0),	  // BOTTOM RIGHT
+
+	sf::Color(0, 255, 0),	  // TOP    RIGHT
+	sf::Color(50, 50, 50),	  // TOP    CENTER
+	sf::Color(230, 245, 66),  // TOP    LEFT
 };
 
 // "COLORS" IS AN ARRAY

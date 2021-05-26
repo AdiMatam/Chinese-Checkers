@@ -70,13 +70,36 @@ void CC::move(Slot* clicked) {
 	}
 }
 
+void ChineseCheckers::undo() {
+	if (m_MoveStack.empty()) {
+		printf("NO MOVES HAVE BEEN MADE!\n");
+		return;
+	}
+	auto [start, end] = m_MoveStack.top();
+	m_MoveStack.pop();
+
+	start->setFillColor(end->getFillColor());
+	end->setFillColor(sf::Color::Transparent);
+
+	--m_CurrentPlayer %= m_PlayerCount;
+	printf("MOVE UNDONE\n\nPLAYER %d / %d:\n", m_CurrentPlayer + 1, m_PlayerCount);
+}
+
+void CC::nextTurn() {
+	m_MoveStack.push(std::move(m_CurrentMove));
+	m_CurrentMove.reset();
+
+	checkWin();
+	m_EnableMouse = true;
+	++m_CurrentPlayer %= m_PlayerCount;
+	printf("\nPlayer %d / %d:\n", m_CurrentPlayer + 1, m_PlayerCount);
+}
+
 // FOR A VICTORY, EVERY PIECE THAT BELONGS TO A GIVEN PLAYER MUST BE IN THE "DESTINATION"
 int CC::checkWin() {
 	int len = 6 / m_PlayerCount;
 	getMyColors(m_CurrentPlayer, m_PlayerCount, m_PlayerColors, len);
 	for (Slot& s : m_Slots) {
-		/* if a slot does not belong to current player 
-		AND its current color doesn't match the color it should be (at end), no win yet */
 		if (
 			!arrContains(s.getFillColor(), m_PlayerColors, len) and
 			s.getFillColor() != s.getGoalColor()
@@ -90,16 +113,6 @@ int CC::checkWin() {
 
 bool CC::isOver() {
 	return m_GameOver;
-}
-
-void ChineseCheckers::nextTurn() {
-	m_MoveStack.push(std::move(m_CurrentMove));
-	m_CurrentMove.reset();
-
-	checkWin();
-	m_EnableMouse = true;
-	++m_CurrentPlayer %= m_PlayerCount;
-	printf("\nPlayer %d / %d:\n", m_CurrentPlayer + 1, m_PlayerCount);
 }
 
 // MULTI MOVE HANDLER. PREVENT PLAYER FROM "SKIPPING A TURN"

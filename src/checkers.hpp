@@ -45,6 +45,7 @@ public:
 	void processClick(float x, float y);
 	void selector(Slot* clicked);
 	void move(Slot* clicked);
+	void undo();
 	int checkWin();
 	bool isOver();
 	
@@ -53,5 +54,4 @@ public:
 	Slot* findSlot(float x, float y);
 	void normalize(float* x, float* y);
 	void showErrors(Slot* clicked);
-	void undo();
 };

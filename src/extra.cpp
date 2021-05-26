@@ -68,23 +68,3 @@ void ChineseCheckers::showErrors(Slot* clicked) {
 	else
 		printf("INVALID MOVE - MUST (MOVE BY 1) OR (JUMP OVER PIECE)\n");
 }
-
-void ChineseCheckers::undo() {
-	if (m_MoveStack.empty()) {
-		printf("NO MOVES HAVE BEEN MADE!\n");
-		return;
-	}
-	auto [start, end] = m_MoveStack.top();
-	m_MoveStack.pop();
-
-	start->setFillColor(end->getFillColor());
-	end->setFillColor(sf::Color::Transparent);
-	
-	--m_CurrentPlayer %= m_PlayerCount;
-	printf("MOVE UNDONE\n\nPLAYER %d / %d:\n", m_CurrentPlayer + 1, m_PlayerCount);
-
-}
-
-//void ChineseCheckers::save(const std::string& filepath) {
-//	printf("Saving, to be implemented...\n");
-//}

@@ -16,7 +16,6 @@ void config(tgui::Button::Ptr button) {
 */
 
 int main() {
-	// SFML GRAPHICS CONFIGURATION
 	const std::string TITLE = "Chinese Checkers";
 	sf::ContextSettings set;
 	set.antialiasingLevel = 8;
@@ -27,9 +26,6 @@ int main() {
 	sf::Event ev;
 	ChineseCheckers game(&window, 2);
 	
-	// MAIN GAME LOOP
-	// SCREEN CONTINOUSLY CLEARED AND GEOMETRY REDRAWN
-	// "DATA" OF GEOMETRY ALTERED BY "EVENTS" -> KEYPRESS, MOUSEPRESS, ETC
 	while (window.isOpen()) {
 		while (window.pollEvent(ev)) {
 			if (ev.type == sf::Event::Closed or keyPressed(ev, sf::Keyboard::Escape))
@@ -38,15 +34,15 @@ int main() {
 			else if (keyPressed(ev, sf::Keyboard::Left) or keyPressed(ev, sf::Keyboard::Right))
 				game.spin(ev.key.code);
 
-			else if (keyPressed(ev, sf::Keyboard::Z) and ev.key.control)
-				game.undo();
-
 			else if (!game.isOver()) {
 				if (mousePressed(ev, sf::Mouse::Left))
 					game.processClick(ev.mouseButton.x, ev.mouseButton.y);
 				
 				else if (keyPressed(ev, sf::Keyboard::Enter) and game.movedAtAll())
 					game.nextTurn();
+
+				else if (keyPressed(ev, sf::Keyboard::Z) and ev.key.control)
+					game.undo();
 			}
 		}
 		game.draw();

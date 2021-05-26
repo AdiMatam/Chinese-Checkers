@@ -78,17 +78,17 @@ void Slot::determineColor(int x, int y, int row) {
     else {
         int index;
         if (row <= 4) {
-            if (y < HALF) index = 5;
-            else          index = 0;
+            if (y < HALF) index = 4; //top
+            else          index = 1; //bottom
         }
         else {
-            if (x < HALF) {
-                if (y < HALF) index = 3;
-                else          index = 1;
+            if (x < HALF) { // left
+                if (y < HALF) index = 5;
+                else          index = 0; // bottom
             }
             else {
-                if (y < HALF) index = 4;
-                else          index = 2;
+                if (y < HALF) index = 3;
+                else          index = 2; // bottom
             }
         }
         // DETERMINE INDEX OF CHOSEN COLOR AND ASSIGN "GOAL" TO THE "OPPOSITE" OF IT.
