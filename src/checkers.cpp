@@ -7,6 +7,7 @@ CC::ChineseCheckers(sf::RenderWindow* window, int playerCount)
 	: m_Window(window), m_PlayerCount(playerCount), m_CurrentPlayer(0), 
 	m_Selected(nullptr), m_GameOver(false), m_EnableMouse(true)
 {
+	m_CurrentMove.reset();
 	printf("STARTING GAME\n\nPLAYER %d / %d:\n", m_CurrentPlayer + 1, m_PlayerCount);
 	config();
 	Slot::s_PlayerColors = m_PlayerColors;
@@ -23,11 +24,10 @@ void CC::processClick(float x, float y) {
 	Slot* clicked = findSlot(x, y);
 	if (clicked == nullptr) return;
 
-	// select piece if it belongs to current player.
-	// enable mouse is used for constraining multi moves -> described later
-	if (clicked->isMine(m_CurrentPlayer, m_PlayerCount) && m_EnableMouse)
+	if (clicked->isMine(m_CurrentPlayer, m_PlayerCount) && m_EnableMouse) {
+		m_CurrentMove.start = clicked;
 		selector(clicked);
-	// move piece if "destination" is empty and something is already selected
+	}
 	else if (clicked->isEmpty() && m_Selected != nullptr)
 		move(clicked);
 	else
@@ -56,6 +56,8 @@ void CC::move(Slot* clicked) {
 	m_Selected->setFillColor(sf::Color::Transparent);
 	m_Selected->unpick();
 
+	m_CurrentMove.end = clicked;
+	
 	if (type == MoveType::SINGLE) {
 		m_Selected = nullptr;
 		nextTurn();
@@ -91,9 +93,11 @@ bool CC::isOver() {
 }
 
 void ChineseCheckers::nextTurn() {
+	m_MoveStack.push(std::move(m_CurrentMove));
+	m_CurrentMove.reset();
+
 	checkWin();
 	m_EnableMouse = true;
-	// adds one to current_player and clamps it between (0 -> player_count-1)
 	++m_CurrentPlayer %= m_PlayerCount;
 	printf("\nPlayer %d / %d:\n", m_CurrentPlayer + 1, m_PlayerCount);
 }

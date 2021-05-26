@@ -1,6 +1,10 @@
 #include "pch.hpp"
 #include "slot.hpp"
 
+void Move::reset() {
+    start = nullptr; end = nullptr;
+}
+
 // STATIC REFERENCE TO COLOR ARRAY
 sf::Color* Slot::s_PlayerColors;
 
@@ -94,3 +98,4 @@ void Slot::determineColor(int x, int y, int row) {
     setFillColor(*c);
     m_Overlay.setFillColor(*c);
 }
+

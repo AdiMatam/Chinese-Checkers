@@ -20,3 +20,9 @@ private:
 	void config();
 	void determineColor(int x, int y, int row);
 };
+
+struct Move {
+	Slot* start;
+	Slot* end;
+	void reset();
+};

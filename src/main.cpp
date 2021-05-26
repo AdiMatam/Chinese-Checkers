@@ -2,7 +2,7 @@
 #include "helpers.hpp"
 #include "checkers.hpp"
 
-/* EXPERIMENTATION
+/* EXPERIMENTATION - IGNORE FOR PRES.
 void config(tgui::Button::Ptr button) {
 	button->setSize(tgui::Layout2d(30, 30));
 	button->setOrigin(sf::Vector2f(0.f, 0.f));
@@ -35,8 +35,11 @@ int main() {
 			if (ev.type == sf::Event::Closed or keyPressed(ev, sf::Keyboard::Escape))
 				window.close();
 
-			if (keyPressed(ev, sf::Keyboard::Left) or keyPressed(ev, sf::Keyboard::Right))
+			else if (keyPressed(ev, sf::Keyboard::Left) or keyPressed(ev, sf::Keyboard::Right))
 				game.spin(ev.key.code);
+
+			else if (keyPressed(ev, sf::Keyboard::Z) and ev.key.control)
+				game.undo();
 
 			else if (!game.isOver()) {
 				if (mousePressed(ev, sf::Mouse::Left))

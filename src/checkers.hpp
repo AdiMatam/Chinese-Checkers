@@ -19,6 +19,8 @@ private:
 	bool m_EnableMouse;
 
 	std::vector<Slot> m_Slots;
+	Move m_CurrentMove;
+	std::stack<Move> m_MoveStack;
 
 	enum MoveType {
 		NOHOPE, SINGLE, MULTIPLE
@@ -51,5 +53,5 @@ public:
 	Slot* findSlot(float x, float y);
 	void normalize(float* x, float* y);
 	void showErrors(Slot* clicked);
-	//void save(const std::string& filepath);
+	void undo();
 };

@@ -6,6 +6,7 @@
 #include <cmath>
 #include <string>
 #include <vector>
+#include <stack>
 
 // Dependency - graphics library
 //#include <TGUI/TGUI.hpp>
