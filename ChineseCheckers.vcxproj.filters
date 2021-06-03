@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\checkers.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\helpers.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -25,6 +22,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\slot.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\net\server.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\checkers.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\net\gamedata.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -47,7 +53,16 @@
     <ClCompile Include="src\extra.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\net\server.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="src\checkers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\net\client.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\net\gamedata.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

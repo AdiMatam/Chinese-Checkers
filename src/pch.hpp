@@ -7,9 +7,12 @@
 #include <string>
 #include <vector>
 #include <stack>
+#include <thread>
+#include <unordered_map>
 
 // Dependency - graphics library
 //#include <TGUI/TGUI.hpp>
 #include <SFML/Graphics.hpp>
+#include <SFML/Network.hpp>
 
 #endif

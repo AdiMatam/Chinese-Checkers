@@ -20,12 +20,17 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\checkers.hpp" />
+    <ClInclude Include="src\net\gamedata.hpp" />
+    <ClInclude Include="src\net\server.hpp" />
     <ClInclude Include="src\helpers.hpp" />
     <ClInclude Include="src\pch.hpp" />
     <ClInclude Include="src\slot.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\checkers.cpp" />
+    <ClCompile Include="src\net\client.cpp" />
+    <ClCompile Include="src\net\gamedata.cpp" />
+    <ClCompile Include="src\net\server.cpp" />
     <ClCompile Include="src\drawers.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\helpers.cpp" />
@@ -117,7 +122,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>SFML_STATIC;TGUI_STATIC;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;$(SolutionDir)include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.hpp</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -137,7 +142,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>SFML_STATIC;TGUI_STATIC;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;$(SolutionDir)include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.hpp</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
