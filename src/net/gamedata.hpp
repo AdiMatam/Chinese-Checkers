@@ -3,10 +3,7 @@
 #include "pch.hpp"
 #include "helpers.hpp"
 
-using SocketPtr = std::shared_ptr<sf::TcpSocket>;
-
 struct GameData {
-    //std::vector<SocketPtr> players;
     int playerCount;
     bool ready;
     int totalPlayers;
@@ -19,5 +16,10 @@ struct GameData {
 };
 
 sf::Packet& operator <<(sf::Packet& packet, const GameData& character);
-
 sf::Packet& operator >>(sf::Packet& packet, GameData& character);
+
+struct GameSelectorPackage : public GameData {
+    sf::SocketSelector clients;
+    GameSelectorPackage() = default;
+    GameSelectorPackage(int count, int gameId);
+};

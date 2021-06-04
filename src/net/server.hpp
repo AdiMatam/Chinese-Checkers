@@ -12,14 +12,15 @@ private:
     sf::IpAddress m_IP;
 
     sf::TcpListener m_Listener;
-    sf::SocketSelector m_Selector;
+    //sf::SocketSelector m_Selector;
     std::vector<SocketPtr> m_Connections;
-    std::unordered_map<int, GameData> m_GameMap; //id -> game
+    std::unordered_map<int, GameSelectorPackage> m_GameMap; //id -> game
 
     void acceptConnection();
-    void communicate();
+    void handleClients();
     int generateGameId(int count);
-    void send(SocketPtr conn, sf::Packet* packet, GameData* data);
+    
+    static void send(SocketPtr conn, sf::Packet* packet, GameData* data);
 
 public:
     Server(int PORT, const sf::IpAddress& IP);

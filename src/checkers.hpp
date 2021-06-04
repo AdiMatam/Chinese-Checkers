@@ -7,7 +7,7 @@
 class ChineseCheckers : public sf::TcpSocket {
 public:
 	ChineseCheckers(sf::RenderWindow*, int playerCount, const sf::IpAddress& addr=sf::IpAddress::getLocalAddress());
-	void updateData();
+	//void sendAndRecv(const std::string& msg);
 private:
 	sf::RenderWindow* m_Window;
 	sf::Packet m_Packet;
@@ -17,3 +17,4 @@ private:
 	void onConnect(int);
 };
 
+using CC = ChineseCheckers;

@@ -4,7 +4,7 @@
 Server::Server(int PORT, const sf::IpAddress& IP)
     : m_Port(PORT), m_IP(IP) {
     m_Listener.listen(PORT, IP);
-    m_Selector.add(m_Listener);
+    //m_Selector.add(m_Listener);
 }
 
 //PRIVATE
@@ -12,7 +12,7 @@ void Server::acceptConnection() {
     printf("New connection\n");
     SocketPtr connection = std::make_shared<sf::TcpSocket>();
     m_Listener.accept(*connection);
-    m_Selector.add(*connection);
+    //m_Selector.add(*connection);
     m_Connections.push_back(connection);
 
     sf::Packet data;
@@ -24,9 +24,9 @@ void Server::acceptConnection() {
         if (gameId == -1) {
             // create new game
             gameId = m_GameMap.size();
-            m_GameMap[gameId] = std::move(GameData(totalPlayers, gameId));
+            m_GameMap[gameId] = std::move(GameSelectorPackage(totalPlayers, gameId));
         }
-        GameData* current = &m_GameMap[gameId];
+        GameSelectorPackage* current = &m_GameMap[gameId];
         current->addPlayer();
 
         data << *current << (current->playerCount - 1);
@@ -45,26 +45,26 @@ int Server::generateGameId(int playerCount) {
     return -1;
 }
 
-void Server::communicate() {
-    for (SocketPtr conn : m_Connections) {
-        if (m_Selector.isReady(*conn)) {
-            // ASSUMING THAT DATA IS VALIDATED (ON CLIENT SIDE)
-            sf::Packet packet;
-            if (conn->receive(packet) == sf::Socket::Done) {
-                GameData data;
-                packet >> data;
-                GameData& current = m_GameMap[data.gameId];
+//void Server::handleClients() {
+//    for (SocketPtr conn : m_Connections) {
+//        if (m_Selector.isReady(*conn)) {
+//            // ASSUMING THAT DATA IS VALIDATED (ON CLIENT SIDE)
+//            sf::Packet packet;
+//            if (conn->receive(packet) == sf::Socket::Done) {
+//                GameData data;
+//                packet >> data;
+//                GameData& current = m_GameMap[data.gameId];
+//
+//                if (data.msg == "get")
+//                    send(conn, &packet, &current);
+//                else if (data.msg == "update")
+//                    current = std::move(data);
+//            }
+//        }
+//    }
+//}
 
-                if (data.msg == "get")
-                    send(conn, &packet, &current);
-                else if (data.msg == "update")
-                    current = std::move(data);
-            }
-        }
-    }
-}
-
-void send(SocketPtr who, sf::Packet* packet, GameData* data) {
+void Server::send(SocketPtr who, sf::Packet* packet, GameData* data) {
     packet->clear();
         *packet << *data;
         who->send(*packet);
@@ -72,20 +72,20 @@ void send(SocketPtr who, sf::Packet* packet, GameData* data) {
 }
 
 void Server::run() {
-    bool ho = false;
-    printf("Waiting for connections\n");
-    while (true) {
-        if (ho and m_Connections.size() == 0)
-            break;
-        if (m_Selector.wait()) {
-            if (m_Selector.isReady(m_Listener)) {
-                ho = true;
-                acceptConnection();
-            }
-            else
-                communicate();
-        }
-    }
+    //bool ho = false;
+    //printf("Waiting for connections\n");
+    //while (true) {
+    //    if (ho and m_Connections.size() == 0)
+    //        break;
+    //    if (m_Selector.wait()) {
+    //        if (m_Selector.isReady(m_Listener)) {
+    //            ho = true;
+    //            acceptConnection();
+    //        }
+    //        else
+    //            handleClients();
+    //    }
+    //}
     printf("Server loop broken\n");
 }
 

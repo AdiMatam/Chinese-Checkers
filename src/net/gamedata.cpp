@@ -20,3 +20,6 @@ sf::Packet& operator <<(sf::Packet& packet, const GameData& character) {
 sf::Packet& operator >>(sf::Packet& packet, GameData& character) {
     return packet;
 }
+
+GameSelectorPackage::GameSelectorPackage(int count, int gameId)
+    : GameData(count, gameId) {}
