@@ -1,9 +1,12 @@
 #include "pch.hpp"
 #include "checkers.hpp"
 
-void ChineseCheckers::initConnection() {
-	m_Data << m_PlayerCount;
-	this->send(m_Data);
-	m_Data.clear();
+void ChineseCheckers::onConnect(int playerCount) {
+	m_Packet << playerCount;
+	this->send(m_Packet);
+	m_Packet.clear();
+	if (this->receive(m_Packet) == sf::Socket::Done)
+		m_Packet >> m_GameData >> m_PlayerId;
+	m_Packet.clear();
 }
 

@@ -2,16 +2,18 @@
 
 #include "pch.hpp"
 #include "helpers.hpp"
+#include "net/gamedata.hpp"
 
 class ChineseCheckers : public sf::TcpSocket {
 public:
-	ChineseCheckers(sf::RenderWindow*, int count, const sf::IpAddress& addr=sf::IpAddress::getLocalAddress());
-
+	ChineseCheckers(sf::RenderWindow*, int playerCount, const sf::IpAddress& addr=sf::IpAddress::getLocalAddress());
+	void updateData();
 private:
 	sf::RenderWindow* m_Window;
-	int m_PlayerCount;
-	sf::Packet m_Data;
+	sf::Packet m_Packet;
+	GameData m_GameData;
+	int m_PlayerId;
 
-	void initConnection();
+	void onConnect(int);
 };
 

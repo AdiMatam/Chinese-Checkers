@@ -17,9 +17,9 @@ private:
     std::unordered_map<int, GameData> m_GameMap; //id -> game
 
     void acceptConnection();
-    void broadcast();
+    void communicate();
     int generateGameId(int count);
-    //int gameAmountByPlayerCount(int count);
+    void send(SocketPtr conn, sf::Packet* packet, GameData* data);
 
 public:
     Server(int PORT, const sf::IpAddress& IP);

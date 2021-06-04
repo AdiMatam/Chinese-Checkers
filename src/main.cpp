@@ -22,11 +22,11 @@ int main() {
 	ChineseCheckers game(&window, 2);
 	
 	while (window.isOpen()) {
+		game.updateData();
 		while (window.pollEvent(ev)) {
 			if (ev.type == sf::Event::Closed or keyPressed(ev, sf::Keyboard::Escape))
 				window.close();
 		}
-		// 
 	}
 	return 0;
 }

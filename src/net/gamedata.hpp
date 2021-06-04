@@ -6,19 +6,18 @@
 using SocketPtr = std::shared_ptr<sf::TcpSocket>;
 
 struct GameData {
-    std::vector<SocketPtr> players;
-    bool ready;
+    //std::vector<SocketPtr> players;
     int playerCount;
+    bool ready;
+    int totalPlayers;
     int gameId;
+    std::string msg;
 
+    GameData();
     GameData(int count, int gameId);
-    void addPlayer(SocketPtr conn);
+    void addPlayer();
 };
 
-sf::Packet& operator <<(sf::Packet& packet, const GameData& character); {
-    return packet;
-}
+sf::Packet& operator <<(sf::Packet& packet, const GameData& character);
 
-sf::Packet& operator >>(sf::Packet& packet, GameData& character); {
-    return packet;
-}
+sf::Packet& operator >>(sf::Packet& packet, GameData& character);

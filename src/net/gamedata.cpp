@@ -1,12 +1,15 @@
 #include "pch.hpp"
 #include "gamedata.hpp"
 
-GameData::GameData(int count, int gameId)
-    : ready(false), playerCount(count), gameId(gameId) {}
+GameData::GameData()
+    : playerCount(0), ready(false), totalPlayers(0), gameId(0) {}
 
-void GameData::addPlayer(SocketPtr conn) {
-    players.push_back(conn);
-    if (players.size() == playerCount)
+GameData::GameData(int count, int gameId)
+    : playerCount(0), ready(false), totalPlayers(count), gameId(gameId) {}
+
+void GameData::addPlayer() {
+    playerCount++;
+    if (playerCount == totalPlayers)
         ready = true;
 }
 
